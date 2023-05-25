@@ -21,6 +21,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @MappedSuperclass
 @Getter
 @SuperBuilder
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @ToString
 public class BaseEntity {
