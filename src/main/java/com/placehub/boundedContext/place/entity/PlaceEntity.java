@@ -1,7 +1,11 @@
 package com.placehub.boundedContext.place.entity;
 
+import com.placehub.base.entity.BaseEntity;
 import jakarta.persistence.Entity;
+import lombok.NoArgsConstructor;
 
 @Entity
-public class PlaceEntity {
+@NoArgsConstructor
+public class PlaceEntity extends BaseEntity {
+
 }
