@@ -9,11 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+
 @Transactional
 @SpringBootTest
 @ActiveProfiles("test")
@@ -105,6 +107,32 @@ class PostTest {
             postService.changePublicShowing(1L, false);
         } catch (SQLException e) {
             assertThat(e.getMessage()).isEqualTo("존재하지 않는 포스트입니다");
+        }
+    }
+
+    @Test
+    @DisplayName("게시글 내용 수정 성공시")
+    void modifyContentTest() throws SQLDataException {
+        LocalDateTime now = LocalDateTime.now();
+        long postId = postService.createPost(1, 1, "content", true, now);
+
+        try {
+            String modifiedContent = "ReplacedContent";
+            long id = postService.modifyContent(postId, modifiedContent);
+            assertThat(postRepository.findById(id).get().getContent()).isEqualTo(modifiedContent);
+        } catch (SQLException e) {
+            throw new SQLDataException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("게시글 내용 수정시 존재하지 않는 게시글일때")
+    void modifyContentNotExistingPostTest() {
+        try {
+            String modifiedContent = "ReplacedContent";
+            postService.modifyContent(1L, modifiedContent);
+        } catch (SQLException e) {
+            assertThat(e.getMessage()).isEqualTo("존재하지 않는 게시글입니다");
         }
     }
 }

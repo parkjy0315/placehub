@@ -56,4 +56,20 @@ public class PostService {
 
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
+
+    public long modifyContent(long id, String conent) throws SQLException {
+        Optional<Post> wrappedPost = postRepository.findById(id);
+
+        if (wrappedPost.isPresent()) {
+            Post post = wrappedPost.get();
+
+            post = post.toBuilder()
+                    .content(conent)
+                    .build();
+
+            return postRepository.save(post).getId();
+        }
+
+        throw new SQLDataException("존재하지 않는 게시글입니다");
+    }
 }
