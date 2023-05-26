@@ -20,7 +20,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 
 @MappedSuperclass
 @Getter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @ToString
