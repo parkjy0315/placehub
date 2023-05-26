@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,14 +55,16 @@ class PostTest {
     @Test
     @DisplayName("Post 엔티티 Create Service")
     void postCrudServiceTest() {
+        LocalDateTime now = LocalDateTime.now();
         Post expected = Post.builder()
                 .member(1L)
                 .place(1L)
                 .content("content")
+                .visitedDate(now)
                 .openToPublic(true)
 //                        .deleteDate(now)
                 .build();
-        long savedId = postService.createPost(1L, 1L, "content", true);
+        long savedId = postService.createPost(1L, 1L, "content", true, now);
 
         assertThat(postRepository.findById(savedId).get().toString()).isEqualTo(expected.toString());
 
@@ -70,9 +73,10 @@ class PostTest {
     @Test
     @DisplayName("장소에 따른 게시글 얻기")
     void getPostsByPlaceTest() {
-        long one = postService.createPost(1, 1, "No.1", true);
-        long two = postService.createPost(1, 2, "No.2", false);
-        long three = postService.createPost(1, 1, "No.3", true);
+        LocalDateTime now = LocalDateTime.now();
+        long one = postService.createPost(1, 1, "No.1", true, now);
+        long two = postService.createPost(1, 2, "No.2", false, now);
+        long three = postService.createPost(1, 1, "No.3", true, now);
 
         List<Post> posts = postService.getPostsByPlace(1L);
         assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById(three).get().toString());

@@ -5,6 +5,7 @@ import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,12 +16,13 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public long createPost(long userId, long placeId, String content, boolean openToPublic) {
+    public long createPost(long userId, long placeId, String content, boolean openToPublic, LocalDateTime visitedDate) {
         Post post = Post.builder()
                 .member(userId)
                 .place(placeId)
                 .content(content)
                 .openToPublic(openToPublic)
+                .visitedDate(visitedDate)
                 .build();
 
         return postRepository.save(post).getId();
