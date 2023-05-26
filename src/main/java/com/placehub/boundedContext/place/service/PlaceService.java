@@ -28,7 +28,7 @@ public class PlaceService {
     }
 
     public Place update(Place place, String placeName, Double xPos, Double yPos, String category) {
-        Place updatePlace = place.builder()
+        Place updatePlace = place.toBuilder()
                 .placeName(placeName)
                 .xPos(xPos)
                 .yPos(yPos)
