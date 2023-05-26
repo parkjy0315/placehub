@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.post.entity;
 
 import com.placehub.boundedContext.post.repository.PostRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +20,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostTest {
     @Autowired
     private PostRepository postRepository;
+    private static Post expected;
+
+    @BeforeAll
+    private static void makeExpectedPost() {
+        expected = Post.builder()
+                .userId(1L)
+                .placeId(1L)
+                .content("content")
+                .likeCount(3L)
+                .openToPublic(true)
+//                        .deleteDate(now)
+                .build();
+    }
 
     @Test
     @DisplayName("Post 엔티티 CRUD")
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     void postCrudTest() {
-        LocalDateTime now = LocalDateTime.now();
-        Post expected = Post.builder()
-                        .userId(1L)
-                        .placeId(1L)
-                        .content("content")
-                        .likeCount(3L)
-                        .openToPublic(true)
-//                        .deleteDate(now)
-                        .build();
         // Create
         postRepository.save(expected);
 
