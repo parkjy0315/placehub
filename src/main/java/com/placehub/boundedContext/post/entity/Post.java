@@ -17,8 +17,8 @@ import java.util.Comparator;
 @ToString
 @Where(clause = "delete_date is null")
 public class Post extends BaseEntity implements Comparable<Post> {
-    private long userId;
-    private long placeId;
+    private long member;
+    private long place;
     String content;
     private long likeCount;
     private boolean openToPublic;

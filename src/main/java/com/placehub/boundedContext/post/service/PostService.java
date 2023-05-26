@@ -17,8 +17,8 @@ public class PostService {
 
     public long createPost(long userId, long placeId, String content, boolean openToPublic) {
         Post post = Post.builder()
-                .userId(userId)
-                .placeId(placeId)
+                .member(userId)
+                .place(placeId)
                 .content(content)
                 .openToPublic(openToPublic)
                 .build();
@@ -27,7 +27,7 @@ public class PostService {
     }
 
     public List<Post> getPostsByPlace(long placeId) {
-        Optional<List<Post>> postList = postRepository.findPostsByPlaceId(placeId);
+        Optional<List<Post>> postList = postRepository.findPostsByPlace(placeId);
 
         if (postList.isPresent()) {
             List<Post> posts = postList.get();
