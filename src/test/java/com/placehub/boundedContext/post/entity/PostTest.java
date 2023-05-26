@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostTest {
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private PostService postService;
     private static Post expected;
 
     @BeforeAll
@@ -55,5 +57,14 @@ class PostTest {
         // Delete
         postRepository.deleteById(1L);
         assertThat(postRepository.findById(1L).isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Post 엔티티 Create Service")
+    void postCrudServiceTest() {
+        long savedId = postService.createPost(1L, 1L, "content", true);
+
+        assertThat(postRepository.findById(savedId).get().toString()).isEqualTo(expected.toString());
+
     }
 }
