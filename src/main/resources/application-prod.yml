@@ -1,15 +1,4 @@
 spring:
-<<<<<<< HEAD
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        show_sql: true
-  h2:
-    console:
-      enabled: true
-=======
   profiles:
     default:
 
@@ -35,4 +24,3 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
->>>>>>> be54601c4f0d592afe174665496c79df4e234b25
