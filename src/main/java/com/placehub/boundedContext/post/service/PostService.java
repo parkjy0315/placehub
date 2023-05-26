@@ -5,6 +5,8 @@ import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,5 +40,20 @@ public class PostService {
         }
 
         return new ArrayList<>();
+    }
+
+    public long changePublicShowing(long id, boolean toChange) throws SQLException {
+        Optional<Post> wrappedPost = postRepository.findById(id);
+
+        if (wrappedPost.isPresent()) {
+            Post post = wrappedPost.get();
+            post = post.toBuilder()
+                    .openToPublic(toChange)
+                    .build();
+
+            return postRepository.save(post).getId();
+        }
+
+        throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -81,5 +82,29 @@ class PostTest {
         List<Post> posts = postService.getPostsByPlace(1L);
         assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById(three).get().toString());
         assertThat(posts.get(1).toString()).isEqualTo(postRepository.findById(one).get().toString());
+    }
+
+    @Test
+    @DisplayName("공개여부 변경 성공시")
+    void changePublicStateTest() {
+        LocalDateTime now = LocalDateTime.now();
+        long postId = postService.createPost(1, 1, "No.1", true, now);
+
+        try {
+            long id = postService.changePublicShowing(postId, false);
+            assertThat(postRepository.findById(id).get().isOpenToPublic()).isFalse();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    @DisplayName("공개여부 변경시 존재하지 않는 게시글일때")
+    void changePublicStateNotExistingPostTest() {
+        try {
+            postService.changePublicShowing(1L, false);
+        } catch (SQLException e) {
+            assertThat(e.getMessage()).isEqualTo("존재하지 않는 포스트입니다");
+        }
     }
 }
