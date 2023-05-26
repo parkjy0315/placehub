@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.w3.org/1999/xhtml">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
     <header th:replace="~{header :: headerFragment}"></header>
     <!-- nav-bar 끝 -->
 
-    <div th:block layout:fragment="content"></div>
+    <div layout:fragment="content"></div>
 
     <!-- footer 시작 -->
     <footer th:replace="~{footer :: footerFragment}"></footer>
