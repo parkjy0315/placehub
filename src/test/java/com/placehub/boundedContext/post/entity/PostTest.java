@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.post.entity;
 
 import com.placehub.boundedContext.post.repository.PostRepository;
+import com.placehub.boundedContext.post.service.PostService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,6 @@ class PostTest {
                 .userId(1L)
                 .placeId(1L)
                 .content("content")
-                .likeCount(3L)
                 .openToPublic(true)
 //                        .deleteDate(now)
                 .build();
