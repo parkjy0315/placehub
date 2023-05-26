@@ -8,16 +8,23 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
+import java.util.Comparator;
+
 @Entity
 @NoArgsConstructor
 @SuperBuilder(toBuilder = true)
 @Getter
 @ToString
 @Where(clause = "delete_date is null")
-public class Post extends BaseEntity {
+public class Post extends BaseEntity implements Comparable<Post> {
     private long userId;
     private long placeId;
     String content;
     private long likeCount;
     private boolean openToPublic;
+
+    @Override
+    public int compareTo(Post o) {
+        return o.getCreateDate().compareTo(getCreateDate());
+    }
 }

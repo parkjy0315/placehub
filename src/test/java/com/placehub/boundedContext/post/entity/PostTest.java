@@ -7,11 +7,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,5 +65,18 @@ class PostTest {
 
         assertThat(postRepository.findById(savedId).get().toString()).isEqualTo(expected.toString());
 
+    }
+
+    @Test
+    @DisplayName("장소에 따른 게시글 얻기")
+    void getPostsByPlaceTest() {
+        postRepository.save(expected);
+        postService.createPost(1, 2, "No.2", false);
+        postService.createPost(1, 1, "No.3", true);
+
+        List<Post> posts = postService.getPostsByPlace(1L);
+
+        assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById(3L).get().toString());
+        assertThat(posts.get(1).toString()).isEqualTo(postRepository.findById(1L).get().toString());
     }
 }
