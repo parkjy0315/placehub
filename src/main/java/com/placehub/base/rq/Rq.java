@@ -3,6 +3,7 @@ package com.placehub.base.rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
