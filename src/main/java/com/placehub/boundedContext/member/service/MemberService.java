@@ -16,11 +16,11 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public Member create(String member_id, String password, String username, String email, String nickname) {
+    public Member create(String username, String password, String name, String email, String nickname) {
         Member member = Member.builder()
-                .member_id(member_id)
-                .password(password)
                 .username(username)
+                .password(password)
+                .name(name)
                 .email(email)
                 .nickname(nickname)
                 .build();

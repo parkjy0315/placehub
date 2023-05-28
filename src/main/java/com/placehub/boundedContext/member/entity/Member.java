@@ -20,9 +20,9 @@ import java.util.List;
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
     @Column(unique = true)
-    private String member_id;
-    private String password;
     private String username;
+    private String password;
+    private String name;
     private String email;
     private String nickname;
 
@@ -39,6 +39,6 @@ public class Member extends BaseEntity {
     }
 
     public boolean isAdmin() {
-        return "admin".equals(member_id);
+        return "admin".equals(username);
     }
 }
