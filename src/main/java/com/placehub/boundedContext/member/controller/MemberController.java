@@ -30,7 +30,7 @@ public class MemberController {
     public static class JoinForm {
         @NotBlank
         @Size(min = 4, max = 20)
-        private final String member_id;
+        private final String username;
         @NotBlank
         @Size(min = 4, max = 20)
         private final String password;
@@ -38,7 +38,7 @@ public class MemberController {
         @Email(message = "유효하지 않은 이메일입니다.")
         private final String email;
         @Null
-        private final String username;
+        private final String name;
         @Null
         private final String nickname;
     }
@@ -46,7 +46,7 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
-        memberService.join(joinForm.getMember_id(), joinForm.getPassword());
+        memberService.join(joinForm.getUsername(), joinForm.getPassword());
 
         return "redirect:/";
     }
