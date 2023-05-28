@@ -4,10 +4,10 @@ import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.repository.CommentRepository;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.post.entity.Post;
-import com.placehub.boundedContext.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -15,12 +15,24 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    public Comment create(Post post, String content, Member author){
+
+//    public Comment create(Post post, String content, Member author){
+//
+//        Comment comment = Comment.builder()
+//                .content(content)
+//                .post(post)
+//                .author(author)
+//                .build();
+//
+//        return commentRepository.save(comment);
+//    }
+
+    public Comment create(Long postId, String content, String username){
 
         Comment comment = Comment.builder()
                 .content(content)
-                .post(post)
-                .author(author)
+                .postId(postId)
+                .username(username)
                 .build();
 
         return commentRepository.save(comment);
@@ -33,15 +45,28 @@ public class CommentService {
 
     public Comment update(Long id, String content){
         Comment comment = commentRepository.findById(id).orElse(null);
-        Comment updateComment = Comment.builder()
+        if (comment == null) {
+            return null;
+        }
+        Comment updatedComment = comment.toBuilder()
                 .content(content)
                 .build();
-        return commentRepository.save(updateComment);
+        return commentRepository.save(updatedComment);
     }
 
-    public void delete(Comment comment) {
-        commentRepository.delete(comment);
+    public void delete(Long id) {
+        Comment comment = commentRepository.findById(id).orElse(null);
+        if (comment != null) {
+            commentRepository.delete(comment);
+        }
     }
 
 
+    public Optional<Comment> findById(Long id) {
+        return commentRepository.findById(id);
+    }
+
+    public List<Comment> findAll() {
+        return commentRepository.findAll();
+    }
 }
