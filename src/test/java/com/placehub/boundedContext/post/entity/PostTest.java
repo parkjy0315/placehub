@@ -78,9 +78,9 @@ class PostTest {
     @DisplayName("장소에 따른 게시글 얻기")
     void getPostsByPlaceTest() {
         LocalDate now = LocalDate.now();
-        long one = postService.createPost(1, 1, "No.1", true, now);
-        long two = postService.createPost(1, 2, "No.2", false, now);
-        long three = postService.createPost(1, 1, "No.3", true, now);
+        long one = postService.createPost(1L, 1L, "No.1", true, now);
+        long two = postService.createPost(1L, 2L, "No.2", false, now);
+        long three = postService.createPost(1L, 1L, "No.3", true, now);
 
         List<Post> posts = postService.getPostsByPlace(1L);
         assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById(three).get().toString());
@@ -91,7 +91,7 @@ class PostTest {
     @DisplayName("공개여부 변경 성공시")
     void changePublicStateTest() {
         LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1, 1, "No.1", true, now);
+        long postId = postService.createPost(1L, 1L, "No.1", true, now);
 
         try {
             long id = postService.changePublicShowing(postId, false);
@@ -115,7 +115,7 @@ class PostTest {
     @DisplayName("게시글 내용 수정 성공시")
     void modifyContentTest() throws SQLDataException {
         LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1, 1, "content", true, now);
+        long postId = postService.createPost(1L, 1L, "content", true, now);
 
         try {
             String modifiedContent = "ReplacedContent";

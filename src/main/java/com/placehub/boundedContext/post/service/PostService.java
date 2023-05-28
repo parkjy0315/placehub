@@ -19,7 +19,11 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public long createPost(long userId, long placeId, String content, boolean openToPublic, LocalDate visitedDate) {
+    public long createPost(Long userId, Long placeId, String content, boolean openToPublic, LocalDate visitedDate) throws RuntimeException {
+        if (!validateCreatingPost(userId, placeId, visitedDate)) {
+            throw new RuntimeException("올바르지 않은 포스팅");
+        }
+
         Post post = Post.builder()
                 .member(userId)
                 .place(placeId)
@@ -29,6 +33,19 @@ public class PostService {
                 .build();
 
         return postRepository.save(post).getId();
+    }
+
+    private boolean validateCreatingPost(Long userId, Long placeId, LocalDate visitedDate) {
+        LocalDate now = LocalDate.now();
+        return !userId.equals(null) && !placeId.equals(null) && !visitedDate.isAfter(now);
+    }
+
+    public long convertPlaceToId(String place) {
+        if (place.equals("서울 시청")) {
+            return 1L;
+        }
+
+        return 2L;
     }
 
     public List<Post> getPostsByPlace(long placeId) {
