@@ -37,9 +37,7 @@ public class MemberController {
         @NotBlank
         @Email(message = "유효하지 않은 이메일입니다.")
         private final String email;
-        @Null
         private final String name;
-        @Null
         private final String nickname;
     }
 
