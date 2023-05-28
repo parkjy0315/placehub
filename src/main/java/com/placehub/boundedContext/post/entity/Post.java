@@ -8,7 +8,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 
-import java.util.Comparator;
+import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -21,6 +21,7 @@ public class Post extends BaseEntity implements Comparable<Post> {
     private long place;
     String content;
     private long likeCount;
+    private LocalDate visitedDate;
     private boolean openToPublic;
 
     @Override
