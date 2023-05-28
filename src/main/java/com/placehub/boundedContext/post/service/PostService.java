@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,7 +19,7 @@ public class PostService {
     @Autowired
     private PostRepository postRepository;
 
-    public long createPost(long userId, long placeId, String content, boolean openToPublic, LocalDateTime visitedDate) {
+    public long createPost(long userId, long placeId, String content, boolean openToPublic, LocalDate visitedDate) {
         Post post = Post.builder()
                 .member(userId)
                 .place(placeId)

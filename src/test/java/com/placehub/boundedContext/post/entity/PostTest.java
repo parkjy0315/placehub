@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLDataException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,7 +59,7 @@ class PostTest {
     @Test
     @DisplayName("Post 엔티티 Create Service")
     void postCrudServiceTest() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         Post expected = Post.builder()
                 .member(1L)
                 .place(1L)
@@ -76,7 +77,7 @@ class PostTest {
     @Test
     @DisplayName("장소에 따른 게시글 얻기")
     void getPostsByPlaceTest() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         long one = postService.createPost(1, 1, "No.1", true, now);
         long two = postService.createPost(1, 2, "No.2", false, now);
         long three = postService.createPost(1, 1, "No.3", true, now);
@@ -89,7 +90,7 @@ class PostTest {
     @Test
     @DisplayName("공개여부 변경 성공시")
     void changePublicStateTest() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         long postId = postService.createPost(1, 1, "No.1", true, now);
 
         try {
@@ -113,7 +114,7 @@ class PostTest {
     @Test
     @DisplayName("게시글 내용 수정 성공시")
     void modifyContentTest() throws SQLDataException {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         long postId = postService.createPost(1, 1, "content", true, now);
 
         try {
