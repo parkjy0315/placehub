@@ -16,6 +16,26 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    public Member create(String member_id, String password, String username, String email, String nickname) {
+        Member member = Member.builder()
+                .member_id(member_id)
+                .password(password)
+                .username(username)
+                .email(email)
+                .nickname(nickname)
+                .build();
+        return memberRepository.save(member);
+    }
+
+    public Member read(Long id) {
+        Optional<Member> member = memberRepository.findById(id);
+        return member.orElse(null);
+    }
+
+
+    public void delete(Member member) {memberRepository.delete(member);}
+
+
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
