@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.member.controller;
 
+import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -46,7 +47,7 @@ public class MemberController {
     public String join(@Valid JoinForm joinForm) {
         memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
-        return "redirect:/";
+        return "redirect:/member/login?msg=" + Ut.url.encode("회원가입이 완료되었습니다.\n로그인 후 이용해주세요.");
     }
 
     @PreAuthorize("isAnonymous()")
