@@ -59,6 +59,9 @@ public class MemberControllerTests {
                         .with(csrf()) // CSRF 키 생성
                         .param("username", "user10")
                         .param("password", "1234")
+                        .param("email","aaa1@naver.com")
+                        .param("name","홍길동")
+                        .param("nickname","도적")
                 )
                 .andDo(print());
 
@@ -76,7 +79,7 @@ public class MemberControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/member/join")
                         .with(csrf()) // CSRF 키 생성
-                        .param("member_id", "user10")
+                        .param("username", "user10")
                 )
                 .andDo(print());
 
@@ -129,5 +132,47 @@ public class MemberControllerTests {
                 .andExpect(handler().handlerType(MemberController.class))
                 .andExpect(handler().methodName("join"))
                 .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @DisplayName("로그인 폼")
+    void t004() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(get("/member/login"))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(MemberController.class))
+                .andExpect(handler().methodName("showLogin"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(containsString("""
+                        <input type="text" name="username"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        <input type="password" name="password"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        <input type="submit" value="로그인"
+                        """.stripIndent().trim())));
+    }
+
+    @Test
+    @DisplayName("로그인 처리")
+    void t005() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/member/login")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("username", "user1")
+                        .param("password", "1234")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/**"));
     }
 }
