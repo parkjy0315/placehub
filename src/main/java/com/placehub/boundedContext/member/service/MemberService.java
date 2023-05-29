@@ -41,11 +41,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Member join(String username, String password) {
+    public Member join(String username, String password, String email,String name, String nickname) {
         Member member = Member
                 .builder()
                 .username(username)
                 .password(passwordEncoder.encode(password))
+                .email(email)
+                .name(name)
+                .nickname(nickname)
                 .build();
 
         return memberRepository.save(member);
