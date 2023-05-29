@@ -59,6 +59,9 @@ public class MemberControllerTests {
                         .with(csrf()) // CSRF 키 생성
                         .param("username", "user10")
                         .param("password", "1234")
+                        .param("email","aaa1@naver.com")
+                        .param("name","홍길동")
+                        .param("nickname","도적")
                 )
                 .andDo(print());
 
@@ -76,7 +79,7 @@ public class MemberControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/member/join")
                         .with(csrf()) // CSRF 키 생성
-                        .param("member_id", "user10")
+                        .param("username", "user10")
                 )
                 .andDo(print());
 
