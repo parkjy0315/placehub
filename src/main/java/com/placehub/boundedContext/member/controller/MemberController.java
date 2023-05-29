@@ -30,25 +30,29 @@ public class MemberController {
     public static class JoinForm {
         @NotBlank
         @Size(min = 4, max = 20)
-        private final String member_id;
+        private final String username;
         @NotBlank
         @Size(min = 4, max = 20)
         private final String password;
         @NotBlank
         @Email(message = "유효하지 않은 이메일입니다.")
         private final String email;
-        @Null
-        private final String username;
-        @Null
+        private final String name;
         private final String nickname;
     }
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
-        memberService.join(joinForm.getMember_id(), joinForm.getPassword());
+        memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
         return "redirect:/";
+    }
+
+    @PreAuthorize("isAnonymous()")
+    @GetMapping("/login")
+    public String showLogin() {
+        return "usr/member/login";
     }
 
 }
