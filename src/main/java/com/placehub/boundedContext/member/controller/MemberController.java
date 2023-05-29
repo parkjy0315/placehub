@@ -1,6 +1,8 @@
 package com.placehub.boundedContext.member.controller;
 
+import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
+import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -45,9 +47,15 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
-        memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
+        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
-        return "redirect:/member/login?msg=" + Ut.url.encode("회원가입이 완료되었습니다.\n로그인 후 이용해주세요.");
+        if (joinRs.isFail()) {
+            return "common/js";
+        }
+
+        String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
+
+        return "redirect:/member/login?msg=" + Ut.url.encode(msg);
     }
 
     @PreAuthorize("isAnonymous()")
