@@ -5,16 +5,49 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'yg-jalnan';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+#LogoBlue {
+    font-family: "yg-jalnan";
+    text-underline-position: under;
+    word-break: keep-all;
+    color : #2D55C9;
+}
+
+#LogoYellow {
+    font-family: "yg-jalnan";
+    text-underline-position: under;
+    word-break: keep-all;
+    color : #FFEF83;
+}
+
+#SecondFont {
+    font-family: "yg-jalnan";
+    text-underline-position: under;
+    word-break: keep-all;
+}
+
 html > body {
     font-family: "GmarketSansMedium";
     text-underline-position: under;
     word-break: keep-all;
 }
 
-header{
+header {
     background-color: #2D55C9;
 }
 
 footer{
     background-color: #2D55C9;
+}
+
+:root {
+    --my-blue: #2D55C9;
+    --my-yellow: #FFEF83;
 }
