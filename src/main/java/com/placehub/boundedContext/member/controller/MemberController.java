@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+
     @GetMapping("/join")
     public String showJoin() {
         return "usr/member/join";
@@ -59,11 +60,6 @@ public class MemberController {
         return "redirect:/member/login?msg=" + Ut.url.encode(msg);
     }
 
-    @PreAuthorize("isAnonymous()")
-    @GetMapping("/login")
-    public String showLogin() {
-        return "usr/member/login";
-    }
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")

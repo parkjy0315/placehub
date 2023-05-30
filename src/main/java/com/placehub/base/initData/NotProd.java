@@ -18,9 +18,10 @@ public class NotProd {
     ) {
         return new CommandLineRunner() {
             @Override
-            @Transactional
             public void run(String... args) throws Exception {
                 // Member memberAdmin = memberService.join("admin", "1234").getData();
+                Member member1 = memberService.join("user1", "1234", "123@123", "이름1", "닉네임1").getData();
+                Member member2 = memberService.join("user2", "1234", "234@234", "이름12", "닉네임2").getData();
             }
         };
     }

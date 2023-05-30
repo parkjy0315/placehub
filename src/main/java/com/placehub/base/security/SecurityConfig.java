@@ -11,29 +11,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
-@RequiredArgsConstructor
+//@EnableWebSecurity
+//@EnableMethodSecurity(prePostEnabled = true)
+//@RequiredArgsConstructor
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .formLogin(
-//                        formLogin -> formLogin
-//                                .loginPage("/usr/member/login")
-//                )
+        http
+                .formLogin(
+                        formLogin -> formLogin
+                                .loginPage("/member/login")
+                )
 //                .oauth2Login(
 //                        oauth2Login -> oauth2Login
-//                                .loginPage("/usr/member/login")
+//                                .loginPage("/member/login")
 //                                .tokenEndpoint(t -> t
 //                                        .accessTokenResponseClient(oAuth2AccessTokenResponseClient)
 //                                )
 //                )
-//                .logout(
-//                        logout -> logout
-//                                .logoutUrl("/usr/member/logout")
-//                );
-//        return http.build();
+                .logout(
+                        logout -> logout
+                                .logoutUrl("/member/logout")
+                );
+
         return http.build();
     }
 

@@ -36,19 +36,26 @@ public class MemberService {
 
     public void delete(Member member) {memberRepository.delete(member);}
 
-
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
 
     @Transactional
-    public RsData<Member> join(String username, String password, String email, String name, String nickname) {
+    // 일반 회원가입
+    public RsData<Member> join(String username, String password, String email, String name, String nickname){
+        // "PlaceHub" - 일반 회원가입으로 가입한 회원 확인용
+        return join("PlaceHub", username, password, email, name, nickname);
+    }
+
+    @Transactional
+    public RsData<Member> join(String providerTypeCode, String username, String password, String email, String name, String nickname) {
         if ( findByUsername(username).isPresent() ) {
             return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
         }
 
         Member member = Member
                 .builder()
+                .providerTypeCode(providerTypeCode)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .email(email)

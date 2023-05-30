@@ -19,6 +19,8 @@ import java.util.List;
 @SuperBuilder
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
+
+    private String providerTypeCode; // 일반/소셜 중 무엇으로 가입했는지 확인용
     @Column(unique = true)
     private String username;
     private String password;
