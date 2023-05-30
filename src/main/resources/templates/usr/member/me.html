@@ -1,0 +1,45 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>
+        내 정보
+    </title>
+</head>
+
+<body>
+
+<div layout:fragment="content" class="flex-grow flex items-center justify-center">
+
+<!-- 내 정보 시작 -->
+<div class="max-w-xl w-full px-4 py-5">
+    <div class="flex flex-col gap-4">
+
+
+        <div class="card flex-shrink-0 shadow-2xl bg-base-100">
+            <div class="card-body">
+                <div class="overflow-x-auto">
+                    <h2 class="card-title mb-3">
+                        <i class="fa-solid fa-user"></i>
+                        내 정보
+                    </h2>
+                    <table class="table w-full">
+                        <tr>
+                            <td>계정</td>
+                            <td><span th:text="${@rq.member.username}"></span></td>
+                        </tr>
+                        <tr>
+                            <td>가입날짜</td>
+                            <td><i class="fa-regular fa-clock"></i>
+                                <span th:text="${#temporals.format(@rq.member.createDate, 'yy-MM-dd')}"></span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- 내 정보 끝 -->
+    </div>
+    </div>
+</div>
+</body>
+</html>
