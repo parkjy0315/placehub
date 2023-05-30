@@ -56,47 +56,55 @@
 
 <body>
 
-<script>
-    function JoinForm__submit(form) {
-        // username 이(가) 올바른지 체크
-
-        form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
-
-        if (form.username.value.length == 0) {
-            toastWarning('아이디를 입력해주세요.');
-            form.username.focus();
-            return;
-        }
-
-        if (form.username.value.length < 4) {
-            toastWarning('아이디를 4자 이상 입력해주세요.');
-            form.username.focus();
-            return;
-        }
-
-
-        form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
-
-        if (form.password.value.length == 0) {
-            form.password.focus();
-            toastWarning('비밀번호를 입력해주세요.');
-            return;
-        }
-
-        if (form.password.value.length < 4) {
-            toastWarning('비밀번호를 4자 이상 입력해주세요.');
-            form.password.focus();
-            return;
-        }
-
-        form.submit(); // 폼 발송
-    }
-</script>
 
 <div layout:fragment="content" class="flex-grow flex items-center justify-center">
 
     <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        function JoinForm__submit(form) {
+
+            form.username.value = form.username.value.trim();
+
+            if (form.username.value.length == 0) {
+                toastWarning('아이디를 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            if (form.username.value.length < 4) {
+                toastWarning('아이디를 4자 이상 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+
+            form.password.value = form.password.value.trim();
+
+            if (form.password.value.length == 0) {
+                form.password.focus();
+                toastWarning('비밀번호를 입력해주세요.');
+                return;
+            }
+
+            if (form.password.value.length < 4) {
+                toastWarning('비밀번호를 4자 이상 입력해주세요.');
+                form.password.focus();
+                return;
+            }
+
+            form.email.value = form.email.value.trim();
+
+            if (form.email.value.length == 0) {
+                toastWarning('이메일을 입력해주세요.');
+                form.email.focus();
+                return;
+            }
+
+            form.submit(); // 폼 발송
+        }
+    </script>
 
     <form th:action method="POST" class="p-10 flex flex-col gap-4" onsubmit="JoinForm__submit(this); return false;">
         <div>

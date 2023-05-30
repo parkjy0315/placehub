@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.member.service;
 
+import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,11 @@ public class MemberService {
     }
 
     @Transactional
-    public Member join(String username, String password, String email,String name, String nickname) {
+    public RsData<Member> join(String username, String password, String email, String name, String nickname) {
+        if ( findByUsername(username).isPresent() ) {
+            return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
+        }
+
         Member member = Member
                 .builder()
                 .username(username)
@@ -51,7 +56,8 @@ public class MemberService {
                 .nickname(nickname)
                 .build();
 
-        return memberRepository.save(member);
+        memberRepository.save(member);
+        return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
     }
 
 }
