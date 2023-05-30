@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.member.controller;
 
+import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
@@ -53,7 +55,7 @@ public class MemberController {
         RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
         if (joinRs.isFail()) {
-            return "common/js";
+            return rq.historyBack(joinRs.getMsg());
         }
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
