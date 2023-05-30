@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
     private final MemberService memberService;
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
     public String showJoin() {
         return "usr/member/join";
