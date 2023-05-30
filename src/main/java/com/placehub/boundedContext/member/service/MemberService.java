@@ -36,19 +36,28 @@ public class MemberService {
 
     public void delete(Member member) {memberRepository.delete(member);}
 
-
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
 
     @Transactional
-    public RsData<Member> join(String username, String password, String email, String name, String nickname) {
+
+    // 일반 회원가입
+    public RsData<Member> join(String username, String password, String email, String name, String nickname){
+        // "PlaceHub" - 일반 회원가입으로 가입한 회원 확인용
+        return join("PlaceHub", username, password, email, name, nickname);
+    }
+
+    @Transactional
+    public RsData<Member> join(String providerTypeCode, String username, String password, String email, String name, String nickname) {
+
         if ( findByUsername(username).isPresent() ) {
             return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
         }
 
         Member member = Member
                 .builder()
+                .providerTypeCode(providerTypeCode)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .email(email)
@@ -58,6 +67,19 @@ public class MemberService {
 
         memberRepository.save(member);
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
+
+    }
+
+    // 소셜 로그인
+    @Transactional
+    public RsData<Member> whenSocialLogin(String providerTypeCode, String username, String email, String name) {
+        Optional<Member> opMember = findByUsername(username);
+
+        if (opMember.isPresent()) return RsData.of("S-1", "로그인 되었습니다.", opMember.get());
+
+        return join(providerTypeCode, username, "", email, name, ""); // 최초 로그인시 실행
+        //TODO : 닉네임 설정
+
     }
 
 }

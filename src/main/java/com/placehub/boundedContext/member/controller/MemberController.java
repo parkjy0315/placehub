@@ -1,5 +1,7 @@
 package com.placehub.boundedContext.member.controller;
 
+
+import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
@@ -14,6 +16,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final Rq rq;
+
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
     public String showJoin() {
         return "usr/member/join";
@@ -51,7 +57,8 @@ public class MemberController {
         RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
         if (joinRs.isFail()) {
-            return "common/js";
+            return rq.historyBack(joinRs.getMsg());
+
         }
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
@@ -59,10 +66,16 @@ public class MemberController {
         return "redirect:/member/login?msg=" + Ut.url.encode(msg);
     }
 
+
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
         return "usr/member/login";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public String showMe(Model model) {
+        return "usr/member/me";
+    }
 }
