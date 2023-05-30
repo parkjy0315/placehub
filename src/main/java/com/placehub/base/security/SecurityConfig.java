@@ -15,25 +15,23 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http
-//                .formLogin(
-//                        formLogin -> formLogin
-//                                .loginPage("/usr/member/login")
-//                )
-//                .oauth2Login(
-//                        oauth2Login -> oauth2Login
-//                                .loginPage("/usr/member/login")
-//                                .tokenEndpoint(t -> t
-//                                        .accessTokenResponseClient(oAuth2AccessTokenResponseClient)
-//                                )
-//                )
-//                .logout(
-//                        logout -> logout
-//                                .logoutUrl("/usr/member/logout")
-//                );
-//        return http.build();
+        http
+                .formLogin(
+                        formLogin -> formLogin
+                                .loginPage("/member/login")
+                )
+                .oauth2Login(
+                        oauth2Login -> oauth2Login
+                                .loginPage("/member/login")
+                )
+                .logout(
+                        logout -> logout
+                                .logoutUrl("/member/logout")
+                );
+
         return http.build();
     }
 
