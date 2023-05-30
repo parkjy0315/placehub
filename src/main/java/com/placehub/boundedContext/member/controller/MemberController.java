@@ -47,6 +47,7 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
+
         RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
         if (joinRs.isFail()) {
@@ -56,6 +57,12 @@ public class MemberController {
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
 
         return "redirect:/member/login?msg=" + Ut.url.encode(msg);
+    }
+
+    @PreAuthorize("isAnonymous()")
+    @GetMapping("/login")
+    public String showLogin() {
+        return "usr/member/login";
     }
 
     @PreAuthorize("isAnonymous()")
