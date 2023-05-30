@@ -24,8 +24,20 @@
                     </h2>
                     <table class="table w-full">
                         <tr>
-                            <td>계정</td>
+                            <td>아이디</td>
                             <td><span th:text="${@rq.member.username}"></span></td>
+                        </tr>
+                        <tr>
+                            <td>이름</td>
+                            <td><span th:text="${@rq.member.name}"></span></td>
+                        </tr>
+                        <tr>
+                            <td>닉네임</td>
+                            <td><span th:text="${@rq.member.nickname}"></span></td>
+                        </tr>
+                        <tr>
+                            <td>이메일</td>
+                            <td><span th:text="${@rq.member.email}"></span></td>
                         </tr>
                         <tr>
                             <td>가입날짜</td>
