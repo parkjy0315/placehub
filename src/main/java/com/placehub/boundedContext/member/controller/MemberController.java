@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.member.controller;
 
+
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
@@ -57,6 +58,7 @@ public class MemberController {
 
         if (joinRs.isFail()) {
             return rq.historyBack(joinRs.getMsg());
+
         }
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";

@@ -12,12 +12,18 @@ import java.util.Optional;
 public class PlaceService {
     private final PlaceRepository placeRepository;
 
-    public Place create(String placeName, Double xPos, Double yPos, String category) {
+    public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
+                        String placeName, String phone, String addressName,
+                        Double xPos, Double yPos) {
         Place place = Place.builder()
+                .bigCategoryId(bigCategoryId)
+                .midCategoryId(midCategoryId)
+                .smallCategoryId(smallCategoryId)
                 .placeName(placeName)
+                .phone(phone)
+                .addressName(addressName)
                 .xPos(xPos)
                 .yPos(yPos)
-                .category(category)
                 .build();
         return placeRepository.save(place);
     }
@@ -27,12 +33,19 @@ public class PlaceService {
         return place.orElse(null);
     }
 
-    public Place update(Place place, String placeName, Double xPos, Double yPos, String category) {
+    public Place update(Place place,
+                        Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
+                        String placeName, String phone, String addressName,
+                        Double xPos, Double yPos) {
         Place updatePlace = place.toBuilder()
+                .bigCategoryId(bigCategoryId)
+                .midCategoryId(midCategoryId)
+                .smallCategoryId(smallCategoryId)
                 .placeName(placeName)
+                .phone(phone)
+                .addressName(addressName)
                 .xPos(xPos)
                 .yPos(yPos)
-                .category(category)
                 .build();
         return placeRepository.save(updatePlace);
     }

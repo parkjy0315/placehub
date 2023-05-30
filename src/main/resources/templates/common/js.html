@@ -1,3 +1,4 @@
+
 <script th:inline="javascript">
     // 일반 메세지
     const localStorageKeyAboutHistoryBackMsg = /*[[${localStorageKeyAboutHistoryBackMsg}]]*/ null;
@@ -14,6 +15,7 @@
     if (localStorageKeyAboutHistoryBackErrorMsg && localStorageKeyAboutHistoryBackErrorMsg.trim().length > 0) {
         localStorage.setItem(localStorageKeyAboutHistoryBackErrorMsg, historyBackErrorMsg);
     }
+
 
     history.back();
 </script>
