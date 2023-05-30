@@ -72,13 +72,12 @@ public class MemberService {
 
     // 소셜 로그인
     @Transactional
-    public RsData<Member> whenSocialLogin(String providerTypeCode, String username, String email, String name) {
+    public RsData<Member> whenSocialLogin(String providerTypeCode, String username, String email, String name, String nickname) {
         Optional<Member> opMember = findByUsername(username);
 
         if (opMember.isPresent()) return RsData.of("S-1", "로그인 되었습니다.", opMember.get());
 
-        return join(providerTypeCode, username, "", email, name, ""); // 최초 로그인시 실행
-        //TODO : 닉네임 설정
+        return join(providerTypeCode, username, "", email, name, nickname); // 최초 로그인시 실행
 
     }
 
