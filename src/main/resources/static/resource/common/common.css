@@ -10,3 +10,11 @@ html > body {
     text-underline-position: under;
     word-break: keep-all;
 }
+
+header{
+    background-color: #2D55C9;
+}
+
+footer{
+    background-color: #2D55C9;
+}
