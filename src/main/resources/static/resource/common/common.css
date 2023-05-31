@@ -13,20 +13,6 @@
 }
 
 
-#LogoBlue {
-    font-family: "yg-jalnan";
-    text-underline-position: under;
-    word-break: keep-all;
-    color : #2D55C9;
-}
-
-#LogoYellow {
-    font-family: "yg-jalnan";
-    text-underline-position: under;
-    word-break: keep-all;
-    color : #FFEF83;
-}
-
 #SecondFont {
     font-family: "yg-jalnan";
     text-underline-position: under;
@@ -39,13 +25,6 @@ html > body {
     word-break: keep-all;
 }
 
-header {
-    background-color: #2D55C9;
-}
-
-footer{
-    background-color: #2D55C9;
-}
 
 :root {
     --my-blue: #2D55C9;
