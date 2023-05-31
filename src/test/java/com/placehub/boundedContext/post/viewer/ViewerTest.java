@@ -1,0 +1,46 @@
+package com.placehub.boundedContext.post.viewer;
+
+import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.member.form.Viewer;
+import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.post.service.PostService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Transactional
+@SpringBootTest
+@ActiveProfiles("test")
+public class ViewerTest {
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private MemberService memberService;
+
+    @Test
+    @DisplayName("포스팅 뷰어 테스트 성공")
+    void postViewerSuccessTest() {
+        memberService.create("user", "12345", "홍길동", "gildong@naver.com", "빠더를빠더라부르지못하고");
+        postService.createPost(1L, 1L, "content", true, LocalDate.now());
+
+        RsData<Viewer> response = postService.showSinglePost(1L);
+
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.getData().getContent()).isEqualTo("content");
+    }
+
+    @Test
+    @DisplayName("포스팅 뷰어 테스트 실패")
+    void postViewerFailTest() {
+        RsData<Viewer> response = postService.showSinglePost(1L);
+
+        assertThat(response.isSuccess()).isFalse();
+    }
+}

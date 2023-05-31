@@ -2,6 +2,8 @@ package com.placehub.boundedContext.post.controller;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.placehub.base.rq.Rq;
+import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.member.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +11,9 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -47,5 +51,18 @@ public class PostController {
 
         postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
         return "redirect:/posts/makePost";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/showPost/{id}")
+    public String showPost(@PathVariable long postId, Model model) {
+        RsData<Viewer> response = postService.showSinglePost(postId);
+
+        if (response.isFail()) {
+            return rq.historyBack(response);
+        }
+
+        model.addAttribute("postView", response);
+        return null;
     }
 }
