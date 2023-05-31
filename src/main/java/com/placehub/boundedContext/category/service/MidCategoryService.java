@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.category.service;
 
 
+import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.repository.MidCategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,11 @@ public class MidCategoryService {
 
     public MidCategory read(Long id) {
         Optional<MidCategory> category = midCategoryRepository.findById(id);
+        return category.orElse(null);
+    }
+
+    public MidCategory findByCategoryName(String categoryName) {
+        Optional<MidCategory> category = midCategoryRepository.findByCategoryName(categoryName);
         return category.orElse(null);
     }
 
