@@ -54,7 +54,6 @@ public class PlaceData {
         "id" : "1496650030"
          */
         JSONArray documents = (JSONArray) placeData.get("documents");
-
         for (int i = 0; i < documents.size(); i++) {
             JSONObject element = (JSONObject) documents.get(i);
 
