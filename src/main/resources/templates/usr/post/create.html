@@ -7,7 +7,12 @@
 
 <body>
 <div layout:fragment="content">
+
+    <!--flowbite 불러오기-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"  rel="stylesheet" />
+    <!--datepicker 불러오기-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/datepicker.min.js"></script>
+
     <script>
         function validate(form) {
             const visitedDate = form.visitedDate.value;
@@ -79,7 +84,7 @@
                                           clip-rule="evenodd"></path>
                                 </svg>
                             </div>
-                            <input name="visitedDate" id="visitedDate" datepicker datepicker-format="yyyy-mm-dd"
+                            <input name="visitedDate" id="visitedDate" datepicker datepicker-autohide datepicker-format="yyyy-mm-dd"
                                    type="text"
                                    class="w-52 h-12 bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    placeholder="Select date">
