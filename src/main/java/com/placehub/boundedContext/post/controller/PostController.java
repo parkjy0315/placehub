@@ -2,28 +2,29 @@ package com.placehub.boundedContext.post.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
+
 @Controller
-@RequestMapping("/posts")
+@RequestMapping("/post")
 @RequiredArgsConstructor
 public class PostController {
     private final Rq rq;
     private final PostService postService;
     @Data
-    class  PostForm {
+    class PostForm {
         private String place;
 //        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -33,23 +34,33 @@ public class PostController {
         private String content;
     }
 
-    @GetMapping("/makePost")
-    public String makepost() {
-        return "posts/makePost";
+    @GetMapping("/create")
+    public String create() {
+        return "usr/post/create";
     }
 
 //    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/makePost")
-    public String test(@Valid PostForm postForm) {
-        long userId = 1L;
+    @PostMapping("/create")
+    public String create(@Valid PostForm postForm) {
+        long userId = rq.getMember().getId();
         long placeId = postService.convertPlaceToId(postForm.getPlace());
         boolean isOpenToPublic = postForm.getIsOpenToPublic().equals("공개");
         String content = postForm.getContent();
         LocalDate visitedDate = postForm.getVisitedDate();
 
+
         postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
-        return "redirect:/posts/makePost";
+        return "redirect:/post/create";
     }
+
+    @GetMapping("/list")
+    public String list(Model model){
+        List<Post> postList = this.postService.findAll();
+        model.addAttribute("postList", postList);
+        return "usr/post/list";
+    }
+
+
 
 //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
@@ -61,7 +72,7 @@ public class PostController {
         }
 
         model.addAttribute("postView", response);
-        return "posts/viewer";
+        return "usr/post/viewer";
     }
 
     @PostMapping("softDelete/{postId}")

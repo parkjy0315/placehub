@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.post.entity;
 
 import com.placehub.base.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,8 @@ import java.time.LocalDate;
 public class Post extends BaseEntity implements Comparable<Post> {
     private long member;
     private long place;
-    String content;
+    @Column(columnDefinition = "TEXT")
+    private String content;
     private long likeCount;
     private LocalDate visitedDate;
     private boolean openToPublic;

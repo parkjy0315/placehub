@@ -97,9 +97,9 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 게시글입니다");
     }
 
-    public RsData<Viewer> showSinglePost(long postID) {
+    public RsData<Viewer> showSinglePost(long postid) {
         Viewer viewer = new Viewer();
-        Optional<Post> tmpPost = postRepository.findById(postID);
+        Optional<Post> tmpPost = postRepository.findById(postid);
 
         if (tmpPost.isEmpty()) {
             return RsData.of("F-2", "존재하지 않는 포스팅입니다");
@@ -112,7 +112,7 @@ public class PostService {
         viewer.setUsername(member.getNickname());
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
-        viewer.setPostId(postID);
+        viewer.setPostId(postid);
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 
@@ -129,5 +129,9 @@ public class PostService {
 
         postRepository.save(post);
         return RsData.of("S-1", "삭제 성공", post);
+    }
+
+    public List<Post> findAll() {
+        return postRepository.findAll();
     }
 }
