@@ -29,25 +29,21 @@ public class PlaceLikeServiceTests {
     private PlaceLikeService placeLikeService;
     @Autowired
     private MemberService memberService;
-
     @Autowired
     private PlaceService placeService;
-
-    @Autowired
-    private PlaceRepository placeRepository;
 
     @Test
     @DisplayName("좋아요 등록")
     void t001() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeRepository.save(Place.builder().id(1L).build());
+        Place place = placeService.findById(1L).orElse(null);
 
         placeLikeService.create(place.getId(), member);
 
-        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(1L, 1L);
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(place.getId(), member.getId());
 
-        assertThat(placeLike.getPlace().getId()).isEqualTo(1L);
-        assertThat(placeLike.getMember().getId()).isEqualTo(1L);
+        assertThat(placeLike.getPlace().getId()).isEqualTo(place.getId());
+        assertThat(placeLike.getMember().getId()).isEqualTo(member.getId());
 
     }
 
@@ -55,11 +51,11 @@ public class PlaceLikeServiceTests {
     @DisplayName("좋아요 취소 - 권한 있음")
     void t002() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeRepository.save(Place.builder().id(1L).build());
+        Place place = placeService.findById(1L).orElse(null);
 
         placeLikeService.create(place.getId(), member);
 
-        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(1L, 1L);
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(place.getId(), member.getId());
         Long placeLikeId = placeLike.getId();
 
         RsData<PlaceLike> canDeleteResult = placeLikeService.canDelete(placeLike, member);
@@ -75,11 +71,11 @@ public class PlaceLikeServiceTests {
     void t003() throws Exception {
         Member member1 = memberService.findById(1L).orElse(null);
         Member member2 = memberService.findById(2L).orElse(null);
-        Place place = placeRepository.save(Place.builder().id(1L).build());
+        Place place = placeService.findById(1L).orElse(null);
 
         placeLikeService.create(place.getId(), member1);
 
-        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(1L, 1L);
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(place.getId(), member1.getId());
 
         RsData<PlaceLike> canDeleteResult = placeLikeService.canDelete(placeLike, member2);
 
