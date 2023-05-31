@@ -27,6 +27,11 @@ public class BigCategoryService {
         return category.orElse(null);
     }
 
+    public BigCategory findByCategoryName(String categoryName) {
+        Optional<BigCategory> category = bigCategoryRepository.findByCategoryName(categoryName);
+        return category.orElse(null);
+    }
+
     public BigCategory update(BigCategory category, String categoryName) {
         BigCategory updateCategory = category.toBuilder()
                 .categoryName(categoryName)
