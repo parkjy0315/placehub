@@ -1,6 +1,8 @@
 package com.placehub.boundedContext.placelike.controller;
 
 import com.placehub.base.rq.Rq;
+import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,11 +17,27 @@ public class PlaceLikeController {
     private final PlaceLikeService placeLikeService;
     private final Rq rq;
 
-    @PostMapping("/create/{placeId}")
-    public String create(@PathVariable("placeId") Long placeId){
+    @PostMapping("/{placeId}")
+    public String likePlace(@PathVariable("placeId") Long placeId){
 
-        placeLikeService.create(placeId, rq.getMember());
-        return "redirect:/place/list";
+        PlaceLike placeLike = placeLikeService.findByPlacdIdAndMemberId(placeId, rq.getMember().getId());
+
+        boolean isLiked = placeLikeService.isPlaceLiked(placeId, rq.getMember());
+
+        if(isLiked){
+            RsData canDeleteRsData = placeLikeService.canDelete(placeLike, rq.getMember());
+
+            if(canDeleteRsData.isFail()) {
+                return rq.historyBack(canDeleteRsData);
+            }
+
+            RsData deleteRsData = placeLikeService.delete(placeLike);
+            return rq.historyBack(deleteRsData);
+        }
+
+        RsData createRsData = placeLikeService.create(placeId, rq.getMember());
+
+        return rq.redirectWithMsg("/place/list", createRsData);
     }
 
 }
