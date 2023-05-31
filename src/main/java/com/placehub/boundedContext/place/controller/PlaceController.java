@@ -61,15 +61,17 @@ public class PlaceController {
             put("카페", "CE7");
         }};
 
-        double xLng = 37.532878; // 경도
-        double yLat = 126.981969; // 위도
+        double minX = 126.84; // 좌하단 X
+        double minY = 37.45; // 좌하단 Y
+        double maxX = 127.16; // 우상단 X
+        double maxY = 37.70; // 우상단 Y
+
         int page = 1; // 페이지 수
         int size = 15; // 한 페이지 내 결과 개수
+        String rect = String.format("%f, %f, %f, %f", minX, minY, maxX, maxY);
 
-        JSONObject result = LocalApi.Category.getAll(xLng, yLat, categoryCode.get("관광명소"), 20000, page, size);
+        JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode.get("관광명소"), 20000, page, size);
         placeData.savePlace(result);
         return result.toJSONString();
     }
-
-
 }
