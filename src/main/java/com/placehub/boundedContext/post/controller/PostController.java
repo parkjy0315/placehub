@@ -50,7 +50,7 @@ public class PostController {
 
 
         postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
-        return "redirect:/post/create";
+        return "redirect:/post/list";
     }
 
     @GetMapping("/list")
@@ -59,8 +59,6 @@ public class PostController {
         model.addAttribute("postList", postList);
         return "usr/post/list";
     }
-
-
 
 //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
@@ -82,6 +80,6 @@ public class PostController {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        return "redirect:/";
+        return rq.redirectWithMsg("/post/list", response);
     }
 }

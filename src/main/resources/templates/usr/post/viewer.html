@@ -35,7 +35,7 @@
                         <a href="">수정하기</a>
                     </button>
 
-                    <form th:action="|/posts/softDelete/${postView.getData().getPostId()}|" method="post"
+                    <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
                           onsubmit="checkDelete(this); return false">
                         <button type="submit" th:text="삭제하기"
                                 class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600"></button>
