@@ -13,16 +13,27 @@
     <div class="flex">
       <div th:text="${postView.getData().username}" class="text-7xl"></div>
       <div class="flex justify-self-end">
+
         <button><a href="">수정하기</a></button>
-        <button><a href="/post/delete">삭제하기</a></button></div>
+
+        <script>
+          function checkDelete(deleteForm) {
+            if (confirm("정말 삭제하시겠습니까?") == true) {
+              deleteForm.submit();
+            }
+
+            return;
+          }
+        </script>
+        <form th:action="|/posts/softDelete/${postView.getData().getPostId()}|" method="post" onsubmit="checkDelete(this); return false">
+          <button type="submit" th:text="삭제하기"></button>
+        </form>
+      </div>
     </div>
 
-    <div class="w-11 h-24">
-      사진넣는곳
-    </div>
+    <div class="w-11 h-24">사진넣는곳</div>
 
-    <div th:text="${postView.getData().content}">
-
+    <div th:text="${postView.getData().content}"></div>
     </div>
   </div>
 </div>

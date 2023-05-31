@@ -2,7 +2,7 @@ package com.placehub.boundedContext.post.service;
 
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
-import com.placehub.boundedContext.member.form.Viewer;
+import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.member.repository.MemberRepository;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.repository.PostRepository;
@@ -112,6 +112,22 @@ public class PostService {
         viewer.setUsername(member.getNickname());
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
+        viewer.setPostId(postID);
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
+    }
+
+    public RsData deletePost(long postId) {
+        Optional<Post> wrappedPost = postRepository.findById(postId);
+
+        if (wrappedPost.isEmpty()) {
+            return RsData.of("F-2", "존재하지 않는 포스팅입니다");
+        }
+
+        Post post = wrappedPost.get().toBuilder()
+                .deleteDate(LocalDateTime.now())
+                .build();
+
+        postRepository.save(post);
+        return RsData.of("S-1", "삭제 성공", post);
     }
 }

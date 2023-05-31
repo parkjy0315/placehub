@@ -1,4 +1,4 @@
-package com.placehub.boundedContext.member.form;
+package com.placehub.boundedContext.post.form;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,4 +11,5 @@ public class Viewer {
     private String username;
     private LocalDate visitedDate;
     private String content;
+    private long postId;
 }
