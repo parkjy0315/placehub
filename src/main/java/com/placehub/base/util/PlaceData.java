@@ -14,6 +14,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -54,7 +55,6 @@ public class PlaceData {
         "id" : "1496650030"
          */
         JSONArray documents = (JSONArray) placeData.get("documents");
-
         for (int i = 0; i < documents.size(); i++) {
             JSONObject element = (JSONObject) documents.get(i);
 
