@@ -1,0 +1,30 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>
+    게시글 읽기
+  </title>
+</head>
+
+<body>
+
+<div layout:fragment="content" class="flex-grow flex items-center justify-center">
+  <div>
+    <div class="flex">
+      <div th:text="${postView.getData().username}" class="text-7xl"></div>
+      <div class="flex justify-self-end">
+        <button><a href="">수정하기</a></button>
+        <button><a href="/post/delete">삭제하기</a></button></div>
+    </div>
+
+    <div class="w-11 h-24">
+      사진넣는곳
+    </div>
+
+    <div th:text="${postView.getData().content}">
+
+    </div>
+  </div>
+</div>
+</body>
+</html>

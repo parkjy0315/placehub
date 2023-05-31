@@ -53,16 +53,16 @@ public class PostController {
         return "redirect:/posts/makePost";
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/showPost/{id}")
-    public String showPost(@PathVariable long postId, Model model) {
+//    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/view/{postId}")
+    public String showPost(@PathVariable Long postId, Model model) {
         RsData<Viewer> response = postService.showSinglePost(postId);
 
         if (response.isFail()) {
-            return rq.historyBack(response);
+            throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
         model.addAttribute("postView", response);
-        return null;
+        return "posts/viewer";
     }
 }
