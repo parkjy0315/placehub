@@ -63,7 +63,7 @@ public class MemberController {
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
 
-        return "redirect:/member/login?msg=" + Ut.url.encode(msg);
+        return rq.redirectWithMsg("/member/login", joinRs);
     }
 
 
