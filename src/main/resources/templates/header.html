@@ -2,20 +2,22 @@
     <div class="container mx-auto px-4">
         <nav class="flex items-center justify-between py-4">
             <div>
-                <a href="#" class="text-2xl font-bold text-white">로고</a>
+                <a href="/" id="SecondFont" class="text-2xl font-bold" style="color: #FFEF83">PlaceHub</a>
             </div>
             <div class="hidden md:block">
                 <ul class="flex space-x-4">
-                    <li><a href="/" class="text-gray-400 hover:text-white">홈</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">서비스</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-white">소개</a></li>
-                    <li><a href="/member/join" sec:authorize="isAnonymous()" class="text-gray-400 hover:text-white">회원가입</a></li>
-                    <li><a href="/member/login" sec:authorize="isAnonymous()" class="text-gray-400 hover:text-white">로그인</a></li>
-                    <li><a href="/member/me"  sec:authorize="isAuthenticated()" class="text-gray-400 hover:text-white">내정보</a></li>
-                    <li><a href="/comment/list"  sec:authorize="isAuthenticated()" class="text-gray-400 hover:text-white">댓글</a></li>
-
-                    <a href="javascript:;" sec:authorize="isAuthenticated()" onclick="$(this).next().submit();" class="text-gray-400 hover:text-white">로그아웃</a>
-                    <form th:action="|/member/logout|" method="POST"></form>
+                    <li th:if="${@rq.logout}" class="flex gap-4">
+                        <a href="/" class="text-white hover:text-yellow-300">홈</a>
+                        <a href="/member/join" class="text-white hover:text-yellow-300">회원가입</a>
+                        <a href="/member/login" class="text-white hover:text-yellow-300">로그인</a>
+                    </li>
+                    <li th:if="${@rq.login}" class="flex gap-4">
+                        <a href="/" class="text-white hover:text-yellow-300">홈</a>
+                        <a href="/member/me" class="text-white hover:text-yellow-300">내정보</a>
+                        <a href="/comment/list" class="text-white hover:text-yellow-300">댓글</a>
+                        <a href="javascript:;" onclick="$(this).next().submit();" class="text-white hover:text-yellow-300">로그아웃</a>
+                        <form th:action="|/member/logout|" method="POST"></form>
+                    </li>
                 </ul>
             </div>
             <div class="md:hidden">
