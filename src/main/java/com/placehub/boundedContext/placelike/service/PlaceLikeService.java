@@ -2,9 +2,7 @@ package com.placehub.boundedContext.placelike.service;
 
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
-import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
-import com.placehub.boundedContext.place.repository.PlaceRepository;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.repository.PlaceLikeRepository;
@@ -16,12 +14,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class PlaceLikeService {
 
     private final PlaceLikeRepository placeLikeRepository;
     private final PlaceService placeService;
-    private final PlaceRepository placeRepository;
 
 
     // 현재 상태 확인
@@ -32,9 +29,7 @@ public class PlaceLikeService {
 
     public RsData<PlaceLike> create(Long placeId, Member actor) {
 
-        //TODO : 서비스로 등록
-        //Place place = placeService.findById(placeId).orElse(null);
-        Place place = placeRepository.findById(placeId).orElse(null);
+        Place place = placeService.read(placeId);
 
         PlaceLike placeLike = PlaceLike.builder()
                 .member(actor)

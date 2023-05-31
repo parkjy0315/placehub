@@ -36,7 +36,7 @@ public class PlaceLikeServiceTests {
     @DisplayName("좋아요 등록")
     void t001() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeService.findById(1L).orElse(null);
+        Place place = placeService.read(1L);
 
         placeLikeService.create(place.getId(), member);
 
@@ -51,7 +51,7 @@ public class PlaceLikeServiceTests {
     @DisplayName("좋아요 취소 - 권한 있음")
     void t002() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeService.findById(1L).orElse(null);
+        Place place = placeService.read(1L);
 
         placeLikeService.create(place.getId(), member);
 
@@ -71,7 +71,7 @@ public class PlaceLikeServiceTests {
     void t003() throws Exception {
         Member member1 = memberService.findById(1L).orElse(null);
         Member member2 = memberService.findById(2L).orElse(null);
-        Place place = placeService.findById(1L).orElse(null);
+        Place place = placeService.read(1L);
 
         placeLikeService.create(place.getId(), member1);
 
