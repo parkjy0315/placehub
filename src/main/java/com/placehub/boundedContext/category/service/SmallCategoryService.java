@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.category.service;
 
 
+import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.repository.SmallCategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,11 @@ public class SmallCategoryService {
 
     public SmallCategory read(Long id) {
         Optional<SmallCategory> category = smallCategoryRepository.findById(id);
+        return category.orElse(null);
+    }
+
+    public SmallCategory findByCategoryName(String categoryName) {
+        Optional<SmallCategory> category = smallCategoryRepository.findByCategoryName(categoryName);
         return category.orElse(null);
     }
 
