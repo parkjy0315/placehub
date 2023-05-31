@@ -23,5 +23,4 @@ public class PlaceLike extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Place place;
 
-
 }

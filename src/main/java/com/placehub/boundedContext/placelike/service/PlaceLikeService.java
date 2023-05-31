@@ -26,7 +26,7 @@ public class PlaceLikeService {
 
     // 현재 상태 확인
     public boolean isPlaceLiked(Long placeId, Member actor) {
-        return placeLikeRepository.existsByPlacdIdAndMemberId(placeId, actor.getId());
+        return placeLikeRepository.existsByPlaceIdAndMemberId(placeId, actor.getId());
     }
 
 
@@ -79,8 +79,8 @@ public class PlaceLikeService {
         return placeLikeRepository.findById(Id);
     }
 
-    public PlaceLike findByPlacdIdAndMemberId(Long placeId, Long memberId){
-        return placeLikeRepository.findByPlacdIdAndMemberId(placeId, memberId);
+    public PlaceLike findByPlaceIdAndMemberId(Long placeId, Long memberId){
+        return placeLikeRepository.findByPlaceIdAndMemberId(placeId, memberId);
     }
 
 

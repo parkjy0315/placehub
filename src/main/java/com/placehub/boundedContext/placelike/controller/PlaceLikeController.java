@@ -20,7 +20,7 @@ public class PlaceLikeController {
     @PostMapping("/{placeId}")
     public String likePlace(@PathVariable("placeId") Long placeId){
 
-        PlaceLike placeLike = placeLikeService.findByPlacdIdAndMemberId(placeId, rq.getMember().getId());
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, rq.getMember().getId());
 
         boolean isLiked = placeLikeService.isPlaceLiked(placeId, rq.getMember());
 
