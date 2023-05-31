@@ -33,14 +33,53 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String providerTypeCode = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
 
+        String email = "";
+        String name = "";
+        String nickname = "";
+
+        if (providerTypeCode.equals("KAKAO")) {
+
+            Map<String, Object> userInfo = oAuth2User.getAttribute("kakao_account");
+            email = extractValue(userInfo, "email");
+
+            Map<String, Object> profile = extractValue(userInfo, "profile");
+            nickname = extractValue(profile, "nickname");
+
+            // 사용자 이름 - 개발 단계에선 권한 없음으로 불러오기 불가 - 임시로 닉네임과 동일하게 설정
+            // TODO : 카카오 비즈앱 전환 후 이름 가져오기 권한 받고 수정해야함
+            // name = extractValue(userInfo, "name");
+            name = extractValue(profile, "nickname");
+        }
+
+        if(providerTypeCode.equals("NAVER")){
+
+            Map<String, String> userInfo = (Map<String, String>) oAuth2User.getAttributes().get("response");
+            oauthId = userInfo.get("id");
+            name = userInfo.get("name");
+            email = userInfo.get("email");
+            nickname = userInfo.get("nickname");
+
+        }
+
+        if (providerTypeCode.equals("GOOGLE")) {
+            email = oAuth2User.getAttribute("email");
+            name = oAuth2User.getAttribute("name");
+        }
+
         String username = providerTypeCode + "__%s".formatted(oauthId);
-        String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
-
-        Member member = memberService.whenSocialLogin(providerTypeCode, username, "", "").getData();
+        Member member = memberService.whenSocialLogin(providerTypeCode, username, email, name, nickname).getData();
 
         return new CustomOAuth2User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
     }
+
+    private <T> T extractValue(Map<String, Object> map, String key) {
+        if (map != null && map.containsKey(key)) {
+            return (T) map.get(key);
+        }
+        return null;
+    }
+
 }
 
 class CustomOAuth2User extends User implements OAuth2User {
@@ -58,4 +97,6 @@ class CustomOAuth2User extends User implements OAuth2User {
     public String getName() {
         return getUsername();
     }
+
+
 }
