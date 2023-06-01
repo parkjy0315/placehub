@@ -63,8 +63,11 @@
                         <div class="text-2xl font-bold mb-2">공간 추가</div>
                         <div class="dropdown dropdown-bottom">
                             <select name="place" class="select select-bordered w-full max-w-xs">
-                                <option>서울 시청</option>
-                                <option>부산 시청</option>
+                                <option th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}">서울 시청</option>
+
+                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '서울 시청'}">서울 시청</option>
+
+                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '부산 시청'}">부산 시청</option>
                             </select>
                         </div>
                     </div>
@@ -80,20 +83,22 @@
                                           clip-rule="evenodd"></path>
                                 </svg>
                             </div>
+
                             <input name="visitedDate" id="visitedDate" datepicker datepicker-autohide datepicker-format="yyyy-mm-dd"
                                    type="text"
+                                   th:value="${modifyingData != null ? modifyingData.getData().getVisitedDate() : ''}"
                                    class="w-52 h-12 bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    placeholder="Select date">
                         </div>
                     </div>
 
-                    <div class="card mb-5">
+                    <th:block th:if="${modifyingData == null}" class="card mb-5">
                         <div class="text-2xl font-bold mb-2">공개 여부</div>
                         <select name="isOpenToPublic" class="select select-bordered w-full max-w-xs">
                             <option>공개</option>
                             <option>비공개</option>
                         </select>
-                    </div>
+                    </th:block>
 
                     <script>
                         function selectItem(element) {
@@ -111,6 +116,7 @@
                     <div>
                         <div class="text-2xl font-bold mb-2">내용</div>
                         <textarea name="content" id='content' placeholder="공간에서의 경험과 감상을 작성해보세요"
+                                  th:text="${modifyingData != null ? modifyingData.getData().getContent() : ''}"
                                   class="textarea textarea-bordered"
                                   style="width: 500px; height: 300px; resize: none"></textarea>
                     </div>

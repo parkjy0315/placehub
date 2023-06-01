@@ -35,6 +35,14 @@ public class PostController {
         private String content;
     }
 
+    @Data
+    class ModifyingForm {
+        private String place;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate visitedDate;
+        private String content;
+    }
+
     @GetMapping("/create")
     public String create() {
         return "usr/post/create";
@@ -86,7 +94,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("modify/{postId}")
-    public String modifyPost(@PathVariable long postId) {
+    public String modifyPost(@PathVariable long postId, Model model) {
         long userId = rq.getMember().getId();
 
         RsData postOwnerValidation = postService.validPostOwner(userId, postId);
@@ -94,7 +102,27 @@ public class PostController {
             return postOwnerValidation.getMsg();
         }
 
+        RsData<Viewer> response = postService.showSinglePost(postId);
+        model.addAttribute("modifyingData", response);
         return "/usr/post/create";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("modify/{postId}")
+    public String modifyPost(@Valid ModifyingForm modifyingForm, @PathVariable long postId) {
+        long userId = rq.getMember().getId();
+
+        RsData postOwnerValidation = postService.validPostOwner(userId, postId);
+        if (postOwnerValidation.isFail()) {
+            return postOwnerValidation.getMsg();
+        }
+
+        long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
+        String content = modifyingForm.getContent();
+        LocalDate visitedDate = modifyingForm.getVisitedDate();
+        postService.modifyContent(postId, placeId, content, visitedDate);
+
+        return "redirect:/post/list";
     }
 
 }

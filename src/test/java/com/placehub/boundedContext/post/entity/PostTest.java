@@ -119,10 +119,10 @@ class PostTest {
 
         try {
             String modifiedContent = "ReplacedContent";
-            long id = postService.modifyContent(1L, postId, 1L, modifiedContent, now);
+            long id = postService.modifyContent(postId, 1L, modifiedContent, now);
             assertThat(postRepository.findById(id).get().getContent()).isEqualTo(modifiedContent);
-        } catch (SQLException e) {
-            throw new SQLDataException(e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
 

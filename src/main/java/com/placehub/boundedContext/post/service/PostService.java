@@ -2,6 +2,7 @@ package com.placehub.boundedContext.post.service;
 
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.place.repository.PlaceRepository;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.member.repository.MemberRepository;
 import com.placehub.boundedContext.post.entity.Post;
@@ -24,6 +25,8 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private PlaceRepository placeRepository;
 
     public long createPost(Long userId, Long placeId, String content, boolean openToPublic, LocalDate visitedDate) throws RuntimeException {
         if (!validateCreatingPost(userId, placeId, visitedDate)) {
@@ -62,12 +65,24 @@ public class PostService {
         return !userId.equals(null) && !placeId.equals(null) && !visitedDate.isAfter(now);
     }
 
+    private boolean validateModifyingPost(Long placeId, LocalDate visitedDate) {
+        return !placeId.equals(null) && !visitedDate.isAfter(LocalDate.now());
+    }
+
     public long convertPlaceToId(String place) {
         if (place.equals("서울 시청")) {
             return 1L;
         }
 
         return 2L;
+    }
+
+    public String convertIdToPlace(long placeId) {
+        if (placeId == 1L) {
+            return "서울 시청";
+        }
+
+        return "부산 시청";
     }
 
     public List<Post> getPostsByPlace(long placeId) {
@@ -97,13 +112,17 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 
-    public long modifyContent(long userId, long postId, long placeId, String conent, LocalDate visitedDate) throws SQLException, RuntimeException{
+    public long modifyContent(long postId, long placeId, String content, LocalDate visitedDate) throws RuntimeException{
+        if (!validateModifyingPost(placeId, visitedDate)) {
+            throw new RuntimeException("올바르지 않은 포스팅");
+        }
+
         Optional<Post> wrappedPost = postRepository.findById(postId);
         Post post = wrappedPost.get();
 
         post = post.toBuilder()
                 .place(placeId)
-                .content(conent)
+                .content(content)
                 .visitedDate(visitedDate)
                 .build();
 
@@ -127,6 +146,8 @@ public class PostService {
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
         viewer.setPostId(postid);
+        viewer.setPlaceName(convertIdToPlace(post.getPlace()));
+        viewer.setOpenToPublic(post.isOpenToPublic());
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 

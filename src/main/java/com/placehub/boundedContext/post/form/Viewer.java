@@ -12,4 +12,6 @@ public class Viewer {
     private LocalDate visitedDate;
     private String content;
     private long postId;
+    private String placeName;
+    private boolean isOpenToPublic;
 }
