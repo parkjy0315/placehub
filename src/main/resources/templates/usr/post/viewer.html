@@ -23,6 +23,19 @@
         }
     </script>
 
+    <script>
+        function CommentForm__submit(form) {
+
+            if (form.content.value.length == 0) {
+                toastWarning('댓글 내용을 입력해주세요');
+                form.content.focus();
+                return false;
+            }
+
+            form.submit();
+        }
+    </script>
+
     <div class="hero-content flex-col">
         <div class="max-w-2xl w-full px-4">
             <div>
@@ -91,11 +104,13 @@
 
                 <!-- 댓글 작성 폼-->
                 <form th:action="@{/comment/create/{id}(id=${postView.getData().getPostId()})}" method="post"
-                      class="mb-4">
+                      onsubmit="CommentForm__submit(this); return false" class="mb-4">
+                    <div class="form-control">
                     <textarea sec:authorize="isAnonymous()" disabled name="content" placeholder="댓글 내용을 입력하세요"
                               class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
                     <textarea sec:authorize="isAuthenticated()" name="content" id="content" placeholder="댓글 내용을 입력하세요"
                               class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+                    </div>
                     <div sec:authorize="isAuthenticated()" class="flex justify-end">
                         <button type="submit" class="px-4 py-2 btn mt-2">댓글 등록</button>
                     </div>
