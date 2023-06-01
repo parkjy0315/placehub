@@ -23,14 +23,10 @@
             }
 
             const now = new Date();
-            let nowMonth = '';
-            if (now.getMonth() + 1 < 10) {
-                nowMonth = '0' + (now.getMonth() + 1);
-            } else {
-                nowMonth = now.getMonth() + 1;
-            }
+            const nowMonth = '0' + (now.getMonth() + 1);
+            const nowDay = '0' + now.getDate();
 
-            const nowString = now.getFullYear() + '-' + nowMonth + '-' + now.getDate();
+            const nowString = now.getFullYear() + '-' + nowMonth + '-' + nowDay;
             if (new Date(visitedDate) > new Date(nowString)) {
                 alert('현재보다 미래의 날짜는 입력할 수 없습니다.')
                 form.visitedDate.focus();
