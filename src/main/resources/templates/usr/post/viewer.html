@@ -31,9 +31,11 @@
                 </div>
 
                 <div class="flex gap-4 justify-end">
-                    <button class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600">
-                        <a href="">수정하기</a>
-                    </button>
+                    <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
+                        <button type="submit" class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600">
+                            수정하기
+                        </button>
+                    </form>
 
                     <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
                           onsubmit="checkDelete(this); return false">
