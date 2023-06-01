@@ -1,6 +1,6 @@
 package com.placehub.base.util;
 
-
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.nio.charset.StandardCharsets;
 
 @Component
+@RequiredArgsConstructor
 public class LocalApi {
     private static String REST_API_KEY;
     private static String API_SERVER_HOST;
@@ -156,5 +157,4 @@ public class LocalApi {
             return object;
         }
     }
-
 }
