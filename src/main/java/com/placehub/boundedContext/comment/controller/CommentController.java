@@ -45,17 +45,31 @@ public class CommentController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/update/{id}")
     public String update(@PathVariable Long id, Model model) {
+
+        Long postId = commentService.findById(id).get().getPostId();
+
+        RsData<Comment> isVaildRsData = commentService.isVaild(id);
+        if(isVaildRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+        }
+
+        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
+        if(hasPermissionRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+        }
+
         Comment comment = commentService.findById(id).orElse(null);
         model.addAttribute("comment", comment);
-        return "usr/comment/comment_form"; // 수정 페이지 템플릿의 파일명
+        return "usr/comment/comment_form";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id, @RequestParam String content) {
         Long postId = commentService.findById(id).get().getPostId();
-        commentService.update(id, content);
-        return "redirect:/post/view/" + postId;
+        RsData<Comment> updateRsData = commentService.update(id, content);
+
+        return rq.redirectWithMsg("/post/view/" + postId, updateRsData);
     }
 
     @PreAuthorize("isAuthenticated()")

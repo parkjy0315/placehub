@@ -42,15 +42,12 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment update(Long id, String content){
+    public RsData<Comment> update(Long id, String content){
         Comment comment = commentRepository.findById(id).orElse(null);
-        if (comment == null) {
-            return null;
-        }
-        Comment updatedComment = comment.toBuilder()
-                .content(content)
-                .build();
-        return commentRepository.save(updatedComment);
+
+        comment.setContent(content);
+
+        return RsData.of("S-1", "댓글이 수정되었습니다.");
     }
 
     //Soft Delete로 구현

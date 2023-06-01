@@ -22,6 +22,8 @@ public class Comment extends BaseEntity {
     private Long postId;
     private Long memberId;
     private String memberNickName;
+
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String content;
 
