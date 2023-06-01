@@ -40,6 +40,10 @@ public class MemberService {
         return memberRepository.findByUsername(username);
     }
 
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
     @Transactional
 
     // 일반 회원가입
