@@ -35,7 +35,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String email = "";
         String name = "";
-        String nickname = "";
 
         if (providerTypeCode.equals("KAKAO")) {
 
@@ -43,7 +42,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             email = extractValue(userInfo, "email");
 
             Map<String, Object> profile = extractValue(userInfo, "profile");
-            nickname = extractValue(profile, "nickname");
 
             // 사용자 이름 - 개발 단계에선 권한 없음으로 불러오기 불가 - 임시로 닉네임과 동일하게 설정
             // TODO : 카카오 비즈앱 전환 후 이름 가져오기 권한 받고 수정해야함
@@ -57,7 +55,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             oauthId = userInfo.get("id");
             name = userInfo.get("name");
             email = userInfo.get("email");
-            nickname = userInfo.get("nickname");
 
         }
 
@@ -67,6 +64,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         String username = providerTypeCode + "__%s".formatted(oauthId);
+        String nickname = providerTypeCode + "__%s".formatted(oauthId); // 소셜로그인 시 닉네임은 username과 동일하게
 
         Member member = memberService.whenSocialLogin(providerTypeCode, username, email, name, nickname).getData();
 

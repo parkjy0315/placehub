@@ -54,12 +54,13 @@ public class MemberController {
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
 
-        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
+        RsData<Member> checkRsData = memberService.checkDuplicateValue(joinForm.getUsername(), joinForm.getEmail(), joinForm.getNickname());
 
-        if (joinRs.isFail()) {
-            return rq.historyBack(joinRs.getMsg());
-
+        if (checkRsData.isFail()) {
+            return rq.historyBack(checkRsData.getMsg());
         }
+
+        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
 
