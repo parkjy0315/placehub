@@ -119,21 +119,37 @@ class PostTest {
 
         try {
             String modifiedContent = "ReplacedContent";
-            long id = postService.modifyContent(postId, modifiedContent);
+            long id = postService.modifyContent(postId, 1L, modifiedContent, now);
             assertThat(postRepository.findById(id).get().getContent()).isEqualTo(modifiedContent);
-        } catch (SQLException e) {
-            throw new SQLDataException(e);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Test
-    @DisplayName("게시글 내용 수정시 존재하지 않는 게시글일때")
-    void modifyContentNotExistingPostTest() {
-        try {
-            String modifiedContent = "ReplacedContent";
-            postService.modifyContent(1L, modifiedContent);
-        } catch (SQLException e) {
-            assertThat(e.getMessage()).isEqualTo("존재하지 않는 게시글입니다");
-        }
+    @DisplayName("수정 권한 확인 성공")
+    void modifyValidationTest() {
+        LocalDate now = LocalDate.now();
+        long postId = postService.createPost(1L, 1L, "content", true, now);
+        long userId = postRepository.findById(postId).get().getMember();
+
+        assertThat(postService.validPostOwner(userId, postId).isSuccess()).isTrue();
+    }
+
+    @Test
+    @DisplayName("수정 권한 확인 실패 존재하지 않는 글")
+    void modifyValidationNotExistTest() {
+        assertThat(postService.validPostOwner(0L, 0L).isFail()).isTrue();
+        assertThat(postService.validPostOwner(0L, 0L).getMsg()).isEqualTo("존재하지 않는 게시글입니다");
+    }
+
+    @Test
+    @DisplayName("게시글 내용 수정시 작성자 본인이 아닐때")
+    void modifyInvalidAuthorTest() {
+        LocalDate now = LocalDate.now();
+        long postId = postService.createPost(1L, 1L, "content", true, now);
+
+        assertThat(postService.validPostOwner(0L, postId).isFail()).isTrue();
+        assertThat(postService.validPostOwner(0L, postId).getMsg()).isEqualTo("이 게시글의 작성자가 아닙니다");
     }
 }

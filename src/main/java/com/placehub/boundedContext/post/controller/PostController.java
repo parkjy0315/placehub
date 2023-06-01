@@ -2,6 +2,8 @@ package com.placehub.boundedContext.post.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.comment.entity.Comment;
+import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
@@ -10,6 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,14 +26,23 @@ import java.util.List;
 public class PostController {
     private final Rq rq;
     private final PostService postService;
+    private final CommentService commentService;
     @Data
     class PostForm {
         private String place;
-//        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
+        //        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate visitedDate;
         @NotBlank
         private String isOpenToPublic;
+        private String content;
+    }
+
+    @Data
+    class ModifyingForm {
+        private String place;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate visitedDate;
         private String content;
     }
 
@@ -39,7 +51,7 @@ public class PostController {
         return "usr/post/create";
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public String create(@Valid PostForm postForm) {
         long userId = rq.getMember().getId();
@@ -60,7 +72,7 @@ public class PostController {
         return "usr/post/list";
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
     public String showPost(@PathVariable Long postId, Model model) {
         RsData<Viewer> response = postService.showSinglePost(postId);
@@ -68,6 +80,9 @@ public class PostController {
         if (response.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
+
+        List<Comment> comments = commentService.findCommentsByPostId(postId);
+        model.addAttribute("comments", comments);
 
         model.addAttribute("postView", response);
         return "usr/post/viewer";
@@ -82,4 +97,38 @@ public class PostController {
 
         return rq.redirectWithMsg("/post/list", response);
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("modify/{postId}")
+    public String modifyPost(@PathVariable long postId, Model model) {
+        long userId = rq.getMember().getId();
+
+        RsData postOwnerValidation = postService.validPostOwner(userId, postId);
+        if (postOwnerValidation.isFail()) {
+            return postOwnerValidation.getMsg();
+        }
+
+        RsData<Viewer> response = postService.showSinglePost(postId);
+        model.addAttribute("modifyingData", response);
+        return "/usr/post/create";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("modify/{postId}")
+    public String modifyPost(@Valid ModifyingForm modifyingForm, @PathVariable long postId) {
+        long userId = rq.getMember().getId();
+
+        RsData postOwnerValidation = postService.validPostOwner(userId, postId);
+        if (postOwnerValidation.isFail()) {
+            return postOwnerValidation.getMsg();
+        }
+
+        long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
+        String content = modifyingForm.getContent();
+        LocalDate visitedDate = modifyingForm.getVisitedDate();
+        postService.modifyContent(postId, placeId, content, visitedDate);
+
+        return "redirect:/post/list";
+    }
+
 }

@@ -1,6 +1,6 @@
 package com.placehub.base.util;
 
-
+import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.nio.charset.StandardCharsets;
 
 @Component
+@RequiredArgsConstructor
 public class LocalApi {
     private static String REST_API_KEY;
     private static String API_SERVER_HOST;
@@ -74,16 +75,6 @@ public class LocalApi {
     }
 
     public static class Category {
-        /**
-         * 키워드로 장소 검색하기
-         * @param x - 중심좌표의 x좌표 혹은 경도값
-         * @param y - 중심좌표의 y좌표 혹은 위도값
-         * @param category 카테고리 - 검색을 원하는 질의어
-         * @param radius 반경 - 중심좌표부터의 반경거리
-         * @param page 결과 페이지 번호 - (최소:1, 최대:45, 기본값:1)
-         * @param size 한 페이지에 보여질 문서의 개수 - (최소:1, 최대:15, 기본값:15)
-         * @return JSONObejct
-         */
         public static JSONObject getAll(double x, double y, String category, int radius, int page, int size) {
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(API_SERVER_HOST + CATEGORY_URL)
                     .queryParam("category_group_code", category)
@@ -116,17 +107,7 @@ public class LocalApi {
             return object;
         }
 
-        /**
-         * 키워드로 장소 검색하기
-         * @param x - 중심좌표의 x좌표 혹은 경도값
-         * @param y - 중심좌표의 y좌표 혹은 위도값
-         * @param category 카테고리 - 검색을 원하는 질의어
-         * @param radius 반경 - 중심좌표부터의 반경거리
-         * @param page 결과 페이지 번호 - (최소:1, 최대:45, 기본값:1)
-         * @param size 한 페이지에 보여질 문서의 개수 - (최소:1, 최대:15, 기본값:15)
-         * @return JSONObejct
-         */
-        public static JSONObject getAllRect(String rect, String category, int radius, int page, int size) {
+        public static JSONObject getAllRect(String rect, String category, int page, int size) {
             UriComponents uri = UriComponentsBuilder.fromHttpUrl(API_SERVER_HOST + CATEGORY_URL)
                     .queryParam("category_group_code", category)
                     .queryParam("rect", rect)
@@ -156,5 +137,4 @@ public class LocalApi {
             return object;
         }
     }
-
 }

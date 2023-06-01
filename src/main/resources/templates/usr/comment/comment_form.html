@@ -2,23 +2,33 @@
       xmlns:layout="http://www.w3.org/1999/xhtml"
       xmlns:d="http://www.daisyui.com">
 <head>
-  <title>댓글 수정</title>
-
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.6/dist/full.css" rel="stylesheet" type="text/css"/>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/datepicker.min.js"></script>
+    <title>댓글 수정</title>
 </head>
 
-<body layout:fragment="content" class="bg-gray-100">
-<div class="container mx-auto py-8">
-  <h1 class="text-3xl font-bold mb-4">댓글 수정</h1>
+<div layout:fragment="content">
+    <div class="hero-content flex-col mb-10">
+        <div class="w-full px-4">
 
-  <form th:action=@{/comment/update/{id}(id=${comment.id})} method="post" class="mb-4 ">
-    <input type="hidden" name="id" th:value="${comment.id}" />
-    <textarea name="content" class="w-full px-4 py-2 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-xl"
-              th:text="${comment.content}"></textarea>
-    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg mt-5">수정</button>
-  </form>
+            <div class="flex flex-col items-center my-5">
+                <h1 class="text-4xl my-2 font-bold">댓글 수정</h1>
+            </div>
+
+
+            <div class="flex flex-col gap-5 w-full">
+                <form th:action=@{/comment/update/{id}(id=${comment.id})} method="post" class="mb-4 ">
+                    <input type="hidden" name="id" th:value="${comment.id}"/>
+                    <textarea name="content"
+                              class="textarea textarea-bordered textarea-md w-full px-4 py-2 rounded-lg  focus:ring-2 focus:ring-blue-400"
+                              th:text="${comment.content}" style="height: 200px; width: 600px"></textarea>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 btn mt-5">댓글 수정</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
 </div>
 </body>
 </html>

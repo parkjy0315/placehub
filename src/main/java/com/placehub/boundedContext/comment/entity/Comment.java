@@ -1,14 +1,13 @@
 package com.placehub.boundedContext.comment.entity;
 
 import com.placehub.base.entity.BaseEntity;
-import com.placehub.boundedContext.member.entity.Member;
-import com.placehub.boundedContext.post.entity.Post;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -18,17 +17,16 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Comment extends BaseEntity {
 
+    private Long postId;
+    private Long memberId;
+    private String memberNickName;
+
+    @Setter
     @Column(columnDefinition = "TEXT")
+    @NotNull
     private String content;
 
-//    @ManyToOne
-//    private Post post;
-//    @ManyToOne
-//    private Member author;
-
-    //임시
-    private Long postId;
-    private String username;
-
+    @Setter
+    private boolean deleted = false;
 
 }

@@ -1,6 +1,7 @@
 package com.placehub.base.util;
 
 
+import com.placehub.base.entity.Category;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.entity.SmallCategory;
@@ -12,48 +13,79 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class PlaceData {
-    @Autowired
     private final PlaceService placeService;
-    @Autowired
     private final BigCategoryService bigCategoryService;
-    @Autowired
     private final MidCategoryService midCategoryService;
-    @Autowired
     private final SmallCategoryService smallCategoryService;
+
+    private static double START_X;
+    private static double START_Y;
+    private static double END_X;
+    private static double END_Y;
+
+    @Autowired
+    public PlaceData(PlaceService placeService,
+                     BigCategoryService bigCategoryService,
+                     MidCategoryService midCategoryService,
+                     SmallCategoryService smallCategoryService,
+                     Environment environment) {
+        this.placeService = placeService;
+        this.bigCategoryService = bigCategoryService;
+        this.midCategoryService = midCategoryService;
+        this.smallCategoryService = smallCategoryService;
+
+        START_X = Double.parseDouble(environment.getProperty("custom.api.coord.start-x"));
+        START_Y = Double.parseDouble(environment.getProperty("custom.api.coord.start-y"));
+        END_X = Double.parseDouble(environment.getProperty("custom.api.coord.end-x"));
+        END_Y = Double.parseDouble(environment.getProperty("custom.api.coord.end-y"));
+    }
+
+    public void saveAllCategoryData(String categoryCode) {
+        double xDist = END_X - START_X;
+        double yDist = END_Y - START_Y;
+
+        // 0.04 : 문화, 관광
+        // 0.005 : 음식점, 카페
+        double criteria = 0.005;
+
+        for (int i = 0; i <= (int) (yDist / criteria); i++) {
+            for (int j = 0; j <= (int) (xDist / criteria); j++) {
+                int page = 1; // 페이지 수
+                int size = 15; // 한 페이지 내 결과 개수
+                double[] coords = getNextCoord(i, j, criteria);
+                String rect = String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+
+                while (true) {
+                    JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
+                    savePlace(result);
+                    System.out.println("total_count = " + ((JSONObject) result.get("meta")).get("total_count"));
+                    System.out.printf("%d %d page = %d\n", i, j, page);
+                    if (isLastPage(result)) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public double[] getNextCoord(int i, int j, double criteria) {
+        double leftDownX = START_X + j * criteria; // 좌하단 X
+        double leftDownY = END_Y - (i + 1) * criteria; // 좌하단 Y
+        double rightUpX = START_X + (j + 1) * criteria; // 우상단 X
+        double rightUpY = END_Y - i * criteria; // 우상단 Y
+
+        return new double[]{leftDownX, leftDownY, rightUpX, rightUpY};
+    }
 
     @Transactional
     public void savePlace(JSONObject placeData) {
-        /*
-        "total_count"
-        "is_end"
-        "pageable_count"
-        "same_name"
-         */
-        JSONObject meta = (JSONObject) placeData.get("meta");
-
-        /*
-        # JSONObject 내용
-
-        "place_url" : "http://place.map.kakao.com/1496650030",
-        "place_name" : "남영동스테이크골목",
-        "category_group_name" : "관광명소",
-        "road_address_name" : "",
-        "category_name" : "여행 > 관광,명소 > 테마거리 > 먹자골목",
-        "distance" : "1449",
-        "phone" : "",
-        "category_group_code" : "AT4",
-        "x" : "126.973236353706",
-        "y" : "37.5439359573409",
-        "address_name" : "서울 용산구 남영동 2",
-        "id" : "1496650030"
-         */
         JSONArray documents = (JSONArray) placeData.get("documents");
         for (int i = 0; i < documents.size(); i++) {
             JSONObject element = (JSONObject) documents.get(i);
@@ -65,42 +97,61 @@ public class PlaceData {
             Double xPos = Double.parseDouble((String) element.get("x"));
             Double yPos = Double.parseDouble((String) element.get("y"));
 
-            String[] categorySplit = new String[3];
-            String[] temp = categoryName.split(" > ");
-            for (int j = 0; j < Math.min(temp.length, 3); j++) {
-                categorySplit[j] = temp[j];
-            }
-
-            BigCategory bigCategory = null;
-            MidCategory midCategory = null;
-            SmallCategory smallCategory = null;
-            switch (categorySplit.length) {
-                case 3:
-                    smallCategory = smallCategoryService.findByCategoryName(categorySplit[2]);
-                case 2:
-                    midCategory = midCategoryService.findByCategoryName(categorySplit[1]);
-                case 1:
-                    bigCategory = bigCategoryService.findByCategoryName(categorySplit[0]);
-                    break;
-            }
-
-            if (bigCategory == null) {
-                bigCategory = bigCategoryService.create(categorySplit[0]);
-            }
-            if (midCategory == null) {
-                midCategory = midCategoryService.create(categorySplit[1]);
-            }
-            if (smallCategory == null) {
-                smallCategory = smallCategoryService.create(categorySplit[2]);
-            }
+            Category[] categories = categoryFilter(categoryName);
 
             placeService.create(
-                    bigCategory.getId(),
-                    midCategory.getId(),
-                    smallCategory.getId(),
+                    categories[0].getId(),
+                    categories[1].getId(),
+                    categories[2].getId(),
                     placeName, phone, addressName,
                     xPos, yPos
             );
         }
     }
+
+    public Category[] categoryFilter(String categoryStr) {
+        String[] categorySplit = new String[3];
+        String[] temp = categoryStr.split(" > ");
+        for (int j = 0; j < Math.min(temp.length, 3); j++) {
+            categorySplit[j] = temp[j];
+        }
+
+        BigCategory bigCategory = null;
+        MidCategory midCategory = null;
+        SmallCategory smallCategory = null;
+        switch (categorySplit.length) {
+            case 3:
+                smallCategory = smallCategoryService.findByCategoryName(categorySplit[2]);
+            case 2:
+                midCategory = midCategoryService.findByCategoryName(categorySplit[1]);
+            case 1:
+                bigCategory = bigCategoryService.findByCategoryName(categorySplit[0]);
+                break;
+        }
+
+        if (bigCategory == null) {
+            bigCategory = bigCategoryService.create(categorySplit[0]);
+        }
+        if (midCategory == null) {
+            midCategory = midCategoryService.create(categorySplit[1]);
+        }
+        if (smallCategory == null) {
+            smallCategory = smallCategoryService.create(categorySplit[2]);
+        }
+
+        return new Category[]{bigCategory, midCategory, smallCategory};
+    }
+
+    public boolean isLastPage(JSONObject placeData) {
+        /*
+        "total_count"
+        "is_end"
+        "pageable_count"
+        "same_name"
+         */
+        JSONObject meta = (JSONObject) placeData.get("meta");
+        return (boolean) meta.get("is_end");
+    }
+
+
 }
