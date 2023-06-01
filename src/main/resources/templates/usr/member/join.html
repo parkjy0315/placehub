@@ -59,6 +59,19 @@
                 return;
             }
 
+            form.name.value = form.name.value.trim();
+            if (form.name.value.length == 0) {
+                toastWarning('이름을 입력해주세요.');
+                form.name.focus();
+                return;
+            }
+
+            form.nickname.value = form.nickname.value.trim();
+            if (form.nickname.value.length == 0) {
+                toastWarning('닉네임을 입력해주세요.');
+                form.nickname.focus();
+                return;
+            }
 
             form.submit(); // 폼 발송
         }
