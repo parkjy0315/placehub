@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.comment.controller;
 
 import com.placehub.base.rq.Rq;
+import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.post.entity.Post;
@@ -41,6 +42,7 @@ public class CommentController {
         return "/usr/comment/comment";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/update/{id}")
     public String update(@PathVariable Long id, Model model) {
         Comment comment = commentService.findById(id).orElse(null);
@@ -48,6 +50,7 @@ public class CommentController {
         return "usr/comment/comment_form"; // 수정 페이지 템플릿의 파일명
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id, @RequestParam String content) {
         Long postId = commentService.findById(id).get().getPostId();
@@ -55,10 +58,23 @@ public class CommentController {
         return "redirect:/post/view/" + postId;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
         Long postId = commentService.findById(id).get().getPostId();
-        commentService.delete(id);
-        return "redirect:/post/view/" + postId;
+
+        RsData<Comment> isVaildRsData = commentService.isVaild(id);
+        if(isVaildRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+        }
+
+        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
+        if(hasPermissionRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+        }
+
+        RsData<Comment> deleteRsData = commentService.delete(id);
+
+        return rq.redirectWithMsg("/post/view/" + postId, deleteRsData);
     }
 }

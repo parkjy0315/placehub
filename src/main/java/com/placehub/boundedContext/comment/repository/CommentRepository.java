@@ -11,4 +11,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Override
     Optional<Comment> findById(Long id);
     List<Comment> findByPostId(Long id);
+    List<Comment> findByPostIdAndDeletedFalse(Long id);
 }

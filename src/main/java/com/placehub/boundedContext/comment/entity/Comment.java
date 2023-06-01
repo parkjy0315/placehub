@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -18,19 +19,13 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class Comment extends BaseEntity {
 
+    private Long postId;
+    private Long memberId;
+    private String memberNickName;
     @Column(columnDefinition = "TEXT")
     private String content;
 
-//    @ManyToOne
-//    private Post post;
-//    @ManyToOne
-//    private Member author;
-
-    //임시
-    private Long postId;
-    private Long memberId;
-
-    private String memberNickName;
-
+    @Setter
+    private boolean deleted = false;
 
 }
