@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,7 +40,7 @@ public class PostController {
         return "usr/post/create";
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
     public String create(@Valid PostForm postForm) {
         long userId = rq.getMember().getId();
