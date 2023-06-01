@@ -27,7 +27,7 @@ public class PostController {
     @Data
     class PostForm {
         private String place;
-//        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
+        //        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         private LocalDate visitedDate;
         @NotBlank
@@ -69,7 +69,7 @@ public class PostController {
         return "usr/post/list";
     }
 
-//    @PreAuthorize("isAuthenticated()")
+    //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
     public String showPost(@PathVariable Long postId, Model model) {
         RsData<Viewer> response = postService.showSinglePost(postId);
