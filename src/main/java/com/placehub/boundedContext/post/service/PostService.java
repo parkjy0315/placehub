@@ -41,6 +41,22 @@ public class PostService {
         return postRepository.save(post).getId();
     }
 
+    public RsData validPostOwner(long userId, long postId) {
+        Optional<Post> wrappedPost = postRepository.findById(postId);
+
+        if (wrappedPost.isEmpty()) {
+            return RsData.of("F-3", "존재하지 않는 게시글입니다");
+        }
+
+        Post post = wrappedPost.get();
+
+        if (post.getMember() != userId) {
+            return RsData.of("F-4", "이 게시글의 작성자가 아닙니다");
+        }
+
+        return RsData.of("S-1", "올바른 권한을 가진 이용자입니다");
+    }
+
     private boolean validateCreatingPost(Long userId, Long placeId, LocalDate visitedDate) {
         LocalDate now = LocalDate.now();
         return !userId.equals(null) && !placeId.equals(null) && !visitedDate.isAfter(now);
@@ -81,20 +97,18 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 
-    public long modifyContent(long id, String conent) throws SQLException {
-        Optional<Post> wrappedPost = postRepository.findById(id);
+    public long modifyContent(long userId, long postId, long placeId, String conent, LocalDate visitedDate) throws SQLException, RuntimeException{
+        Optional<Post> wrappedPost = postRepository.findById(postId);
+        Post post = wrappedPost.get();
 
-        if (wrappedPost.isPresent()) {
-            Post post = wrappedPost.get();
+        post = post.toBuilder()
+                .place(placeId)
+                .content(conent)
+                .visitedDate(visitedDate)
+                .build();
 
-            post = post.toBuilder()
-                    .content(conent)
-                    .build();
+        return postRepository.save(post).getId();
 
-            return postRepository.save(post).getId();
-        }
-
-        throw new SQLDataException("존재하지 않는 게시글입니다");
     }
 
     public RsData<Viewer> showSinglePost(long postid) {
