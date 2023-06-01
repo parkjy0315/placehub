@@ -1,11 +1,9 @@
 package com.placehub.boundedContext.comment.entity;
 
 import com.placehub.base.entity.BaseEntity;
-import com.placehub.boundedContext.member.entity.Member;
-import com.placehub.boundedContext.post.entity.Post;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +23,7 @@ public class Comment extends BaseEntity {
 
     @Setter
     @Column(columnDefinition = "TEXT")
+    @NotNull
     private String content;
 
     @Setter

@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -80,7 +82,6 @@ public class CommentController {
         }
 
         RsData<Comment> updateRsData = commentService.update(id, content);
-
         return rq.redirectWithMsg("/post/view/" + postId, updateRsData);
     }
 
