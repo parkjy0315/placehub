@@ -1,7 +1,6 @@
 package com.placehub.boundedContext.category.entity;
 
 import com.placehub.base.entity.BaseEntity;
-import com.placehub.base.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Entity
 @NoArgsConstructor
-public class MidCategory extends Category {
+@AllArgsConstructor
+public class MidCategory extends BaseEntity {
     @Column(unique = true)
     private String categoryName;
 }
