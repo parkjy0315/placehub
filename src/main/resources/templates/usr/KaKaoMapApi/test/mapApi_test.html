@@ -30,6 +30,45 @@
     // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
     var map = new kakao.maps.Map(mapContainer, mapOption);
 
+    var positions = [
+        {
+            title: '카카오',
+            latlng: new kakao.maps.LatLng(33.450705, 126.570677)
+        },
+        {
+            title: '생태연못',
+            latlng: new kakao.maps.LatLng(33.450936, 126.569477)
+        },
+        {
+            title: '텃밭',
+            latlng: new kakao.maps.LatLng(33.450879, 126.569940)
+        },
+        {
+            title: '근린공원',
+            latlng: new kakao.maps.LatLng(33.451393, 126.570738)
+        }
+    ];
+
+    // 마커 이미지의 이미지 주소입니다
+    var imageSrc3 = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+    for (var i = 0; i < positions.length; i ++) {
+
+        // 마커 이미지의 이미지 크기 입니다
+        var imageSize3 = new kakao.maps.Size(24, 35);
+
+        // 마커 이미지를 생성합니다
+        var markerImage3 = new kakao.maps.MarkerImage(imageSrc3, imageSize3);
+
+        // 마커를 생성합니다
+        var marker3 = new kakao.maps.Marker({
+            map: map, // 마커를 표시할 지도
+            position: positions[i].latlng, // 마커를 표시할 위치
+            title : positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+            image : markerImage3 // 마커 이미지
+        });
+    }
+
     var imageSrc = 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png', // 마커이미지의 주소입니다
         imageSize = new kakao.maps.Size(64, 69), // 마커이미지의 크기입니다
         imageOption = {offset: new kakao.maps.Point(27, 69)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
@@ -123,11 +162,11 @@
     // 지도를 재설정할 범위정보를 가지고 있을 LatLngBounds 객체를 생성합니다
     var bounds = new kakao.maps.LatLngBounds();
 
-    var i, marker;
+    var i, marker2;
     for (i = 0; i < points.length; i++) {
         // 배열의 좌표들이 잘 보이게 마커를 지도에 추가합니다
-        marker =     new kakao.maps.Marker({ position : points[i] });
-        marker.setMap(map);
+        marker2 = new kakao.maps.Marker({ position : points[i] });
+        marker2.setMap(map);
 
         // LatLngBounds 객체에 좌표를 추가합니다
         bounds.extend(points[i]);
