@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,57 +55,23 @@ public class PlaceController {
     @ResponseBody
     public String saveData() {
         Map<String, String> categoryCode = new HashMap<>() {{
-            put("문화시설", "CT1"); // 2522
-            put("관광명소", "AT4"); // 1111
-            put("음식점", "FD6"); // 135651
-            put("카페", "CE7"); // 33501
+            put("문화시설", "CT1");
+            put("관광명소", "AT4");
+            put("음식점", "FD6");
+            put("카페", "CE7");
         }};
 
-        // 총 범위
-        double startX = 126.84; // 좌하단 X
-        double startY = 37.44; // 좌하단 Y
-        double endX = 127.16; // 우상단 X
-        double endY = 37.72; // 우상단 Y
-
-        // X 차이 = 0.32 / 0.4 = 8
-        // Y 차이 = 0.28 / 0.4 = 7
-        double xDist = endX - startX;
-        double yDist = endY - startY;
-        double criteria = 0.005;
+        double minX = 126.84; // 좌하단 X
+        double minY = 37.45; // 좌하단 Y
+        double maxX = 127.16; // 우상단 X
+        double maxY = 37.70; // 우상단 Y
 
         int page = 1; // 페이지 수
         int size = 15; // 한 페이지 내 결과 개수
+        String rect = String.format("%f, %f, %f, %f", minX, minY, maxX, maxY);
 
-//        String totalRect = String.format("%f,%f,%f,%f", startX, startY, endX, endY);
-//        JSONObject totalResult = LocalApi.Category.getAllRect(totalRect, categoryCode.get("카페"), page, size);
-//        System.out.print("\t" + ((JSONObject) totalResult.get("meta")).get("total_count"));
-
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("output1.txt"));
-
-            for (int i = 0; i < (int) (yDist / criteria); i++) {
-                for (int j = 0; j < (int) (xDist / criteria); j++) {
-                    double leftDownX = startX + j * criteria; // 좌하단 X
-                    double leftDownY = endY - (i + 1) * criteria; // 좌하단 Y
-                    double rightUpX = startX + (j + 1) * criteria; // 우상단 X
-                    double rightUpY = endY - i * criteria; // 우상단 Y
-
-
-                    String rect = String.format("%f,%f,%f,%f", leftDownX, leftDownY, rightUpX, rightUpY);
-
-                    JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode.get("카페"), page, size);
-                    // placeData.savePlace(result);
-
-                    bw.write("\t" + ((JSONObject) result.get("meta")).get("total_count"));
-                }
-                bw.write("\n");
-                System.out.println(i + " row complete");
-            }
-            bw.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        return "Success";
+        JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode.get("관광명소"), 20000, page, size);
+        placeData.savePlace(result);
+        return result.toJSONString();
     }
 }
