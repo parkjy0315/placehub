@@ -83,4 +83,18 @@ public class PostController {
 
         return rq.redirectWithMsg("/post/list", response);
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("modify/{postId}")
+    public String modifyPost(@PathVariable long postId) {
+        long userId = rq.getMember().getId();
+
+        RsData postOwnerValidation = postService.validPostOwner(userId, postId);
+        if (postOwnerValidation.isFail()) {
+            return postOwnerValidation.getMsg();
+        }
+
+        return "/usr/post/create";
+    }
+
 }
