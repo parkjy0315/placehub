@@ -4,21 +4,12 @@ import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
-import com.placehub.boundedContext.post.entity.Post;
-import com.placehub.boundedContext.post.service.PostService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @Controller
