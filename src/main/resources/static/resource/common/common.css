@@ -30,3 +30,7 @@ html > body {
     --my-blue: #2D55C9;
     --my-yellow: #FFEF83;
 }
+
+.toast-top-right {
+    top:75px;
+}
