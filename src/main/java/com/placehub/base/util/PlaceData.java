@@ -13,20 +13,76 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
 public class PlaceData {
-    @Autowired
     private final PlaceService placeService;
-    @Autowired
     private final BigCategoryService bigCategoryService;
-    @Autowired
     private final MidCategoryService midCategoryService;
-    @Autowired
     private final SmallCategoryService smallCategoryService;
+
+    private static double START_X;
+    private static double START_Y;
+    private static double END_X;
+    private static double END_Y;
+
+    @Autowired
+    public PlaceData(PlaceService placeService,
+                     BigCategoryService bigCategoryService,
+                     MidCategoryService midCategoryService,
+                     SmallCategoryService smallCategoryService,
+                     Environment environment) {
+        this.placeService = placeService;
+        this.bigCategoryService = bigCategoryService;
+        this.midCategoryService = midCategoryService;
+        this.smallCategoryService = smallCategoryService;
+
+        START_X = Double.parseDouble(environment.getProperty("custom.api.coord.start-x"));
+        START_Y = Double.parseDouble(environment.getProperty("custom.api.coord.start-y"));
+        END_X = Double.parseDouble(environment.getProperty("custom.api.coord.end-x"));
+        END_Y = Double.parseDouble(environment.getProperty("custom.api.coord.end-y"));
+    }
+
+    public void saveAllCategoryData(String categoryCode) {
+        double xDist = END_X - START_X;
+        double yDist = END_Y - START_Y;
+
+        // 0.04 : 문화, 관광
+        // 0.005 : 음식점, 카페
+        double criteria = 0.005;
+
+        for (int i = 0; i <= (int) (yDist / criteria); i++) {
+            for (int j = 0; j <= (int) (xDist / criteria); j++) {
+                int page = 1; // 페이지 수
+                int size = 15; // 한 페이지 내 결과 개수
+                double[] coords = getNextCoord(i, j, criteria);
+                String rect = String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+
+                while (true) {
+                    JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
+                    savePlace(result);
+                    System.out.println("total_count = " + ((JSONObject) result.get("meta")).get("total_count"));
+                    System.out.printf("%d %d page = %d\n", i, j, page);
+                    if (isLastPage(result)) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    public double[] getNextCoord(int i, int j, double criteria) {
+        double leftDownX = START_X + j * criteria; // 좌하단 X
+        double leftDownY = END_Y - (i + 1) * criteria; // 좌하단 Y
+        double rightUpX = START_X + (j + 1) * criteria; // 우상단 X
+        double rightUpY = END_Y - i * criteria; // 우상단 Y
+
+        return new double[]{leftDownX, leftDownY, rightUpX, rightUpY};
+    }
 
     @Transactional
     public void savePlace(JSONObject placeData) {
@@ -42,7 +98,6 @@ public class PlaceData {
             Double yPos = Double.parseDouble((String) element.get("y"));
 
             Category[] categories = categoryFilter(categoryName);
-
 
             placeService.create(
                     categories[0].getId(),
@@ -95,8 +150,7 @@ public class PlaceData {
         "same_name"
          */
         JSONObject meta = (JSONObject) placeData.get("meta");
-        boolean isEnd = (boolean) meta.get("is_end");
-        return isEnd;
+        return (boolean) meta.get("is_end");
     }
 
 

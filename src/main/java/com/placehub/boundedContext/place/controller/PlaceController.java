@@ -54,9 +54,9 @@ public class PlaceController {
         return result.toJSONString();
     }
 
-    @GetMapping("/data-test")
+    @GetMapping("/data-save-test/{categoryName}")
     @ResponseBody
-    public String saveData() {
+    public String saveData(@PathVariable("categoryName") String categoryName) {
         Map<String, String> categoryCode = new HashMap<>() {{
             put("문화시설", "CT1"); // 2522
             put("관광명소", "AT4"); // 1111
@@ -64,51 +64,7 @@ public class PlaceController {
             put("카페", "CE7"); // 33501
         }};
 
-        // 총 범위
-        double startX = 126.84; // 좌하단 X
-        double startY = 37.44; // 좌하단 Y
-        double endX = 127.16; // 우상단 X
-        double endY = 37.72; // 우상단 Y
-
-        // X 차이 = 0.32 / 0.4 = 8
-        // Y 차이 = 0.28 / 0.4 = 7
-        double xDist = endX - startX;
-        double yDist = endY - startY;
-        double criteria = 0.005;
-
-        int page = 1; // 페이지 수
-        int size = 15; // 한 페이지 내 결과 개수
-
-//        String totalRect = String.format("%f,%f,%f,%f", startX, startY, endX, endY);
-//        JSONObject totalResult = LocalApi.Category.getAllRect(totalRect, categoryCode.get("카페"), page, size);
-//        System.out.print("\t" + ((JSONObject) totalResult.get("meta")).get("total_count"));
-
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter("output1.txt"));
-
-            for (int i = 0; i < (int) (yDist / criteria); i++) {
-                for (int j = 0; j < (int) (xDist / criteria); j++) {
-                    double leftDownX = startX + j * criteria; // 좌하단 X
-                    double leftDownY = endY - (i + 1) * criteria; // 좌하단 Y
-                    double rightUpX = startX + (j + 1) * criteria; // 우상단 X
-                    double rightUpY = endY - i * criteria; // 우상단 Y
-
-
-                    String rect = String.format("%f,%f,%f,%f", leftDownX, leftDownY, rightUpX, rightUpY);
-
-                    JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode.get("카페"), page, size);
-                    // placeData.savePlace(result);
-
-                    bw.write("\t" + ((JSONObject) result.get("meta")).get("total_count"));
-                }
-                bw.write("\n");
-                System.out.println(i + " row complete");
-            }
-            bw.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+        placeData.saveAllCategoryData(categoryCode.get(categoryName));
         return "Success";
     }
 }
