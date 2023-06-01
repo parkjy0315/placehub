@@ -22,7 +22,7 @@
 html > body {
     font-family: "GmarketSansMedium";
     text-underline-position: under;
-    word-break: keep-all;
+    word-break: break-word;
 }
 
 
