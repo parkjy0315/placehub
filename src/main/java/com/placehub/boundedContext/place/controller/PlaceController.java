@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,27 +54,17 @@ public class PlaceController {
         return result.toJSONString();
     }
 
-    @GetMapping("/data-test")
+    @GetMapping("/data-save-test/{categoryName}")
     @ResponseBody
-    public String saveData() {
+    public String saveData(@PathVariable("categoryName") String categoryName) {
         Map<String, String> categoryCode = new HashMap<>() {{
-            put("문화시설", "CT1");
-            put("관광명소", "AT4");
-            put("음식점", "FD6");
-            put("카페", "CE7");
+            put("문화시설", "CT1"); // 2522
+            put("관광명소", "AT4"); // 1111
+            put("음식점", "FD6"); // 135651
+            put("카페", "CE7"); // 33501
         }};
 
-        double minX = 126.84; // 좌하단 X
-        double minY = 37.45; // 좌하단 Y
-        double maxX = 127.16; // 우상단 X
-        double maxY = 37.70; // 우상단 Y
-
-        int page = 1; // 페이지 수
-        int size = 15; // 한 페이지 내 결과 개수
-        String rect = String.format("%f, %f, %f, %f", minX, minY, maxX, maxY);
-
-        JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode.get("관광명소"), 20000, page, size);
-        placeData.savePlace(result);
-        return result.toJSONString();
+        placeData.saveAllCategoryData(categoryCode.get(categoryName));
+        return "Success";
     }
 }

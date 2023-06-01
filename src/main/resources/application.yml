@@ -63,3 +63,19 @@ spring:
       hibernate:
         format_sql: true
         show_sql: true
+
+custom:
+  api:
+    coord:
+      start-x: 126.84
+      start-y: 37.44
+      end-x: 127.16
+      end-y: 37.72
+
+    category-code:
+      culture: CT1
+      tour: AT4
+      restaurant: FD6
+      cafe: CE7
+
+
