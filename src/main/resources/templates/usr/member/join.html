@@ -51,6 +51,15 @@
                 return;
             }
 
+            // 이메일 유효성 검사
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(form.email.value)) {
+                toastWarning('유효한 이메일 형식이 아닙니다.');
+                form.email.focus();
+                return;
+            }
+
+
             form.submit(); // 폼 발송
         }
     </script>
