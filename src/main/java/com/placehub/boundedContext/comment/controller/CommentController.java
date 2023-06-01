@@ -66,7 +66,19 @@ public class CommentController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id, @RequestParam String content) {
+
         Long postId = commentService.findById(id).get().getPostId();
+
+        RsData<Comment> isVaildRsData = commentService.isVaild(id);
+        if(isVaildRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+        }
+
+        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
+        if(hasPermissionRsData.isFail()){
+            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+        }
+
         RsData<Comment> updateRsData = commentService.update(id, content);
 
         return rq.redirectWithMsg("/post/view/" + postId, updateRsData);

@@ -72,7 +72,7 @@ public class CommentControllerTests {
     }
 
     @Test
-    @DisplayName("댓글 수정")
+    @DisplayName("댓글 수정 - 권한 있음")
     @WithUserDetails("user1")
     public void t002() throws Exception {
         // WHEN
@@ -100,9 +100,37 @@ public class CommentControllerTests {
     }
 
     @Test
-    @DisplayName("댓글 삭제")
-    @WithUserDetails("user1")
+    @DisplayName("댓글 수정 - 권한 없음, 수정 불가")
+    @WithUserDetails("user2")
     public void t003() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/comment/update/1")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("content", "테스트 내용 1 - 수정")
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(CommentController.class))
+                .andExpect(handler().methodName("update"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/post/view/1**"));
+        ;
+
+        Comment comment = commentService.findById(1L).orElse(null);
+        assertThat(comment).isNotNull();
+        assertThat(comment.getPostId()).isEqualTo(1L);
+        assertThat(comment.getContent()).isEqualTo("테스트 내용");
+        assertThat(comment.getMemberId()).isEqualTo(1L);
+
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - 권한 있음")
+    @WithUserDetails("user1")
+    public void t004() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
                 .perform(post("/comment/delete/1")
@@ -120,6 +148,29 @@ public class CommentControllerTests {
 
         Comment comment = commentService.findById(1L).orElse(null);
         assertThat(comment).isNull();
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 - 권한 없음, 수정 불가")
+    @WithUserDetails("user2")
+    public void t005() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/comment/delete/1")
+                        .with(csrf()) // CSRF 키 생성
+                )
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(CommentController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrlPattern("/post/view/1**"));
+        ;
+
+        Comment comment = commentService.findById(1L).orElse(null);
+        assertThat(comment).isNotNull();
     }
 
 }
