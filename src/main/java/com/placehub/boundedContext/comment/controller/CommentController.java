@@ -27,30 +27,21 @@ public class CommentController {
     private final PostService postService;
     private final Rq rq;
 
-    // @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/create")
-//    public String create(@RequestParam Long postId, @RequestParam String content){
-//
-//        Post post = postService.findById(postId).orElse(null);
-//        commentService.create(post, content, rq.getMember());
-//        return "/usr/comment/comment";
-//    }
-
-    @PostMapping("/create")
-    public String create(@RequestParam Long postId, @RequestParam String content, @RequestParam String username){
-
-        commentService.create(postId, content, username);
-        return "redirect:/comment/list";
+    @GetMapping("/create/{postId}")
+    public String createCommentForm(@PathVariable("postId") Long postId, Model model) {
+        model.addAttribute("postId", postId);
+        return "redirect:/post/view/" + postId;
     }
 
-//    @GetMapping("/list")
-//    public String get(@PathVariable("id") Long id, Model model){
-//        Comment comment = commentService.findById(id).orElse(null);
-//        model.addAttribute("comment", comment);
-//        return "/usr/comment/comment";
-//    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/create/{postId}")
+    public String create(@PathVariable("postId") String postId ,@RequestParam String content){
+        Long parsedPostId = Long.parseLong(postId);
+        commentService.create(parsedPostId, content, rq.getMember());
+        return "redirect:/post/view/" + postId;
+    }
 
-    @GetMapping("/list")
+    @GetMapping("/list/{postId}")
     public String getList(Model model) {
         List<Comment> comments = commentService.findAll();
         model.addAttribute("comments", comments);
@@ -72,7 +63,8 @@ public class CommentController {
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
+        Long postId = commentService.findById(id).get().getPostId();
         commentService.delete(id);
-        return "redirect:/comment/list";
+        return "redirect:/post/view/" + postId;
     }
 }

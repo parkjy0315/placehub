@@ -28,7 +28,9 @@ public class Comment extends BaseEntity {
 
     //임시
     private Long postId;
-    private String username;
+    private Long memberId;
+
+    private String memberNickName;
 
 
 }

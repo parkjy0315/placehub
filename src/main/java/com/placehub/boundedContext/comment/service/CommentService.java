@@ -3,6 +3,7 @@ package com.placehub.boundedContext.comment.service;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.repository.CommentRepository;
 import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final MemberService memberService;
 
 //    public Comment create(Post post, String content, Member author){
 //
@@ -27,12 +29,16 @@ public class CommentService {
 //        return commentRepository.save(comment);
 //    }
 
-    public Comment create(Long postId, String content, String username){
+    public Comment create(Long postId, String content, Member actor){
+
+        Long actorId = actor.getId();
+        String actorNickName = actor.getNickname();
 
         Comment comment = Comment.builder()
                 .content(content)
                 .postId(postId)
-                .username(username)
+                .memberId(actorId)
+                .memberNickName(actorNickName)
                 .build();
 
         return commentRepository.save(comment);
@@ -68,5 +74,9 @@ public class CommentService {
 
     public List<Comment> findAll() {
         return commentRepository.findAll();
+    }
+
+    public List<Comment> findByPostId(Long postId) {
+        return commentRepository.findByPostId(postId);
     }
 }

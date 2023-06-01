@@ -2,6 +2,8 @@ package com.placehub.boundedContext.post.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.comment.entity.Comment;
+import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
@@ -23,6 +25,7 @@ import java.util.List;
 public class PostController {
     private final Rq rq;
     private final PostService postService;
+    private final CommentService commentService;
     @Data
     class PostForm {
         private String place;
@@ -68,6 +71,9 @@ public class PostController {
         if (response.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
+
+        List<Comment> comments = commentService.findByPostId(postId);
+        model.addAttribute("comments", comments);
 
         model.addAttribute("postView", response);
         return "usr/post/viewer";
