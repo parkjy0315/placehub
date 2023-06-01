@@ -36,14 +36,6 @@ public class MemberService {
 
     public void delete(Member member) {memberRepository.delete(member);}
 
-    public Optional<Member> findByUsername(String username) {
-        return memberRepository.findByUsername(username);
-    }
-
-    public Optional<Member> findById(Long id) {
-        return memberRepository.findById(id);
-    }
-
     @Transactional
 
     // 일반 회원가입
@@ -57,6 +49,14 @@ public class MemberService {
 
         if ( findByUsername(username).isPresent() ) {
             return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
+        }
+
+        if ( findByEmail(email).isPresent() ) {
+            return RsData.of("F-2", "해당 이메일(%s)은 이미 사용중입니다.".formatted(email));
+        }
+
+        if ( findByNickname(nickname).isPresent() ) {
+            return RsData.of("F-3", "해당 닉네임(%s)은 이미 사용중입니다.".formatted(nickname));
         }
 
         Member member = Member
@@ -75,6 +75,7 @@ public class MemberService {
     }
 
     // 소셜 로그인
+
     @Transactional
     public RsData<Member> whenSocialLogin(String providerTypeCode, String username, String email, String name, String nickname) {
         Optional<Member> opMember = findByUsername(username);
@@ -83,6 +84,20 @@ public class MemberService {
 
         return join(providerTypeCode, username, "", email, name, nickname); // 최초 로그인시 실행
 
+    }
+
+
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+    public Optional<Member> findByUsername(String username) {
+        return memberRepository.findByUsername(username);
+    }
+    public Optional<Member> findByEmail(String email) {
+        return memberRepository.findByEmail(email);
+    }
+    public Optional<Member> findByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname);
     }
 
 }

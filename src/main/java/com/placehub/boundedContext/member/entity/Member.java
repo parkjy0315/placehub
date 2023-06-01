@@ -25,7 +25,9 @@ public class Member extends BaseEntity {
     private String username;
     private String password;
     private String name;
+    @Column(unique = true)
     private String email;
+    @Column(unique = true)
     private String nickname;
 
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
