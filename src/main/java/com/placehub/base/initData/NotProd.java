@@ -1,5 +1,7 @@
 package com.placehub.base.initData;
 
+import com.placehub.boundedContext.comment.entity.Comment;
+import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
@@ -22,7 +24,8 @@ public class NotProd {
     CommandLineRunner initData(
             MemberService memberService,
             PlaceService placeService,
-            PostService postService
+            PostService postService,
+            CommentService commentService
     ) {
         return new CommandLineRunner() {
             @Override
@@ -30,7 +33,7 @@ public class NotProd {
 
                 // Member memberAdmin = memberService.join("admin", "1234").getData();
                 Member member1 = memberService.join("user1", "1234", "123@123", "이름1", "닉네임1").getData();
-                Member member2 = memberService.join("user2", "1234", "234@234", "이름12", "닉네임2").getData();
+                Member member2 = memberService.join("user2", "1234", "234@234", "이름2", "닉네임2").getData();
 
                 Member memberJinyeongKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__2812333976", "pjy100402@naver.com", "박진영", "박진영").getData();
 
@@ -43,6 +46,8 @@ public class NotProd {
                 //Post post1 =
                         postService.createPost(memberJinyeongKakao.getId(), place.getId(),
                         "테스트용 게시물입니다.", true, LocalDate.now());
+
+                Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
             }
         };
     }

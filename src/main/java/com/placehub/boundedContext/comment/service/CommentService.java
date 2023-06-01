@@ -18,17 +18,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final MemberService memberService;
 
-//    public Comment create(Post post, String content, Member author){
-//
-//        Comment comment = Comment.builder()
-//                .content(content)
-//                .post(post)
-//                .author(author)
-//                .build();
-//
-//        return commentRepository.save(comment);
-//    }
-
     public Comment create(Long postId, String content, Member actor){
 
         Long actorId = actor.getId();

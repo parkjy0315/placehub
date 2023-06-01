@@ -12,18 +12,15 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -49,14 +46,14 @@ public class CommentControllerTests {
 
     @Test
     @DisplayName("댓글 등록")
+    @WithUserDetails("user2")
     public void t001() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(post("/comment/create")
+                .perform(post("/comment/create/1")
                         .with(csrf()) // CSRF 키 생성
                         .param("postId", "1")
                         .param("content", "안녕하세요")
-                        .param("username", "user1")
                 )
                 .andDo(print());
 
@@ -67,45 +64,22 @@ public class CommentControllerTests {
                 .andExpect(status().is3xxRedirection())
         ;
 
-    }
-
-    @Test
-    @DisplayName("댓글 목록")
-    public void t002() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc
-                .perform(get("/comment/list"))
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(CommentController.class))
-                .andExpect(handler().methodName("getList"))
-                .andExpect(status().is2xxSuccessful())
-        ;
+        Comment comment = commentService.findById(2L).orElse(null);
+        assertThat(comment).isNotNull();
+        assertThat(comment.getPostId()).isEqualTo(1L);
+        assertThat(comment.getContent()).isEqualTo("안녕하세요");
+        assertThat(comment.getMemberId()).isEqualTo(2L);
     }
 
     @Test
     @DisplayName("댓글 수정")
-    public void t003() throws Exception {
-
-        Comment comment1 = Comment.builder()
-                .postId(1L)
-                .content("테스트 내용 1")
-                .username("user1")
-                .build();
-
-        commentRepository.save(comment1);
-        Optional<Comment> comment = commentService.findById(comment1.getId());
-        assertTrue(comment.isPresent());
-
+    @WithUserDetails("user1")
+    public void t002() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(post("/comment/update/" + comment1.getId())
+                .perform(post("/comment/update/1")
                         .with(csrf()) // CSRF 키 생성
-                        .param("postId", "1")
-                        .param("content", "수정 내용")
-                        .param("username", "user1")
+                        .param("content", "테스트 내용 1 - 수정")
                 )
                 .andDo(print());
 
@@ -114,43 +88,38 @@ public class CommentControllerTests {
                 .andExpect(handler().handlerType(CommentController.class))
                 .andExpect(handler().methodName("update"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/comment/list*"));
+                .andExpect(redirectedUrlPattern("/post/view/1**"));
         ;
 
-        comment = commentService.findById(comment1.getId());
-        assertThat(comment.get().getContent()).isEqualTo("수정 내용");
+        Comment comment = commentService.findById(1L).orElse(null);
+        assertThat(comment).isNotNull();
+        assertThat(comment.getPostId()).isEqualTo(1L);
+        assertThat(comment.getContent()).isEqualTo("테스트 내용 1 - 수정");
+        assertThat(comment.getMemberId()).isEqualTo(1L);
 
     }
 
     @Test
     @DisplayName("댓글 삭제")
-    public void t004() throws Exception {
-
-        Comment comment2 = Comment.builder()
-                .postId(1L)
-                .content("테스트 내용 2")
-                .username("user2")
-                .build();
-
-        commentRepository.save(comment2);
-        Optional<Comment> comment = commentService.findById(comment2.getId());
-        assertTrue(comment.isPresent());
-
+    @WithUserDetails("user1")
+    public void t003() throws Exception {
         // WHEN
         ResultActions resultActions = mvc
-                .perform(post("/comment/delete/" + comment2.getId())
-                        .with(csrf()))
+                .perform(post("/comment/delete/1")
+                        .with(csrf()) // CSRF 키 생성
+                )
                 .andDo(print());
+
         // THEN
         resultActions
                 .andExpect(handler().handlerType(CommentController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/comment/list*"));
+                .andExpect(redirectedUrlPattern("/post/view/1**"));
+        ;
 
-
-        comment = commentService.findById(comment2.getId());
-        assertTrue(comment.isEmpty());
+        Comment comment = commentService.findById(1L).orElse(null);
+        assertThat(comment).isNull();
     }
 
 }
