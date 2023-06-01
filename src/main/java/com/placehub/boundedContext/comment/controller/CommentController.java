@@ -24,14 +24,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
-    private final PostService postService;
     private final Rq rq;
-
-    @GetMapping("/create/{postId}")
-    public String createCommentForm(@PathVariable("postId") Long postId, Model model) {
-        model.addAttribute("postId", postId);
-        return "redirect:/post/view/" + postId;
-    }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{postId}")
@@ -57,8 +50,9 @@ public class CommentController {
 
     @PostMapping("/update/{id}")
     public String update(@PathVariable Long id, @RequestParam String content) {
+        Long postId = commentService.findById(id).get().getPostId();
         commentService.update(id, content);
-        return "redirect:/comment/list";
+        return "redirect:/post/view/" + postId;
     }
 
     @PostMapping("/delete/{id}")
