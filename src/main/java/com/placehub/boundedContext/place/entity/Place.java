@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.place.entity;
 
 import com.placehub.base.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,8 @@ public class Place extends BaseEntity {
     private Long bigCategoryId;
     private Long midCategoryId;
     private Long smallCategoryId;
+    @Column(unique = true)
+    private Long placeId;
     private String placeName;
     private String phone;
     private String addressName;

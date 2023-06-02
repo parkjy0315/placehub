@@ -37,7 +37,7 @@ public class NotProd {
                 Member memberAdmin = memberService.create("admin", "1234", "user1", "user1@gmail.com", "user1Nick");
 
                 Place place = placeService.create(1L, 1L, 1L,
-                        "place", "02-123-1234", "서울 ",
+                        1L, "place", "02-123-1234", "서울 ",
                         12.0, 123.0);
 
                 //Post post1 =

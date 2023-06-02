@@ -17,6 +17,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.IntStream;
+
 @Component
 @RequiredArgsConstructor
 public class PlaceData {
@@ -51,26 +53,29 @@ public class PlaceData {
         double xDist = END_X - START_X;
         double yDist = END_Y - START_Y;
 
-        // 0.04 : 문화, 관광
-        // 0.005 : 음식점, 카페
         double criteria = 0.005;
 
-        for (int i = 0; i <= (int) (yDist / criteria); i++) {
-            for (int j = 0; j <= (int) (xDist / criteria); j++) {
-                int page = 1; // 페이지 수
-                int size = 15; // 한 페이지 내 결과 개수
-                double[] coords = getNextCoord(i, j, criteria);
-                String rect = String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+        IntStream.range(0, (int) (yDist / criteria) + 1)
+                .boxed()
+                .flatMap(i ->
+                        IntStream.range(0, (int) (xDist / criteria) + 1)
+                                .mapToObj(j -> new int[]{i, j}))
+                .forEach(coords -> fetchPlaceInfo(categoryCode, coords[0], coords[1], criteria));
+    }
 
-                while (true) {
-                    JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
-                    savePlace(result);
-                    System.out.println("total_count = " + ((JSONObject) result.get("meta")).get("total_count"));
-                    System.out.printf("%d %d page = %d\n", i, j, page);
-                    if (isLastPage(result)) {
-                        break;
-                    }
-                }
+    public void fetchPlaceInfo(String categoryCode, int i, int j, double criteria) {
+        int page = 1; // 페이지 수
+        int size = 15; // 한 페이지 내 결과 개수
+        double[] coords = getNextCoord(i, j, criteria);
+        String rect = String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+
+        while (true) {
+            JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
+            savePlace(result);
+            System.out.println("total_count = " + ((JSONObject) result.get("meta")).get("total_count"));
+            System.out.printf("%d %d page = %d\n", i, j, page);
+            if (isLastPage(result)) {
+                break;
             }
         }
     }
@@ -87,26 +92,32 @@ public class PlaceData {
     @Transactional
     public void savePlace(JSONObject placeData) {
         JSONArray documents = (JSONArray) placeData.get("documents");
-        for (int i = 0; i < documents.size(); i++) {
-            JSONObject element = (JSONObject) documents.get(i);
+        documents.stream()
+                .forEach(element -> saveData((JSONObject) element));
+    }
 
-            String categoryName = (String) element.get("category_name");
-            String placeName = (String) element.get("place_name");
-            String phone = (String) element.get("phone");
-            String addressName = (String) element.get("address_name");
-            Double xPos = Double.parseDouble((String) element.get("x"));
-            Double yPos = Double.parseDouble((String) element.get("y"));
+    public void saveData(JSONObject element) {
+        String categoryName = (String) element.get("category_name");
+        String placeName = (String) element.get("place_name");
+        String phone = (String) element.get("phone");
+        String addressName = (String) element.get("address_name");
+        Long placeId = Long.parseLong((String) element.get("id"));
+        Double xPos = Double.parseDouble((String) element.get("x"));
+        Double yPos = Double.parseDouble((String) element.get("y"));
 
-            Category[] categories = categoryFilter(categoryName);
-
-            placeService.create(
-                    categories[0].getId(),
-                    categories[1].getId(),
-                    categories[2].getId(),
-                    placeName, phone, addressName,
-                    xPos, yPos
-            );
+        if (placeService.findByPlaceId(placeId) != null) {
+            return;
         }
+
+        Category[] categories = categoryFilter(categoryName);
+
+        placeService.create(
+                categories[0].getId(),
+                categories[1].getId(),
+                categories[2].getId(),
+                placeId, placeName, phone, addressName,
+                xPos, yPos
+        );
     }
 
     public Category[] categoryFilter(String categoryStr) {
