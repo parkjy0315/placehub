@@ -10,6 +10,12 @@ spring:
     active: dev
     default:
     include: secret
+  servlet:
+    multipart:
+      file-size-threshold: 1MB
+      location: resources/static/Temp
+      max-file-size: 4MB
+      max-request-size: 55MB
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

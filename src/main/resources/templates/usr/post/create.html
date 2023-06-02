@@ -44,7 +44,7 @@
             <div class="p-10"></div>
         </div>
 
-        <form th:action method="post" onsubmit="validate(this); return false;">
+        <form th:action method="post" enctype="multipart/form-data" onsubmit="validate(this); return false;">
             <div class="flex pb-10 border-b-2 my-10">
                 <div class="flex overflow-x-auto">
                     <th:block th:each="num : ${#numbers.sequence(1, 10)}">
@@ -52,9 +52,7 @@
                     </th:block>
                 </div>
 
-                <div class="mx-10">
-                    여기에 사진 넣기
-                </div>
+                <input type="file" id="fileUpload" multiple="multiple" accept="image/*" name="images"/>
             </div>
 
             <div class="flex justify-center mb-5">

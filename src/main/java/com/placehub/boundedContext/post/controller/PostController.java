@@ -8,6 +8,7 @@ import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.ImageService;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,7 @@ public class PostController {
     private final Rq rq;
     private final PostService postService;
     private final CommentService commentService;
+    private final ImageService imageService;
     @GetMapping("/create")
     public String create() {
         return "usr/post/create";
@@ -42,9 +45,10 @@ public class PostController {
         boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
         String content = creatingForm.getContent();
         LocalDate visitedDate = creatingForm.getVisitedDate();
+        List<MultipartFile> images = creatingForm.getImages();
 
-
-        postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
+       long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
+        RsData imageSavingResult = imageService.saveImages(images, postId);
         return "redirect:/post/list";
     }
 
