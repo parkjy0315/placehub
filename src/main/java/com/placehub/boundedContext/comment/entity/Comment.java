@@ -26,7 +26,5 @@ public class Comment extends BaseEntity {
     @NotNull
     private String content;
 
-    @Setter
-    private boolean deleted = false;
 
 }

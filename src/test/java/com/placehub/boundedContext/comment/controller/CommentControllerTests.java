@@ -79,7 +79,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/update/1")
                         .with(csrf()) // CSRF 키 생성
-                        .param("content", "테스트 내용 1 - 수정")
+                        .param("content", "테스트 댓글 1 - 수정")
                 )
                 .andDo(print());
 
@@ -94,7 +94,7 @@ public class CommentControllerTests {
         Comment comment = commentService.findById(1L).orElse(null);
         assertThat(comment).isNotNull();
         assertThat(comment.getPostId()).isEqualTo(1L);
-        assertThat(comment.getContent()).isEqualTo("테스트 내용 1 - 수정");
+        assertThat(comment.getContent()).isEqualTo("테스트 댓글 1 - 수정");
         assertThat(comment.getMemberId()).isEqualTo(1L);
 
     }
@@ -107,7 +107,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/update/1")
                         .with(csrf()) // CSRF 키 생성
-                        .param("content", "테스트 내용 1 - 수정")
+                        .param("content", "테스트 댓글 1 - 수정")
                 )
                 .andDo(print());
 
@@ -122,7 +122,7 @@ public class CommentControllerTests {
         Comment comment = commentService.findById(1L).orElse(null);
         assertThat(comment).isNotNull();
         assertThat(comment.getPostId()).isEqualTo(1L);
-        assertThat(comment.getContent()).isEqualTo("테스트 내용");
+        assertThat(comment.getContent()).isEqualTo("테스트 댓글 1");
         assertThat(comment.getMemberId()).isEqualTo(1L);
 
     }
@@ -147,11 +147,11 @@ public class CommentControllerTests {
         ;
 
         Comment comment = commentService.findById(1L).orElse(null);
-        assertThat(comment).isNull();
+        assertThat(comment.getDeleteDate()).isNotNull();
     }
 
     @Test
-    @DisplayName("댓글 삭제 - 권한 없음, 수정 불가")
+    @DisplayName("댓글 삭제 - 권한 없음, 삭제 불가")
     @WithUserDetails("user2")
     public void t005() throws Exception {
         // WHEN
@@ -170,7 +170,7 @@ public class CommentControllerTests {
         ;
 
         Comment comment = commentService.findById(1L).orElse(null);
-        assertThat(comment).isNotNull();
+        assertThat(comment.getDeleteDate()).isNull();
     }
 
 }
