@@ -1,0 +1,73 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <title>지도</title>
+
+</head>
+<body>
+<div layout:fragment="content">
+
+    <div id="map" style="width:100%;height:350px;"></div>
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=발급받을 api key"></script>
+    <script>
+        var mapContainer = document.getElementById('map'),
+            mapOption = {
+                center: new kakao.maps.LatLng(33.450701, 126.570667),
+                level: 3
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+
+        if (navigator.geolocation) {
+
+
+            navigator.geolocation.getCurrentPosition(function(position) {
+
+                var lat = position.coords.latitude,
+                    lon = position.coords.longitude;
+
+                var markerposition = new kakao.maps.LatLng(lat, lon),
+                    message = '<div style="padding:5px;">현재 나의 위치</div>';
+
+
+                displayMarker(markerposition, message);
+
+            });
+
+        } else {
+
+            var markerposition = new kakao.maps.LatLng(33.450701, 126.570667),
+                message = 'geolocation을 사용할수 없어요..'
+
+            displayMarker(markerposition, message);
+        }
+
+
+        function displayMarker(markerposition, message) {
+
+
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: markerposition
+            });
+
+            var iwContent = message,
+                iwRemoveable = true;
+
+
+            var infowindow = new kakao.maps.InfoWindow({
+                content : iwContent,
+                removable : iwRemoveable
+            });
+
+            infowindow.open(map, marker);
+
+            map.setCenter(markerposition);
+        }
+    </script>
+</div>
+</body>
+</html>
