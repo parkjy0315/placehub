@@ -5,6 +5,8 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.CreatingForm;
+import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
@@ -27,25 +29,6 @@ public class PostController {
     private final Rq rq;
     private final PostService postService;
     private final CommentService commentService;
-    @Data
-    class PostForm {
-        private String place;
-        //        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private LocalDate visitedDate;
-        @NotBlank
-        private String isOpenToPublic;
-        private String content;
-    }
-
-    @Data
-    class ModifyingForm {
-        private String place;
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private LocalDate visitedDate;
-        private String content;
-    }
-
     @GetMapping("/create")
     public String create() {
         return "usr/post/create";
@@ -53,12 +36,12 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
-    public String create(@Valid PostForm postForm) {
+    public String create(@Valid CreatingForm creatingForm) {
         long userId = rq.getMember().getId();
-        long placeId = postService.convertPlaceToId(postForm.getPlace());
-        boolean isOpenToPublic = postForm.getIsOpenToPublic().equals("공개");
-        String content = postForm.getContent();
-        LocalDate visitedDate = postForm.getVisitedDate();
+        long placeId = postService.convertPlaceToId(creatingForm.getPlace());
+        boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
+        String content = creatingForm.getContent();
+        LocalDate visitedDate = creatingForm.getVisitedDate();
 
 
         postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
