@@ -47,7 +47,8 @@
                     </div>
                 </div>
 
-                <div class="flex gap-4 justify-end">
+                <div class="flex gap-4 justify-end"
+                    th:if="${@rq.member.getUsername() == postView.getData().getUsername()}">
                     <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
                         <button type="submit" class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600">
                             수정하기
