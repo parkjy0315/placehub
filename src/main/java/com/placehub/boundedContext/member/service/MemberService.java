@@ -89,6 +89,25 @@ public class MemberService {
     }
 
 
+    public RsData<Member> updateNickname(Member actor, Long memberId, String nickname) {
+
+        if(actor.getId() != memberId) {
+            return RsData.of("F-1", "사용자 정보가 일치하지 않습니다.");
+        }
+
+         Member checkMember = findByNickname(nickname).orElse(null);
+
+        if(checkMember != null) {
+            return RsData.of("F-S", "이미 사용 중인 닉네임입니다.");
+        }
+
+        actor.setNickname(nickname);
+        memberRepository.save(actor);
+
+        return RsData.of("S-1", "닉네임이 수정되었습니다.");
+    }
+
+
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
     }

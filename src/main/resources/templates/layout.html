@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"
+      data-theme="light"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.w3.org/1999/xhtml">
 
@@ -8,6 +9,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
+
+    <!-- csrf toekn-->
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 
     <!-- 제이쿼리 불러오기 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>

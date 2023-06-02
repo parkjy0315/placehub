@@ -1,22 +1,17 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>
-        내 정보
-    </title>
+    <title>내 정보</title>
 </head>
 
 <body>
 
-<div layout:fragment="content" class="flex-grow flex items-center justify-center">
+<div layout:fragment="content">
 
-<!-- 내 정보 시작 -->
-<div class="max-w-xl w-full px-4 py-5">
-    <div class="flex flex-col gap-4">
-
-
-        <div class="card flex-shrink-0 shadow-2xl bg-base-100">
-            <div class="card-body">
+    <!-- 내 정보 시작 -->
+    <div class="hero-content flex my-10">
+        <div class="flex flex-col gap-4">
+            <div>
                 <div class="overflow-x-auto">
                     <h2 class="card-title mb-3">
                         <i class="fa-solid fa-user"></i>
@@ -33,7 +28,21 @@
                         </tr>
                         <tr>
                             <td>닉네임</td>
-                            <td><span th:text="${@rq.member.nickname}"></span></td>
+                            <td class="flex flex-col gap-2">
+                                <div id="nicknameContainer" class="flex gap-5">
+                                    <span id="nicknameValue" th:text="${@rq.member.nickname}"></span>
+                                    <button id="editNicknameBtn" class="btn btn-xs btn-outline"
+                                            th:attr="data-member-id=${@rq.member.id}">수정하기
+                                    </button>
+                                </div>
+                                <div id="nicknameUpdateContainer" class="flex mt-1" style="display: none;">
+                                    <input type="text" id="nicknameInput" placeholder="새로운 닉네임"
+                                           class="p-2 max-w-xs rounded-md border border-gray-200">
+                                    <button id="updateNicknameBtn" class="btn btn-xs btn-outline mx-1">수정완료</button>
+                                </div>
+                                <div id="updateNicknameResult" class="mt-1 text-red-400" style="display: none;"></div>
+                            </td>
+
                         </tr>
                         <tr>
                             <td>이메일</td>
@@ -42,7 +51,8 @@
                         <tr>
                             <td>가입날짜</td>
                             <td><i class="fa-regular fa-clock"></i>
-                                <span th:text="${#temporals.format(@rq.member.createDate, 'yy-MM-dd')}"></span>
+                                <span th:text="${#temporals.format(@rq.member.createDate,
+                                        'yy-MM-dd')}"></span>
                             </td>
                         </tr>
                     </table>
@@ -51,7 +61,78 @@
         </div>
         <!-- 내 정보 끝 -->
     </div>
-    </div>
+
+    <script>
+        const editNicknameBtn = document.getElementById("editNicknameBtn");
+        const nicknameUpdateContainer = document.getElementById("nicknameUpdateContainer");
+        const nicknameValue = document.getElementById("nicknameValue");
+        const nicknameInput = document.getElementById("nicknameInput");
+        const updateNicknameBtn = document.getElementById("updateNicknameBtn");
+        const memberId = editNicknameBtn.getAttribute("data-member-id");
+        const updateNicknameResult = document.getElementById("updateNicknameResult");
+
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // 수정하기 버튼 클릭 시
+        editNicknameBtn.addEventListener("click", () => {
+            nicknameUpdateContainer.style.display = "block";
+            editNicknameBtn.style.display = "none";
+            nicknameInput.value = nicknameValue.textContent;
+        });
+
+        // 수정된 닉네임을 페이지에 반영
+        function updateNicknameDisplay(newNickname) {
+            const nicknameValue = document.getElementById("nicknameValue");
+            nicknameValue.textContent = newNickname;
+        }
+
+        // 수정 완료 버튼 클릭 시
+        updateNicknameBtn.addEventListener("click", () => {
+            const newNickname = nicknameInput.value;
+
+            // 내용을 입력하지 않은 경우
+            if (!newNickname) {
+                updateNicknameResult.style.display = "block";
+                updateNicknameResult.textContent = "변경할 닉네임을 입력해주세요.";
+                return;
+            }
+
+            // 기존 닉네임과 같은 닉네임을 입력한 경우
+            if (newNickname === nicknameValue.textContent) {
+                updateNicknameResult.style.display = "block";
+                updateNicknameResult.textContent = "새로운 닉네임을 입력해주세요.";
+                return;
+            }
+
+            const endpoint = `/member/update/nickname/${memberId}`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", endpoint);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                        updateNicknameDisplay(newNickname); // 수정된 닉네임 반영
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+            xhr.send("nickname=" + encodeURIComponent(newNickname));
+            nicknameUpdateContainer.style.display = "none";
+            updateNicknameResult.style.display = "none";
+            editNicknameBtn.style.display = "block";
+        });
+    </script>
+
 </div>
 </body>
+
 </html>

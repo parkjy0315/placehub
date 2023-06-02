@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.member.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
@@ -14,12 +15,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/member")
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
     private final MemberService memberService;
     private final Rq rq;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
@@ -65,6 +69,20 @@ public class MemberController {
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
 
         return rq.redirectWithMsg("/member/login", joinRs);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update/nickname/{id}")
+    public ResponseEntity<String> updateNickname(@PathVariable Long id ,@RequestParam("nickname") String nickname) {
+        Member member = rq.getMember();
+
+        RsData updateRsData = memberService.updateNickname(member, id, nickname);
+
+        if(updateRsData.isFail()){
+            return ResponseEntity.badRequest().body("{\"message\": \"" + updateRsData.getMsg() + "\"}");
+        }
+
+        return ResponseEntity.ok().body("{\"message\": \"닉네임이 %s(으)로 수정되었습니다.\"}".formatted(nickname));
     }
 
 
