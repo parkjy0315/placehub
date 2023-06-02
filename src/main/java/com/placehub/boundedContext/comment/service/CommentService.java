@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,9 +54,10 @@ public class CommentService {
     //Soft Delete로 구현
     @Transactional
     public RsData<Comment> delete(Long id) {
-        Comment comment = commentRepository.findById(id).orElse(null);
+        Comment comment = commentRepository.findById(id).get();
 
-        comment.setDeleted(true);
+        comment = comment.toBuilder().deleteDate(LocalDateTime.now()).build();
+        commentRepository.save(comment);
 
         return RsData.of("S-1", "댓글이 삭제되었습니다.");
     }
@@ -69,7 +71,7 @@ public class CommentService {
             return RsData.of("F-2", "존재하지 않는 댓글입니다.");
         }
 
-        if (comment.isDeleted()) {
+        if (comment.getDeleteDate() != null) {
             return RsData.of("F-1", "삭제된 댓글입니다.");
         }
 
@@ -99,7 +101,7 @@ public class CommentService {
         return commentRepository.findByPostId(postId);
     }
 
-    public List<Comment> findCommentsByPostId(Long postId) {
-        return commentRepository.findByPostIdAndDeletedFalse(postId);
+    public List<Comment> findNotDeleted(Long postId) {
+        return commentRepository.findByPostIdAndDeleteDateIsNull(postId);
     }
 }
