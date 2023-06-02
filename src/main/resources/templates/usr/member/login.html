@@ -9,33 +9,30 @@
 
 <body>
 
-
-<script>
-    function LoginForm__submit(form) {
-
-        form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
-
-        if (form.username.value.length == 0) {
-            toastWarning('아이디를 입력해주세요.');
-            form.username.focus();
-            return;
-        }
-
-        form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
-
-        if (form.password.value.length == 0) {
-            form.password.focus();
-            toastWarning('비밀번호를 입력해주세요.');
-            return;
-        }
-
-
-        form.submit(); // 폼 발송
-    }
-</script>
-
-
 <div layout:fragment="content" class="flex-grow flex items-center justify-center">
+
+    <script>
+        function LoginForm__submit(form) {
+
+            form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+
+            if (form.username.value.length == 0) {
+                toastWarning('아이디를 입력해주세요.');
+                form.username.focus();
+                return;
+            }
+
+            form.password.value = form.password.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
+
+            if (form.password.value.length == 0) {
+                form.password.focus();
+                toastWarning('비밀번호를 입력해주세요.');
+                return;
+            }
+
+            form.submit(); // 폼 발송
+        }
+    </script>
 
     <div class="hero-content flex-col">
 
@@ -46,10 +43,10 @@
         <form th:action method="POST" class="p-10 flex flex-col gap-4"
               onsubmit="LoginForm__submit(this); return false;">
 
-            <div class="form-control">
+            <div>
                 <input type="text" name="username" maxlength="20" placeholder="아이디" class="input input-bordered">
             </div>
-            <div class="form-control">
+            <div>
                 <input type="password" name="password" maxlength="20" placeholder="비밀번호" class="input input-bordered">
             </div>
 

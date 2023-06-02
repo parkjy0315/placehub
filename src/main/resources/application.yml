@@ -18,6 +18,8 @@ spring:
     url: jdbc:mysql://localhost:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
   security:
+    csrf:
+      enabled: true
     oauth2:
       client:
         registration:

@@ -51,6 +51,28 @@
                 return;
             }
 
+            // 이메일 유효성 검사
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(form.email.value)) {
+                toastWarning('유효한 이메일 형식이 아닙니다.');
+                form.email.focus();
+                return;
+            }
+
+            form.name.value = form.name.value.trim();
+            if (form.name.value.length == 0) {
+                toastWarning('이름을 입력해주세요.');
+                form.name.focus();
+                return;
+            }
+
+            form.nickname.value = form.nickname.value.trim();
+            if (form.nickname.value.length == 0) {
+                toastWarning('닉네임을 입력해주세요.');
+                form.nickname.focus();
+                return;
+            }
+
             form.submit(); // 폼 발송
         }
     </script>
@@ -79,7 +101,7 @@
                 <input type="text" name="nickname" maxlength="20" placeholder="닉네임" class="input input-bordered">
             </div>
 
-            <div>
+            <div class="form-control">
                 <input type="submit" value="회원가입" class="btn btn-primary">
             </div>
         </form>
