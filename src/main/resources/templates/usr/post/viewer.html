@@ -4,6 +4,10 @@
     <title>
         게시글 읽기
     </title>
+
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 </head>
 
 <body>
@@ -19,8 +23,21 @@
         }
     </script>
 
+    <script>
+        function CommentForm__submit(form) {
+
+            if (form.content.value.length == 0) {
+                toastWarning('댓글 내용을 입력해주세요');
+                form.content.focus();
+                return false;
+            }
+
+            form.submit();
+        }
+    </script>
+
     <div class="hero-content flex-col">
-        <div class="!max-w-2xl !min-w-2xl w-full px-4">
+        <div class="max-w-2xl w-full px-4">
             <div>
                 <div class="flex flex-col items-center my-5">
                     <h1 th:text="${postView.getData().username}" class="text-4xl my-2 font-bold"></h1>
@@ -31,9 +48,11 @@
                 </div>
 
                 <div class="flex gap-4 justify-end">
-                    <button class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600">
-                        <a href="">수정하기</a>
-                    </button>
+                    <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
+                        <button type="submit" class="btn btn-primary btn-sm text-indigo-600 bg-white hover:text-white bg-indigo-600">
+                            수정하기
+                        </button>
+                    </form>
 
                     <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
                           onsubmit="checkDelete(this); return false">
@@ -43,9 +62,65 @@
                 </div>
             </div>
             <div>
-                <div class="w-11 h-24 mt-10">사진넣는곳</div>
-                <div th:text="${postView.getData().content}" class="h-96 "></div>
+                <div class="h-24 mt-10">사진넣는곳</div>
+                <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>
             </div>
+
+
+            <!-- 댓글 -->
+            <div class="divider"></div>
+            <span>댓글  </span>
+            <div class="badge badge-accent badge-lg" th:text="${#lists.size(comments)}"></div>
+
+            <!-- 댓글 리스트 -->
+            <div class="flex flex-col gap-6 my-5">
+                <div th:each="comment : ${comments}">
+                    <div class="card flex-shrink-0 w-full bg-base-100 border border-gray-300">
+                        <div class="card-body">
+                            <div class="card-text" th:text="${comment.content}"></div>
+
+                            <div class="flex flex-col items-end gap-1">
+                                <div>
+                                    작성자 : <span class="font-bold"
+                                                th:text="${comment.memberNickName}"></span>
+                                </div>
+                                <div>
+                                    작성일시 : <span class="text-sm text-gray-500"
+                                                 th:text="${#temporals.format(comment.createDate, 'yy-MM-dd hh:mm')}"></span>
+                                </div>
+                            </div>
+
+                            <div sec:authorize="isAuthenticated()"
+                                 th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
+                                <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">
+                                    <button type="submit" class="px-4 py-2 btn btn-outline btn-sm">수정</button>
+                                </form>
+                                <form th:action="@{/comment/delete/{id}(id=${comment.id})}" method="post">
+                                    <input type="hidden" name="_method" value="delete">
+                                    <button type="submit" class="px-4 py-2 btn btn-outline btn-sm ">삭제</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 댓글 작성 폼-->
+                <form th:action="@{/comment/create/{id}(id=${postView.getData().getPostId()})}" method="post"
+                      onsubmit="CommentForm__submit(this); return false" class="mb-4">
+                    <div class="form-control">
+                    <textarea sec:authorize="isAnonymous()" disabled name="content" placeholder="댓글 내용을 입력하세요"
+                              class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+                    <textarea sec:authorize="isAuthenticated()" name="content" id="content" placeholder="댓글 내용을 입력하세요"
+                              class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+                    </div>
+                    <div sec:authorize="isAuthenticated()" class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 btn mt-2">댓글 등록</button>
+                    </div>
+                </form>
+
+
+            </div>
+
         </div>
     </div>
 </div>
