@@ -1,6 +1,8 @@
 package com.placehub.boundedContext.member.controller;
 
 
+import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.member.service.MemberService;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -31,6 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MemberControllerTests {
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private MemberService memberService;
 
     @Test
     @DisplayName("회원가입 폼")
@@ -189,5 +195,44 @@ public class MemberControllerTests {
         resultActions
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrlPattern("/**"));
+    }
+
+
+    @Test
+    @DisplayName("닉네임 수정")
+    @WithUserDetails("user1")
+    void t006() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/member/update/nickname/1")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("nickname", "닉네임수정")
+                )
+                .andDo(print());
+        // THEN
+        resultActions
+                .andExpect(status().is2xxSuccessful());
+
+        Member member = memberService.findById(1L).orElse(null);
+        assertThat(member.getNickname()).isEqualTo("닉네임수정");
+    }
+
+    @Test
+    @DisplayName("닉네임 수정 - 권한 없음")
+    @WithUserDetails("user2")
+    void t007() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(post("/member/update/nickname/1")
+                        .with(csrf()) // CSRF 키 생성
+                        .param("nickname", "닉네임수정")
+                )
+                .andDo(print());
+        // THEN
+        resultActions
+                .andExpect(status().is4xxClientError());
+
+        Member member = memberService.findById(1L).orElse(null);
+        assertThat(member.getNickname()).isEqualTo("닉네임1");
     }
 }
