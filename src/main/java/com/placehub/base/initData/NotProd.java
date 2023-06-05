@@ -32,7 +32,7 @@ public class NotProd {
                 Member member1 = memberService.join("user1", "1234", "123@123", "이름1", "닉네임1").getData();
                 Member member2 = memberService.join("user2", "1234", "234@234", "이름2", "닉네임2").getData();
 
-                Member memberJinyeongKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__2812333976", "pjy100402@naver.com", "박진영", "박진영").getData();
+                Member memberJinyeongKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__2812333976", "pjy100402@naver.com", "박진영", "KAKAO__2812333976").getData();
 
                 Member memberAdmin = memberService.create("admin", "1234", "user1", "user1@gmail.com", "user1Nick");
 

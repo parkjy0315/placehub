@@ -81,7 +81,7 @@ public class PostController {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        List<Comment> comments = commentService.findCommentsByPostId(postId);
+        List<Comment> comments = commentService.findNotDeleted(postId);
         model.addAttribute("comments", comments);
 
         model.addAttribute("postView", response);
