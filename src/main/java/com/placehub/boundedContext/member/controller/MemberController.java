@@ -112,4 +112,13 @@ public class MemberController {
         model.addAttribute("postList", postList);
         return "usr/member/myPage";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update/bio/{id}")
+    public ResponseEntity<String> updateBio(@PathVariable Long id, @RequestParam String bio) {
+
+        memberService.updateBio(rq.getMember(), bio);
+        return ResponseEntity.ok().body("{\"message\": \"바이오가 등록되었습니다.\"}");
+    }
+
 }

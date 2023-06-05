@@ -107,6 +107,14 @@ public class MemberService {
         return RsData.of("S-1", "닉네임이 수정되었습니다.");
     }
 
+    public RsData<Member> updateBio(Member actor, String bio){
+        // TODO : 검증로직
+        actor = actor.toBuilder().bio(bio).build();
+        memberRepository.save(actor);
+
+        return RsData.of("S-1", "바이오가 등록되었습니다.");
+    }
+
 
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);

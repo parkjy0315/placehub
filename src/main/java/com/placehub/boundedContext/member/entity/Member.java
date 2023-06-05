@@ -26,9 +26,7 @@ public class Member extends BaseEntity {
 
     private String providerTypeCode; // 일반/소셜 중 무엇으로 가입했는지 확인용
     @Column(unique = true)
-    @Size(min = AppConfig.Constraints.USERNAME_MIN_LENGTH, max = AppConfig.Constraints.USERNAME_MAX_LENGTH)
     private String username;
-    @Size(min = AppConfig.Constraints.PASSWORD_MIN_LENGTH, max = AppConfig.Constraints.PASSWORD_MAX_LENGTH)
     private String password;
     private String name;
 
@@ -36,6 +34,8 @@ public class Member extends BaseEntity {
 
     @Column(unique = true)
     private String nickname;
+
+    private String bio;
 
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
