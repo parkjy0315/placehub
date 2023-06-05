@@ -41,11 +41,15 @@ public class PostController {
     @PostMapping("/create")
     public String create(@Valid CreatingForm creatingForm) {
         long userId = rq.getMember().getId();
+
         long placeId = postService.convertPlaceToId(creatingForm.getPlace());
         boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
         String content = creatingForm.getContent();
         LocalDate visitedDate = creatingForm.getVisitedDate();
         List<MultipartFile> images = creatingForm.getImages();
+        System.out.println(images.get(0)  + "IMAAAAAA");
+        System.out.println(images.size() + "SSSSSSSSSSSSSSSIZE");
+
 
        long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
         RsData imageSavingResult = imageService.saveImages(images, postId);

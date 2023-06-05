@@ -38,6 +38,7 @@ public class ImageService {
 
             String fileType = "." + file.getContentType().split("/")[1];
             Path filePath = Path.of(IMAGE_STORAGE_PATH + postId + "_" + fileNumber + fileType);
+            fileNumber++;
             try {
                 file.transferTo(filePath);
             } catch (IOException e) {
