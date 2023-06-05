@@ -7,6 +7,8 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,11 +24,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final PostService postService;
     private final Rq rq;
 
     @Autowired
@@ -96,5 +101,13 @@ public class MemberController {
     @GetMapping("/me")
     public String showMe(Model model) {
         return "usr/member/me";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myPage")
+    public String showMyPage(Model model) {
+        List<Post> postList = this.postService.findByMember(rq.getMember().getId());
+        model.addAttribute("postList", postList);
+        return "usr/member/myPage";
     }
 }
