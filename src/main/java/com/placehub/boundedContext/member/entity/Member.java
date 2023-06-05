@@ -1,6 +1,8 @@
 package com.placehub.boundedContext.member.entity;
 
+import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.entity.BaseEntity;
+import com.placehub.base.rq.Rq;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Size;
@@ -24,14 +26,15 @@ public class Member extends BaseEntity {
 
     private String providerTypeCode; // 일반/소셜 중 무엇으로 가입했는지 확인용
     @Column(unique = true)
-    @Size(min = 4, max = 20)
+    @Size(min = AppConfig.Constraints.USERNAME_MIN_LENGTH, max = AppConfig.Constraints.USERNAME_MAX_LENGTH)
     private String username;
-    @Size(min = 4)
+    @Size(min = AppConfig.Constraints.PASSWORD_MIN_LENGTH, max = AppConfig.Constraints.PASSWORD_MAX_LENGTH)
     private String password;
     private String name;
 
     private String email;
 
+    @Column(unique = true)
     private String nickname;
 
     public List<? extends GrantedAuthority> getGrantedAuthorities() {

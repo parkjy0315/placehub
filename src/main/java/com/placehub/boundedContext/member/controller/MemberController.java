@@ -2,6 +2,7 @@ package com.placehub.boundedContext.member.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
@@ -48,10 +49,10 @@ public class MemberController {
     @Getter
     public static class JoinForm {
         @NotBlank
-        @Size(min = 4, max = 20)
+        @Size(min = AppConfig.Constraints.USERNAME_MIN_LENGTH, max = AppConfig.Constraints.USERNAME_MAX_LENGTH)
         private final String username;
         @NotBlank
-        @Size(min = 4, max = 20)
+        @Size(min = AppConfig.Constraints.PASSWORD_MIN_LENGTH, max = AppConfig.Constraints.PASSWORD_MAX_LENGTH)
         private final String password;
         @NotBlank
         @Email(message = "유효하지 않은 이메일입니다.")
