@@ -34,3 +34,7 @@ html > body {
 .toast-top-right {
     top:75px;
 }
+
+.fa-solid {
+    vertical-align: middle;
+}

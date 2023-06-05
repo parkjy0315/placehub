@@ -2,11 +2,15 @@ package com.placehub.boundedContext.member.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,11 +26,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
+    private final PostService postService;
     private final Rq rq;
 
     @Autowired
@@ -42,10 +49,10 @@ public class MemberController {
     @Getter
     public static class JoinForm {
         @NotBlank
-        @Size(min = 4, max = 20)
+        @Size(min = AppConfig.Constraints.USERNAME_MIN_LENGTH, max = AppConfig.Constraints.USERNAME_MAX_LENGTH)
         private final String username;
         @NotBlank
-        @Size(min = 4, max = 20)
+        @Size(min = AppConfig.Constraints.PASSWORD_MIN_LENGTH, max = AppConfig.Constraints.PASSWORD_MAX_LENGTH)
         private final String password;
         @NotBlank
         @Email(message = "유효하지 않은 이메일입니다.")
@@ -97,4 +104,21 @@ public class MemberController {
     public String showMe(Model model) {
         return "usr/member/me";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myPage")
+    public String showMyPage(Model model) {
+        List<Post> postList = this.postService.findByMember(rq.getMember().getId());
+        model.addAttribute("postList", postList);
+        return "usr/member/myPage";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update/bio/{id}")
+    public ResponseEntity<String> updateBio(@PathVariable Long id, @RequestParam String bio) {
+
+        memberService.updateBio(rq.getMember(), bio);
+        return ResponseEntity.ok().body("{\"message\": \"바이오가 등록되었습니다.\"}");
+    }
+
 }
