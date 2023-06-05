@@ -3,6 +3,7 @@ package com.placehub.boundedContext.member.entity;
 import com.placehub.base.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,20 +18,20 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
 
     private String providerTypeCode; // 일반/소셜 중 무엇으로 가입했는지 확인용
     @Column(unique = true)
+    @Size(min = 4, max = 20)
     private String username;
+    @Size(min = 4)
     private String password;
     private String name;
 
     private String email;
 
-    @Setter
-    @Column(unique = true)
     private String nickname;
 
     public List<? extends GrantedAuthority> getGrantedAuthorities() {

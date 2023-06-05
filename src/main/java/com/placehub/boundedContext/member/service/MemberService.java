@@ -101,7 +101,7 @@ public class MemberService {
             return RsData.of("F-S", "이미 사용 중인 닉네임입니다.");
         }
 
-        actor.setNickname(nickname);
+        actor = actor.toBuilder().nickname(nickname).build();
         memberRepository.save(actor);
 
         return RsData.of("S-1", "닉네임이 수정되었습니다.");

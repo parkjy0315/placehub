@@ -8,6 +8,7 @@ import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
