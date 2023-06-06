@@ -3,6 +3,7 @@ package com.placehub.batch.config;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -36,9 +37,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@EnableBatchProcessing
 @Configuration
-@EnableScheduling
+@RequiredArgsConstructor
 public class SavePlaceDataJobConfig {
 //    @Autowired
 //    private final PlaceData placeData;
@@ -137,21 +137,20 @@ public class SavePlaceDataJobConfig {
 ////            List<Place> list = (List<Place>) places.getItems();
 ////            placeRepository.saveAll(list);
 ////        };
-//    }
+//
 
-    @Autowired
-    JobRepository jobRepository;
-    @Autowired
-    PlatformTransactionManager transactionManager;
+    private final JobRepository jobRepository;
+    private final PlatformTransactionManager transactionManager;
 
     @Bean
-    public Job job123(JobRepository jobRepository) {return new JobBuilder("job1", jobRepository)
-                .start(step123(jobRepository))
-                .build();
+    public Job job123() {
+        return new JobBuilder("job1", jobRepository)
+            .start(step123())
+            .build();
     }
 
     @Bean
-    public Step step123(JobRepository jobRepository) {
+    public Step step123() {
         return new StepBuilder("step1", jobRepository)
                 .tasklet(new Tasklet() {
                     @Override
