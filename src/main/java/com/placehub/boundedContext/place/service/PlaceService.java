@@ -30,6 +30,10 @@ public class PlaceService {
         return placeRepository.save(place);
     }
 
+    public Place create(Place place) {
+        return placeRepository.save(place);
+    }
+
     public Place read(Long id) {
         Optional<Place> place = placeRepository.findById(id);
         return place.orElse(null);
