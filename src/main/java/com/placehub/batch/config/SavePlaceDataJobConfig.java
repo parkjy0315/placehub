@@ -3,6 +3,7 @@ package com.placehub.batch.config;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
+import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
@@ -40,126 +41,44 @@ import java.util.stream.Collectors;
 @Configuration
 @RequiredArgsConstructor
 public class SavePlaceDataJobConfig {
-//    @Autowired
-//    private final PlaceData placeData;
-//    @Autowired
-//    private final PlaceRepository placeRepository;
-//    @Autowired
-//    private final PlatformTransactionManager transactionManager;
-//
-//    @Bean
-//    public Job savePlaceDataJob(JobRepository jobRepository) {
-//        return new JobBuilder("savePlaceDataJob", jobRepository)
-//                .start(step1(jobRepository))
-//                .build();
-//    }
-//
-//    @Bean
-//    public Step step1(JobRepository jobRepository) {
-//        return new StepBuilder("savePlaceDataReadStep", jobRepository)
-//                .tasklet(new MyTasklet(), transactionManager)
-//                .build();
-//    }
-//
-//    class MyTasklet implements Tasklet {
-//        @Override
-//        public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-//            System.out.println("tasklet test");
-////            int page = 1;
-////            int size = 15;
-////            double[] coords = placeData.getNextCoord(13, 12, 0.005);
-////            String rect = placeData.convertRectString(coords);
-////            JSONObject result = LocalApi.Category.getAllRect(rect, "CE7", page, size);
-////            List<JSONObject> data = (List<JSONObject>) ((JSONArray) result.get("documents"))
-////                    .stream()
-////                    .collect(Collectors.toList());
-////
-////            data.stream()
-////                    .forEach(element -> placeRepository.save(placeData.convertPlace(element)));
-//
-//            return RepeatStatus.FINISHED;
-//        }
-//    }
-//
-//    @Bean
-//    public Tasklet taskletTest() {
-//        return (contribution, chunkContext) -> {
-//            System.out.println("tasklet test");
-//            int page = 1;
-//            int size = 15;
-//            double[] coords = placeData.getNextCoord(13, 12, 0.005);
-//            String rect = placeData.convertRectString(coords);
-//            JSONObject result = LocalApi.Category.getAllRect(rect, "CE7", page, size);
-//            List<JSONObject> data = (List<JSONObject>) ((JSONArray) result.get("documents"))
-//                    .stream()
-//                    .collect(Collectors.toList());
-//
-//            data.stream()
-//                    .forEach(element -> placeRepository.save(placeData.convertPlace(element)));
-//
-//            return RepeatStatus.FINISHED;
-//        };
-//    }
-//
-//
-//    @Bean
-//    public ListItemReader<JSONObject> savePlaceDataReader() {
-//        int page = 1;
-//        int size = 15;
-//        double[] coords = placeData.getNextCoord(13, 12, 0.005);
-//        String rect = placeData.convertRectString(coords);
-//        JSONObject result = LocalApi.Category.getAllRect(rect, "CE7", page, size);
-//        List<JSONObject> data = (List<JSONObject>) ((JSONArray) result.get("documents"))
-//                .stream()
-//                .collect(Collectors.toList());
-//        return new ListItemReader<>(data);
-//    }
-//
-//    @Bean
-//    public ItemProcessor<JSONObject, String> savePlaceDataProcessor() {
-//        return element -> {
-//            return "place_name";
-//            //return placeData.convertPlace(element);
-//        };
-//    }
-//
-//    @Bean
-//    public ItemWriter<String> savePlaceDataWriter() {
-//        return items -> {
-//            System.out.println(items.getItems().get(0));
-//        };
-////        return chunk -> {
-////            for (Place item : chunk.getItems()) {
-////                System.out.println(item.getPlaceName());
-////            }
-////        };
-////        return chunk -> places -> {
-////            List<Place> list = (List<Place>) places.getItems();
-////            placeRepository.saveAll(list);
-////        };
-//
-
+    private final PlaceData placeData;
+    private final PlaceService placeService;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
 
+    class MyTasklet implements Tasklet {
+        @Override
+        public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+            System.out.println("tasklet test");
+            int page = 1;
+            int size = 15;
+            double[] coords = placeData.getNextCoord(13, 12, 0.005);
+            String rect = placeData.convertRectString(coords);
+            JSONObject result = LocalApi.Category.getAllRect(rect, "FD6", page, size);
+            List<JSONObject> data = (List<JSONObject>) ((JSONArray) result.get("documents"))
+                    .stream()
+                    .collect(Collectors.toList());
+
+            data.stream()
+                    .filter(element -> placeService.findByPlaceId(Long.parseLong((String) element.get("id"))) == null)
+                    .map(element -> placeData.convertPlace(element))
+                    .forEach(place -> placeService.create(place));
+
+            return RepeatStatus.FINISHED;
+        }
+    }
+
     @Bean
-    public Job job123() {
+    public Job job1() {
         return new JobBuilder("job1", jobRepository)
-            .start(step123())
+            .start(step1())
             .build();
     }
 
     @Bean
-    public Step step123() {
+    public Step step1() {
         return new StepBuilder("step1", jobRepository)
-                .tasklet(new Tasklet() {
-                    @Override
-                    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-                        System.out.println("this is example");
-
-                        return RepeatStatus.FINISHED;
-                    }
-                }, transactionManager)
+                .tasklet(new MyTasklet(), transactionManager)
                 .build();
     }
 }

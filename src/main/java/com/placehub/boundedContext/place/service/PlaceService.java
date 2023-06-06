@@ -1,17 +1,25 @@
 package com.placehub.boundedContext.place.service;
 
+import com.placehub.boundedContext.category.service.BigCategoryService;
+import com.placehub.boundedContext.category.service.MidCategoryService;
+import com.placehub.boundedContext.category.service.SmallCategoryService;
+import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class PlaceService {
     private final PlaceRepository placeRepository;
+    private final BigCategoryService bigCategoryService;
+    private final MidCategoryService midCategoryService;
+    private final SmallCategoryService smallCategoryService;
 
     public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         Long placeId, String placeName, String phone, String addressName,
@@ -34,7 +42,7 @@ public class PlaceService {
         return placeRepository.save(place);
     }
 
-    public Place read(Long id) {
+    public Place getPlace(Long id) {
         Optional<Place> place = placeRepository.findById(id);
         return place.orElse(null);
     }
@@ -42,6 +50,10 @@ public class PlaceService {
     public Place findByPlaceId(Long placeId) {
         Optional<Place> place = placeRepository.findByPlaceId(placeId);
         return place.orElse(null);
+    }
+
+    public List<Place> findAll() {
+        return placeRepository.findAll();
     }
 
     public Place update(Place place,
@@ -63,5 +75,19 @@ public class PlaceService {
 
     public void delete(Place place) {
         placeRepository.delete(place);
+    }
+
+    public List<PlaceInfo> getCategoryNamesList(List<Place> placeList) {
+        List<PlaceInfo> categoryNamesList = new ArrayList<>();
+        placeList.stream()
+                .forEach(place -> {
+                    categoryNamesList.add(new PlaceInfo(place,
+                                bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName(),
+                                midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
+                                smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
+                            )
+                    );
+                });
+        return categoryNamesList;
     }
 }

@@ -23,7 +23,7 @@ public class SmallCategoryService {
         return smallCategoryRepository.save(category);
     }
 
-    public SmallCategory read(Long id) {
+    public SmallCategory getSmallCategory(Long id) {
         Optional<SmallCategory> category = smallCategoryRepository.findById(id);
         return category.orElse(null);
     }

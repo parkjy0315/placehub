@@ -1,5 +1,11 @@
 package com.placehub.base.initData;
 
+import com.placehub.boundedContext.category.entity.BigCategory;
+import com.placehub.boundedContext.category.entity.MidCategory;
+import com.placehub.boundedContext.category.entity.SmallCategory;
+import com.placehub.boundedContext.category.service.BigCategoryService;
+import com.placehub.boundedContext.category.service.MidCategoryService;
+import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.member.entity.Member;
@@ -33,6 +39,9 @@ public class NotProd {
     CommandLineRunner initData(
             MemberService memberService,
             PlaceService placeService,
+            BigCategoryService bigCategoryService,
+            MidCategoryService midCategoryService,
+            SmallCategoryService smallCategoryService,
             PostService postService,
             CommentService commentService
     ) {
@@ -48,9 +57,27 @@ public class NotProd {
 
                 Member memberAdmin = memberService.create("admin", "1234", "user1", "user1@gmail.com", "user1Nick");
 
+                //
+                BigCategory bigCategory = bigCategoryService.create("여행");
+                MidCategory midCategory = midCategoryService.create("관광,명소");
+                SmallCategory smallCategory1 = smallCategoryService.create("계곡");
+                SmallCategory smallCategory2 = smallCategoryService.create("산");
+                SmallCategory smallCategory9 = smallCategoryService.create("온천");
+                SmallCategory smallCategory12 = smallCategoryService.create("수목원,식물원");
+
                 Place place = placeService.create(1L, 1L, 1L,
-                        1L, "place", "02-123-1234", "서울 ",
-                        12.0, 123.0);
+                        25235514L, "무당골", "", "경기 고양시 덕양구 내유동",
+                        126.85496334236, 37.7177473046135);
+                Place place2 = placeService.create(1L, 1L, 2L,
+                        25374072L, "철마산", "", "경기 고양시 덕양구 내유동",
+                        126.870253902635, 37.7194409312817);
+                Place place3 = placeService.create(1L, 1L, 9L,
+                        1896911677L, "유황온천로데오", "031-528-4310", "경기 남양주시 별내동 1006-1",
+                        127.125620213198, 37.6457418256592);
+                Place place4 = placeService.create(1L, 1L, 12L,
+                        10442721L, "산들소리", "010-3039-3252", "경기 남양주시 별내동 785-1",
+                        127.1015513297845, 37.65107359115661);
+
 
                 //Post post1 =
                         postService.createPost(memberJinyeongKakao.getId(), place.getId(),

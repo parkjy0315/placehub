@@ -22,7 +22,7 @@ public class BigCategoryService {
         return bigCategoryRepository.save(category);
     }
 
-    public BigCategory read(Long id) {
+    public BigCategory getBigCategory(Long id) {
         Optional<BigCategory> category = bigCategoryRepository.findById(id);
         return category.orElse(null);
     }
