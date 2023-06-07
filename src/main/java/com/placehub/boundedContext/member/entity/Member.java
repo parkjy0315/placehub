@@ -1,8 +1,11 @@
 package com.placehub.boundedContext.member.entity;
 
+import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.entity.BaseEntity;
+import com.placehub.base.rq.Rq;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,7 +20,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @ToString(callSuper = true)
 public class Member extends BaseEntity {
 
@@ -29,9 +32,10 @@ public class Member extends BaseEntity {
 
     private String email;
 
-    @Setter
     @Column(unique = true)
     private String nickname;
+
+    private String bio;
 
     public List<? extends GrantedAuthority> getGrantedAuthorities() {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();

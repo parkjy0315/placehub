@@ -101,10 +101,18 @@ public class MemberService {
             return RsData.of("F-S", "이미 사용 중인 닉네임입니다.");
         }
 
-        actor.setNickname(nickname);
+        actor = actor.toBuilder().nickname(nickname).build();
         memberRepository.save(actor);
 
         return RsData.of("S-1", "닉네임이 수정되었습니다.");
+    }
+
+    public RsData<Member> updateBio(Member actor, String bio){
+        // TODO : 검증로직
+        actor = actor.toBuilder().bio(bio).build();
+        memberRepository.save(actor);
+
+        return RsData.of("S-1", "바이오가 등록되었습니다.");
     }
 
 

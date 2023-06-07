@@ -1,0 +1,232 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>마이페이지</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+
+    <div class="hero-content flex flex-col my-10">
+
+        <h2 class="text-4xl mt-5 mx-5 font-bold flex flex-col">
+            마이페이지
+        </h2>
+
+        <div class="flex flex-col">
+
+
+            <div class="flex justify-between my-10 " style="width: 900px">
+                <div class="flex gap-5">
+                    <div class="avatar">
+                        <div class="w-32 rounded-full">
+                            <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FGHYFr%2FbtrsSwcSDQV%2FUQZxkayGyAXrPACyf0MaV1%2Fimg.jpg"/>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center gap-4">
+                        <div class="flex gap-4">
+                            <span class="text-2xl font-bold" th:text="${@rq.member.username}"></span>
+                            <a href="/member/me">
+                                <i class="fa-solid fa-gear fa-xl"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <div id="bioContainer" class="flex gap-5">
+                                <div class="min-w-sm">
+                                    <span id="bioValue" class="text-gray-400 text-sm"
+                                        th:text="${@rq.member.bio} ? ${@rq.member.bio} : '바이오를 등록해보세요'"></span>
+                                </div>
+                                <button id="editBioBtn" class="btn btn-xs btn-outline"
+                                        th:attr="data-member-id=${@rq.member.id}">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div>
+                            <div id="bioUpdateContainer" class="flex mt-1" style="display: none;">
+                                <textarea id="bioInput"
+                                          class="p-2 max-w-sm rounded-md border border-gray-200"></textarea>
+                                <button id="updateBioBtn" class="btn btn-xs btn-outline mx-1">수정완료</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <div class="flex gap-4">
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로잉
+                            <div>0</div>
+                        </div>
+                        <div class="divider divider-horizontal !mx-1"></div>
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로워
+                            <div>0</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button class="btn btn-outline btn-sm">친구 추가하기</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="flex justify-between mt-5">
+                <div class="flex">
+                    <div class="mx-2">
+                        <button id="myPlaceBtn">나의 공간 아카이빙</button>
+                    </div>
+                    <div class="divider divider-horizontal !mx-1"></div>
+                    <div class="mx-2">
+                        <button id="myLikePlaceBtn">나의 좋아요 목록</button>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="mx-2">
+                        <button id="myPlaceTimelineBtn">타임라인으로 보기</button>
+                    </div>
+                    <div class="mx-2">
+                        <button id="myPlaceMapBtn">지도로 보기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider !my-2"></div>
+
+            <ol id="myPlaceTimeline" class="relative border-l border-gray-200 dark:border-gray-700 mt-10">
+            <li th:each="post, loop : ${postList}" class="mb-10 ml-6">
+                 <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                        <svg aria-hidden="true" class="w-3 h-3 text-blue-800 dark:text-blue-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+                    </span>
+                    <div>
+                        <span th:text="${#temporals.format(post.getVisitedDate(), 'yy년 MM월 dd일')} + ' 방문'"
+                        ></span>
+                        <i th:if="${post.openToPublic}" class="fa-solid fa-lock-open mx-3"></i>
+                        <i th:unless="${post.openToPublic}" class="fa-solid fa-lock mx-3"></i>
+                    </div>
+                    <div class="mt-5">
+                        <a th:href="@{|/post/view/${post.id}|}"
+                           class="card flex-shrink-0 w-full shadow-lg bg-base-100"
+                           style="width: 640px">
+                            <div class="card-body">
+                                <div>
+                                <span th:text="${#strings.length(post.getContent()) > 150 ?
+                                #strings.substring(post.getContent(), 0, 150) + '...' : post.getContent()}"
+                                      class=" text-sm text-gray-400"></span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+            </ol>
+
+            <div id="myLikePlace" style="display: none;">나의 좋아요 목록</div>
+            <div id="myPlaceMap" style="display: none;">나의 공간 지도로 보기</div>
+
+
+
+
+        </div>
+    </div>
+
+
+
+    <script>
+        const editBioBtn = document.getElementById("editBioBtn");
+        const bioUpdateContainer = document.getElementById("bioUpdateContainer");
+        const bioValue = document.getElementById("bioValue");
+        const bioInput = document.getElementById("bioInput");
+        const updateBioBtn = document.getElementById("updateBioBtn");
+        const memberId = editBioBtn.getAttribute("data-member-id");
+        const bioContainer = document.getElementById("bioContainer");
+
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // 수정하기 버튼 클릭 시
+        editBioBtn.addEventListener("click", () => {
+            bioUpdateContainer.style.display = "block";
+            bioContainer.style.display = "none";
+            bioInput.value = bioValue.textContent;
+        });
+
+        function updateBioDisplay(newBio) {
+            const bioValue = document.getElementById("bioValue");
+            bioValue.textContent = newBio;
+        }
+
+        updateBioBtn.addEventListener("click", () => {
+            const newBio = bioInput.value;
+
+
+            const endpoint = `/member/update/bio/${memberId}`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", endpoint);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                        updateBioDisplay(newBio);
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+            xhr.send("bio=" + encodeURIComponent(newBio));
+            bioUpdateContainer.style.display = "none";
+            bioContainer.style.display = "block";
+        });
+
+        const myPlaceBtn = document.getElementById("myPlaceBtn");
+        const myPlaceTimeline = document.getElementById("myPlaceTimeline");
+        const myPlaceTimelineBtn = document.getElementById("myPlaceTimelineBtn")
+        const myPlaceMap = document.getElementById("myPlaceMap");
+        const myPlaceMapBtn = document.getElementById("myPlaceMapBtn")
+        const myLikePlace = document.getElementById("myLikePlace");
+        const myLikePlaceBtn = document.getElementById("myLikePlaceBtn")
+
+        myPlaceBtn.addEventListener("click", () => {
+            myPlaceTimeline.style.display = "block";
+            myLikePlace.style.display = "none";
+            myPlaceMap.style.display = "none";
+            myPlaceTimelineBtn.style.display = "block";
+            myPlaceMapBtn.style.display = "block";
+            myLikePlaceBtn.style.fontWeight = "normal";
+            myPlaceBtn.style.fontWeight = "bold";
+        });
+
+        myPlaceTimelineBtn.addEventListener("click", () => {
+            myPlaceTimeline.style.display = "block";
+            myLikePlace.style.display = "none";
+            myPlaceMap.style.display = "none";
+        });
+
+        myPlaceMapBtn.addEventListener("click", () => {
+            myPlaceTimeline.style.display = "none";
+            myLikePlace.style.display = "none";
+            myPlaceMap.style.display = "block";
+        });
+
+        myLikePlaceBtn.addEventListener("click", () => {
+            myPlaceTimeline.style.display = "none";
+            myLikePlace.style.display = "block";
+            myPlaceMap.style.display = "none";
+            myPlaceTimelineBtn.style.display = "none";
+            myPlaceMapBtn.style.display = "none";
+            myLikePlaceBtn.style.fontWeight = "bold";
+            myPlaceBtn.style.fontWeight = "normal";
+        });
+
+    </script>
+
+</div>
+</body>
+
+</html>

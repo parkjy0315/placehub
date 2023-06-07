@@ -4,7 +4,6 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
-import com.placehub.boundedContext.place.repository.PlaceRepository;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
@@ -36,7 +35,7 @@ public class PlaceLikeServiceTests {
     @DisplayName("좋아요 등록")
     void t001() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeService.read(1L);
+        Place place = placeService.getPlace(1L);
 
         placeLikeService.create(place.getId(), member);
 
@@ -51,7 +50,7 @@ public class PlaceLikeServiceTests {
     @DisplayName("좋아요 취소 - 권한 있음")
     void t002() throws Exception {
         Member member = memberService.findById(1L).orElse(null);
-        Place place = placeService.read(1L);
+        Place place = placeService.getPlace(1L);
 
         placeLikeService.create(place.getId(), member);
 
@@ -71,7 +70,7 @@ public class PlaceLikeServiceTests {
     void t003() throws Exception {
         Member member1 = memberService.findById(1L).orElse(null);
         Member member2 = memberService.findById(2L).orElse(null);
-        Place place = placeService.read(1L);
+        Place place = placeService.getPlace(1L);
 
         placeLikeService.create(place.getId(), member1);
 

@@ -2,20 +2,21 @@ package com.placehub.boundedContext.place.controller;
 
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
+import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -27,6 +28,28 @@ public class PlaceController {
     private final PlaceService placeService;
     @Autowired
     private final PlaceData placeData;
+
+    @GetMapping("/search")
+    public String list(Model model) {
+        List<Place> placeList = placeService.findAll();
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+
+        model.addAttribute("placeInfoList", placeInfoList);
+
+        return "usr/place/search";
+    }
+
+    @GetMapping("/details/{placeId}")
+    public String view(Model model, @PathVariable("placeId") Long id) {
+        Place place = placeService.getPlace(id);
+        if (place == null) {
+            throw new RuntimeException("해당 장소는 없습니다.");
+        }
+
+        model.addAttribute("place", place);
+        return "usr/place/details";
+    }
+
 
     @GetMapping("/keyWordTest/{keyWord}/{radius}")
     @ResponseBody

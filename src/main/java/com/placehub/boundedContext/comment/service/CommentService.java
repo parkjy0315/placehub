@@ -46,7 +46,8 @@ public class CommentService {
     public RsData<Comment> update(Long id, String content){
         Comment comment = commentRepository.findById(id).orElse(null);
 
-        comment.setContent(content);
+        comment = comment.toBuilder().content(content).build();
+        commentRepository.save(comment);
 
         return RsData.of("S-1", "댓글이 수정되었습니다.");
     }

@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<List<Post>> findPostsByPlace(long placeId);
+    List<Post> findByMember(Long memberId);
 }
