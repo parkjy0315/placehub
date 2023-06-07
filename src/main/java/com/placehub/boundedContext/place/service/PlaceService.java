@@ -8,6 +8,7 @@ import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class PlaceService {
     private final MidCategoryService midCategoryService;
     private final SmallCategoryService smallCategoryService;
 
+    @Transactional
     public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         Long placeId, String placeName, String phone, String addressName,
                         Double xPos, Double yPos) {
@@ -39,6 +41,7 @@ public class PlaceService {
         return placeRepository.save(place);
     }
 
+    @Transactional
     public Place create(Place place) {
         return placeRepository.save(place);
     }
@@ -57,6 +60,7 @@ public class PlaceService {
         return placeRepository.findAll();
     }
 
+    @Transactional
     public Place update(Place place,
                         Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         String placeName, String phone, String addressName,
