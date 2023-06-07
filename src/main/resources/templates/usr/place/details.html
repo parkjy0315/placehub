@@ -24,7 +24,7 @@
         <div class="h-24 mt-10" th:text="${place.phone}"></div>
 <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
       </div>
-      <div sec:authorize="isAuthenticated()" th:if="">
+      <div sec:authorize="isAuthenticated()">
         <a th:href="@{|/placeLike/${place.id}|}" class="btn btn-outline btn-sm flex gap-1">
           좋아요
           <div th:text="${place.likeCount}"></div>
