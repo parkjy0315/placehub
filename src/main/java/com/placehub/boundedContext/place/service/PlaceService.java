@@ -110,4 +110,8 @@ public class PlaceService {
         placeRepository.save(place);
     }
 
+    public List<Place> findByPlaceLikeList_MemberId(Long memberId){
+        return placeRepository.findByPlaceLikeList_MemberId(memberId);
+    }
+
 }
