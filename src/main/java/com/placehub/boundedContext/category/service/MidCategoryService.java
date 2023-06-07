@@ -23,7 +23,7 @@ public class MidCategoryService {
         return midCategoryRepository.save(category);
     }
 
-    public MidCategory read(Long id) {
+    public MidCategory getMidCategory(Long id) {
         Optional<MidCategory> category = midCategoryRepository.findById(id);
         return category.orElse(null);
     }
