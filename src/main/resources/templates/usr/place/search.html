@@ -1,0 +1,114 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title> 장소 목록 </title>
+</head>
+
+<body>
+<script>
+
+</script>
+
+<div layout:fragment="content">
+  <div class="hero-content flex-col mb-10">
+    <div class="max-w-2xl w-full px-4">
+      <div class="flex flex-col items-center my-5">
+        <h1 class="text-4xl my-2 font-bold">장소 목록</h1>
+      </div>
+
+        <div class="bg-gray-30">
+            <div class="container mx-auto py-8">
+                <div class="grid grid-cols-3 gap-3">
+                    <form action="">
+                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+                            <div class="w-full">
+                                <div class="relative">
+                                    <select class="select-md form-select">
+                                        <option disabled selected>위치</option>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                    <div class="form-select-arrow"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+                            <div class="w-full">
+                                <div class="relative">
+                                    <select class="select-md form-select">
+                                        <option disabled selected>대분류</option>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                    <div class="form-select-arrow"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+                            <div class="w-full">
+                                <div class="relative">
+                                    <select class="select-md form-select">
+                                        <option disabled selected>중분류</option>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                    <div class="form-select-arrow"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-64 mx-auto mt-8">
+                            <div class="w-full">
+                                <div class="relative">
+                                    <select class="select-md form-select">
+                                        <option disabled selected>소분류</option>
+                                        <option>Option 1</option>
+                                        <option>Option 2</option>
+                                        <option>Option 3</option>
+                                    </select>
+                                    <div class="form-select-arrow"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="container mx-auto py-8">
+                <div class="grid grid-cols-3 gap-3">
+                    <div th:each="placeInfo, loop : ${placeInfoList}">
+                        <a th:href="@{|/place/details/${placeInfo.place.id}|}"
+                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100"
+                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">
+                            <div class="card-body">
+                                <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
+                                <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+                                    <div class="badge badge-accent badge-md" th:text="${placeInfo.bigCategoryName}"></div>
+                                </div>
+                                <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+                                    <div class="badge badge-accent badge-md" th:text="${placeInfo.midCategoryName}"></div>
+                                </div>
+                                <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                    <div class="badge badge-accent badge-md" th:text="${placeInfo.smallCategoryName}"></div>
+                                </div>
+
+                            </div>
+                            <div>
+                                <!--                                <span th:text="${#strings.length(place.getContent()) > 150 ?-->
+                                <!--                                #strings.substring(place.getContent(), 0, 150) + '...' : place.getContent()}"-->
+                                <!--                                      class=" text-sm text-gray-400"></span>-->
+                            </div>
+                            <!--              <div th:text="'등록일시 : ' + ${#temporals.format(place.createDate, 'yyyy-MM-dd HH:mm')}"-->
+                            <!--                   class="flex justify-end"></div>-->
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+  </div>
+</body>
+</html>

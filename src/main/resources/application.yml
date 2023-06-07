@@ -20,6 +20,12 @@ spring:
     password:
     url: jdbc:mysql://localhost:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: always
+
   security:
     csrf:
       enabled: true

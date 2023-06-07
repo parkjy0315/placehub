@@ -1,6 +1,5 @@
 package com.placehub.base.util;
 
-
 import com.placehub.base.entity.Category;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
@@ -8,6 +7,7 @@ import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
+import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -63,11 +63,15 @@ public class PlaceData {
                 .forEach(coords -> fetchPlaceInfo(categoryCode, coords[0], coords[1], criteria));
     }
 
+    public String convertRectString(double [] coords) {
+        return String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+    }
+
     public void fetchPlaceInfo(String categoryCode, int i, int j, double criteria) {
         int page = 1; // 페이지 수
         int size = 15; // 한 페이지 내 결과 개수
         double[] coords = getNextCoord(i, j, criteria);
-        String rect = String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
+        String rect = convertRectString(coords);
 
         while (true) {
             JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
@@ -96,7 +100,7 @@ public class PlaceData {
                 .forEach(element -> saveData((JSONObject) element));
     }
 
-    public void saveData(JSONObject element) {
+    public Place convertPlace(JSONObject element) {
         String categoryName = (String) element.get("category_name");
         String placeName = (String) element.get("place_name");
         String phone = (String) element.get("phone");
@@ -105,19 +109,28 @@ public class PlaceData {
         Double xPos = Double.parseDouble((String) element.get("x"));
         Double yPos = Double.parseDouble((String) element.get("y"));
 
-        if (placeService.findByPlaceId(placeId) != null) {
+        Category[] categories = categoryFilter(categoryName);
+
+        return Place.builder()
+                .bigCategoryId(categories[0].getId())
+                .midCategoryId(categories[1].getId())
+                .smallCategoryId(categories[2].getId())
+                .placeId(placeId)
+                .placeName(placeName)
+                .phone(phone)
+                .addressName(addressName)
+                .xPos(xPos)
+                .yPos(yPos)
+                .build();
+    }
+    public void saveData(JSONObject element) {
+        Place place = convertPlace(element);
+
+        if (placeService.findByPlaceId(place.getPlaceId()) != null) {
             return;
         }
 
-        Category[] categories = categoryFilter(categoryName);
-
-        placeService.create(
-                categories[0].getId(),
-                categories[1].getId(),
-                categories[2].getId(),
-                placeId, placeName, phone, addressName,
-                xPos, yPos
-        );
+        placeService.create(place);
     }
 
     public Category[] categoryFilter(String categoryStr) {
@@ -163,6 +176,4 @@ public class PlaceData {
         JSONObject meta = (JSONObject) placeData.get("meta");
         return (boolean) meta.get("is_end");
     }
-
-
 }

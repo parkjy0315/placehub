@@ -29,7 +29,7 @@ public class PlaceLikeService {
 
     public RsData<PlaceLike> create(Long placeId, Member actor) {
 
-        Place place = placeService.read(placeId);
+        Place place = placeService.getPlace(placeId);
 
         PlaceLike placeLike = PlaceLike.builder()
                 .member(actor)
