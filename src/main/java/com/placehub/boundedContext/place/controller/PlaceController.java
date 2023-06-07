@@ -1,10 +1,13 @@
 package com.placehub.boundedContext.place.controller;
 
+import com.placehub.base.rq.Rq;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
+import com.placehub.boundedContext.placelike.entity.PlaceLike;
+import com.placehub.boundedContext.placelike.service.PlaceLikeService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,10 @@ public class PlaceController {
     private final PlaceService placeService;
     @Autowired
     private final PlaceData placeData;
+    @Autowired
+    private final PlaceLikeService placeLikeService;
+    @Autowired
+    private final Rq rq;
 
     @GetMapping("/search")
     public String list(Model model) {
@@ -47,6 +54,10 @@ public class PlaceController {
         }
 
         model.addAttribute("place", place);
+
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
+        model.addAttribute("placeLike", placeLike);
+
         return "usr/place/details";
     }
 

@@ -17,10 +17,8 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class PlaceLike extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member member;
+    private Long memberId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Place place;
+    private Long placeId;
 
 }

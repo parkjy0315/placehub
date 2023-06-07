@@ -8,6 +8,9 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
@@ -34,6 +37,7 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
+    private final PlaceService placeService;
     private final Rq rq;
 
     @Autowired
@@ -110,6 +114,10 @@ public class MemberController {
     public String showMyPage(Model model) {
         List<Post> postList = this.postService.findByMember(rq.getMember().getId());
         model.addAttribute("postList", postList);
+
+        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        model.addAttribute("placeInfoList", placeInfoList);
         return "usr/member/myPage";
     }
 

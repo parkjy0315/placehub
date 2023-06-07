@@ -41,8 +41,8 @@ public class PlaceLikeServiceTests {
 
         PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(place.getId(), member.getId());
 
-        assertThat(placeLike.getPlace().getId()).isEqualTo(place.getId());
-        assertThat(placeLike.getMember().getId()).isEqualTo(member.getId());
+        assertThat(placeLike.getPlaceId()).isEqualTo(place.getId());
+        assertThat(placeLike.getMemberId()).isEqualTo(member.getId());
 
     }
 
