@@ -71,9 +71,11 @@ public class PostController {
         }
 
         List<Comment> comments = commentService.findNotDeleted(postId);
+        List<String> imagePathes = imageService.callImagePathes(postId);
         model.addAttribute("comments", comments);
 
         model.addAttribute("postView", response);
+        model.addAttribute("imageList", imagePathes);
         return "usr/post/viewer";
     }
 

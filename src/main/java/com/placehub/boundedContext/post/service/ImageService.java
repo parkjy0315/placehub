@@ -4,6 +4,7 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.post.entity.Images;
 import com.placehub.boundedContext.post.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,9 +16,9 @@ import java.util.*;
 @Service
 public class ImageService {
     private static final String fileSeperator = File.separator;
-    private static final String IMAGE_STORAGE_PATH = "src" + fileSeperator + "main" + fileSeperator + "resources"
-                                                            + fileSeperator +"static" + fileSeperator +"resource"
-                                                            + fileSeperator + "postImages";
+    @Value("${custom.genFileDirPath}")
+    private String IMAGE_STORAGE_PATH;
+    private final String rootAddress = "https://localhst:8080/";
     @Autowired
     private ImageRepository imageRepository;
 
@@ -46,9 +47,30 @@ public class ImageService {
         }
     }
 
-    public RsData saveImages(List<MultipartFile> files, long postId) {
-        mkImageDir();
+    public List<String> callImagePathes(long postId) {
+        Optional<List<Images>> wrappedImages = imageRepository.findImagesByPost(postId);
+        List<Images> images = new ArrayList<>();
+        if (wrappedImages.isPresent()) {
+            images = wrappedImages.get();
+        }
 
+        List<String> result = new ArrayList<>();
+
+        for (Images image : images) {
+            StringBuffer imagePath = new StringBuffer();
+            imagePath.append(rootAddress);
+            imagePath.append("postImages/");
+            imagePath.append(image.getPost());
+            imagePath.append("_");
+            imagePath.append(image.getImg());
+            imagePath.append(image.getFileType());
+            result.add(imagePath.toString());
+        }
+
+        return result;
+    }
+
+    public RsData saveImages(List<MultipartFile> files, long postId) {
         long alreadySavedImgCount = 0L;
         Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
         List<Images> alreadySavedImgs = new ArrayList<>();
@@ -76,8 +98,8 @@ public class ImageService {
             if (file.isEmpty()) { continue; }
 
             String fileType = "." + file.getContentType().split("/")[1];
+
             Path filePath = Path.of(IMAGE_STORAGE_PATH + fileSeperator + postId + "_" + maxImgId + fileType);
-            maxImgId++;
             Images img = Images
                     .builder()
                     .img(maxImgId)
@@ -87,6 +109,7 @@ public class ImageService {
 
             imageRepository.save(img);
 
+            maxImgId++;
             try {
                 file.transferTo(filePath);
             } catch (IOException e) {
