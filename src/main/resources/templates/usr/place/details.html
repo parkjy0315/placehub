@@ -24,12 +24,15 @@
         <div class="h-24 mt-10" th:text="${place.phone}"></div>
 <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
       </div>
-      <a th:href="@{|/placeLike/${place.id}|}" class="btn btn-outline btn-sm flex gap-1">
-        좋아요
-        <div th:text="${place.likeCount}"></div>
-        <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
-        <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
-      </a>
+      <div sec:authorize="isAuthenticated()" th:if="">
+        <a th:href="@{|/placeLike/${place.id}|}" class="btn btn-outline btn-sm flex gap-1">
+          좋아요
+          <div th:text="${place.likeCount}"></div>
+          <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
+          <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
+        </a>
+      </div>
+
     </div>
   </div>
 </div>
