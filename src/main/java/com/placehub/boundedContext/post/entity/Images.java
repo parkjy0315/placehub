@@ -14,5 +14,6 @@ import org.hibernate.annotations.Where;
 @Where(clause = "delete_date is null")
 public class Images extends BaseEntity {
     private long post;
-    private long image;
+    private long img;
+    private String fileType;
 }
