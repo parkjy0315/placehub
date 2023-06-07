@@ -47,12 +47,10 @@ public class PostController {
         String content = creatingForm.getContent();
         LocalDate visitedDate = creatingForm.getVisitedDate();
         List<MultipartFile> images = creatingForm.getImages();
-        System.out.println(images.get(0)  + "IMAAAAAA");
-        System.out.println(images.size() + "SSSSSSSSSSSSSSSIZE");
 
-
-       long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
+        long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
         RsData imageSavingResult = imageService.saveImages(images, postId);
+
         return "redirect:/post/list";
     }
 

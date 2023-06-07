@@ -14,7 +14,7 @@ public class ImageService {
     private static final String fileSeperator = File.separator;
     private static final String IMAGE_STORAGE_PATH = "src" + fileSeperator + "main" + fileSeperator + "resources"
                                                             + fileSeperator +"static" + fileSeperator +"resource"
-                                                            + fileSeperator + "postImages" + fileSeperator;
+                                                            + fileSeperator + "postImages";
 
     private RsData validateAcceptedImage(MultipartFile singleFile) {
         if (!singleFile.getContentType().startsWith("image/")) {
@@ -24,7 +24,20 @@ public class ImageService {
         return RsData.of("S-4", "이미지 파일이 맞습니다");
     }
 
+    private void mkImageDir() {
+        File imageDir = new File(IMAGE_STORAGE_PATH);
+        if (!imageDir.exists()) {
+            try {
+                imageDir.mkdir();
+            } catch (Exception mkDirException) {
+                mkDirException.getStackTrace();
+            }
+        }
+    }
+
     public RsData saveImages(List<MultipartFile> files, long postId) {
+        mkImageDir();
+
         for (MultipartFile file : files) {
             RsData fileValidation = validateAcceptedImage(file);
             if (fileValidation.isFail()) {
@@ -37,7 +50,7 @@ public class ImageService {
             if (file.isEmpty()) { continue; }
 
             String fileType = "." + file.getContentType().split("/")[1];
-            Path filePath = Path.of(IMAGE_STORAGE_PATH + postId + "_" + fileNumber + fileType);
+            Path filePath = Path.of(IMAGE_STORAGE_PATH + fileSeperator + postId + "_" + fileNumber + fileType);
             fileNumber++;
             try {
                 file.transferTo(filePath);
