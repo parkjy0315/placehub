@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,13 +33,15 @@ public class PlaceLikeService {
         Place place = placeService.getPlace(placeId);
 
         PlaceLike placeLike = PlaceLike.builder()
-                .member(actor)
-                .place(place)
+                .memberId(actor.getId())
+                .placeId(placeId)
                 .build();
 
         placeLikeRepository.save(placeLike);
 
         //TODO : member와 place에 등록
+        int likeCount = findByPlaceId(placeId).size();
+        placeService.updateLikeCount(placeId, likeCount);
 
         String placeName = place.getPlaceName();
 
@@ -47,11 +50,13 @@ public class PlaceLikeService {
 
     public RsData<PlaceLike> delete(PlaceLike placeLike) {
 
-        String placeName = placeLike.getPlace().getPlaceName();
+        String placeName = placeService.getPlace(placeLike.getPlaceId()).getPlaceName();
 
         placeLikeRepository.delete(placeLike);
 
         //TODO : member와 place에서 삭제
+        int likeCount = findByPlaceId(placeLike.getPlaceId()).size();
+        placeService.updateLikeCount(placeLike.getPlaceId(), likeCount);
 
         return RsData.of("F-1", "%s에 대한 좋아요가 취소되었습니다.".formatted(placeName));
     }
@@ -60,7 +65,7 @@ public class PlaceLikeService {
     public RsData<PlaceLike> canDelete(PlaceLike placeLike, Member actor) {
 
         long actorId = actor.getId();
-        long fromMemberId = placeLike.getMember().getId();
+        long fromMemberId = placeLike.getMemberId();
 
         if(actorId != fromMemberId){
             return RsData.of("F-1", "취소 권한이 없습니다");
@@ -76,6 +81,10 @@ public class PlaceLikeService {
 
     public PlaceLike findByPlaceIdAndMemberId(Long placeId, Long memberId){
         return placeLikeRepository.findByPlaceIdAndMemberId(placeId, memberId);
+    }
+
+    public List<PlaceLike> findByPlaceId(Long placeId){
+        return placeLikeRepository.findByPlaceId(placeId);
     }
 
 
