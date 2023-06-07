@@ -34,6 +34,7 @@ public class PlaceService {
                 .addressName(addressName)
                 .xPos(xPos)
                 .yPos(yPos)
+                //.likeCount(0L)
                 .build();
         return placeRepository.save(place);
     }
@@ -90,4 +91,23 @@ public class PlaceService {
                 });
         return categoryNamesList;
     }
+
+    public void updateLikeCount(Long placeId, int likeCount){
+//        Place place = getPlace(placeId);
+//
+//        if(place.getLikeCount() == null){
+//            place = place.toBuilder().likeCount(0L).build();
+//        }
+//
+//        if(updateCode.equals("D")){
+//            place = place.toBuilder().likeCount(place.getLikeCount()-1).build();
+//        }
+//
+//        place = place.toBuilder().likeCount(place.getLikeCount()+1).build();
+
+        Place place = getPlace(placeId).toBuilder().likeCount((long) likeCount).build();
+
+        placeRepository.save(place);
+    }
+
 }
