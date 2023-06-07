@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,5 +51,21 @@ public class FollowService {
 
     public Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId) {
         return followRepository.findByFollowerIdAndFollowingId(followerId, followingId);
+    }
+
+    public Optional<Follow> findByFollowerId(Long followerId) {
+        return followRepository.findByFollowerId(followerId);
+    }
+
+    public Optional<Follow> findByFollowingId(Long followingId) {
+        return followRepository.findByFollowingId(followingId);
+    }
+
+    public List<Member> findFollowing(Long followerId) {
+        return followRepository.findFollowingByFollowerId(followerId);
+    }
+
+    public List<Member> findFollower(Long followingId) {
+        return followRepository.findFollowerByFollowingId(followingId);
     }
 }

@@ -8,6 +8,8 @@ import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
+import com.placehub.boundedContext.follow.entity.Follow;
+import com.placehub.boundedContext.follow.service.FollowService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
@@ -33,7 +35,8 @@ public class NotProd {
             MidCategoryService midCategoryService,
             SmallCategoryService smallCategoryService,
             PostService postService,
-            CommentService commentService
+            CommentService commentService,
+            FollowService followService
     ) {
         return new CommandLineRunner() {
             @Override
@@ -75,6 +78,10 @@ public class NotProd {
                         "테스트용 게시물입니다.", true, LocalDate.now());
 
                 Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
+
+
+                followService.follow(2L, "닉네임3");
+                followService.follow(3L, "닉네임2");
             }
         };
     }

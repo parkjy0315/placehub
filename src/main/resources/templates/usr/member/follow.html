@@ -11,31 +11,59 @@
 
 <div layout:fragment="content">
     <div class="hero-content flex flex-col my-10">
-        친구 목록
+        <h2 class="text-4xl mt-5 my-5 font-bold flex flex-col">
+            친구 목록
+        </h2>
 
-        <div class="w-full max-w-xs">
-
-
+        <div class="w-full">
             <form th:action="@{'/follow/' + ${nickname}}" method="post"
                   onsubmit="FollowForm__submit(this); return false" class="mb-4">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">팔로우 할 닉네임을 검색하세요</span>
-                    </label>
-                    <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
-                           class="input input-bordered w-full max-w-xs"
-                           name="nickname"/>
+                <label class="label">
+                    <span class="label-text">닉네임 검색</span>
+                </label>
+                <div class="flex gap-2">
+                    <div class="form-control ">
+                        <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
+                               class="input input-bordered w-full max-w-xs"
+                               name="nickname"/>
+
+                    </div>
+                    <div sec:authorize="isAuthenticated()">
+                        <button type="submit" class="btn">등록</button>
+                    </div>
                 </div>
-                <div sec:authorize="isAuthenticated()" class="flex justify-end">
-                    <button type="submit" class="px-4 py-2 btn mt-2">등록</button>
-                </div>
+
             </form>
         </div>
 
         <div class="flex justify-center w-full">
-            <div>팔로우</div>
+            <div>
+                <table class="table w-full">
+                    <tr class="text-center font-bold text-lg">
+                        <th>팔로잉  <span th:text="${#lists.size(followingList)}"></span></th>
+                    </tr>
+                    <div th:each="following, loop : ${followingList}">
+                    <tr>
+                        <td><span th:text="${following.nickname}" ></span>
+                        </td>
+                    </tr>
+                    </div>
+                </table>
+            </div>
             <div class="divider divider-horizontal"></div>
-            <div>팔로잉</div>
+            <div>
+                <table class="table w-full">
+                    <tr class="text-center font-bold text-lg">
+                        <th>팔로잉 <span th:text="${#lists.size(followerList)}"></span></th>
+                    </tr>
+                    <div th:each="follwer, loop : ${followerList}">
+                        <tr>
+                            <td><span th:text="${follwer.nickname}"></span></td>
+
+                        </tr>
+                    </div>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -72,7 +100,7 @@
                 }
             };
 
-            var data = JSON.stringify({ nickname: nickname });
+            var data = JSON.stringify({nickname: nickname});
             xhr.send(data);
         }
     </script>
