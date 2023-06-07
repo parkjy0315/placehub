@@ -79,8 +79,8 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div th:each="placeInfo, loop : ${placeInfoList}">
                         <a th:href="@{|/place/details/${placeInfo.place.id}|}"
-                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100"
-                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">
+                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
+<!--                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">-->
                             <div class="card-body">
                                 <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
                                 <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
