@@ -1,0 +1,83 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>
+        로그인
+    </title>
+
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="hero-content flex flex-col my-10">
+        친구 목록
+
+        <div class="w-full max-w-xs">
+
+
+            <form th:action="@{'/follow/' + ${nickname}}" method="post"
+                  onsubmit="FollowForm__submit(this); return false" class="mb-4">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">팔로우 할 닉네임을 검색하세요</span>
+                    </label>
+                    <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
+                           class="input input-bordered w-full max-w-xs"
+                           name="nickname"/>
+                </div>
+                <div sec:authorize="isAuthenticated()" class="flex justify-end">
+                    <button type="submit" class="px-4 py-2 btn mt-2">등록</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="flex justify-center w-full">
+            <div>팔로우</div>
+            <div class="divider divider-horizontal"></div>
+            <div>팔로잉</div>
+        </div>
+    </div>
+
+    <script>
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        function FollowForm__submit(form) {
+            var nicknameInput = form.querySelector('input[name="nickname"]');
+            var nickname = nicknameInput.value.trim();
+
+            if (nickname.trim() === '') {
+                toastWarning('팔로우 할 사용자의 닉네임을 입력하세요.');
+                return;
+            }
+
+            var url = '/follow/' + nickname;
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+
+            var data = JSON.stringify({ nickname: nickname });
+            xhr.send(data);
+        }
+    </script>
+
+</div>
+
+</body>
+</html>
