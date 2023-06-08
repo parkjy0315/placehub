@@ -48,7 +48,7 @@
                     <div id="followingTableBody">
                         <tr class="hover text-center" th:each="following, loop : ${followingList}">
                             <td>
-                                <a th:href="@{'friend/follow/' + ${following.id}}">
+                                <a th:href="@{'member/page/' + ${following.id}}">
                                     <span th:text="${following.nickname}"></span>
                                 </a>
                             </td>
@@ -64,7 +64,7 @@
                     </tr>
                     <tr class="hover text-center" th:each="follwer, loop : ${followerList}">
                         <td>
-                            <a th:href="@{'friend/follow/' + ${follwer.id}}">
+                            <a th:href="@{'member/page/' + ${follwer.id}}">
                                 <span th:text="${follwer.nickname}"></span>
                             </a>
                         </td>

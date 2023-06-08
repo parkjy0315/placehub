@@ -13,6 +13,7 @@ import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ public class FriendController {
     private final PlaceService placeService;
     private final Rq rq;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showFriendList(Model model) {
         List<Member> followingList = followService.findFollowing(rq.getMember().getId());
@@ -41,6 +43,7 @@ public class FriendController {
         return "usr/member/follow";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/{nickname}")
     public ResponseEntity<String> follow(@PathVariable String nickname) {
 
@@ -51,26 +54,5 @@ public class FriendController {
 
         return ResponseEntity.ok().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
     }
-
-    @GetMapping("/follow/{id}")
-    public String showFriendPage(Model model, @PathVariable Long id) {
-
-        Member friend = memberService.findById(id).orElse(null);
-
-        List<Post> postList = postService.findByMember(id);
-        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<Member> followingList = followService.findFollowing(id);
-        List<Member> followerList = followService.findFollower(id);
-
-        model.addAttribute("friend", friend);
-        model.addAttribute("postList", postList);
-        model.addAttribute("placeInfoList", placeInfoList);
-        model.addAttribute("followingList",followingList);
-        model.addAttribute("followerList",followerList);
-
-        return "usr/member/friendPage";
-    }
-
 
 }
