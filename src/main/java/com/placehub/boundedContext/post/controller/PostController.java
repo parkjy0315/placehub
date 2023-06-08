@@ -49,7 +49,8 @@ public class PostController {
         List<MultipartFile> images = creatingForm.getImages();
 
         long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
-        RsData imageSavingResult = imageService.saveImages(images, postId);
+
+        RsData imageSavingResult = imageService.controlImage(images, postId);
 
         return "redirect:/post/list";
     }
@@ -99,8 +100,10 @@ public class PostController {
             return postOwnerValidation.getMsg();
         }
 
+        List<String> imagePathes = imageService.callImagePathes(postId);
         RsData<Viewer> response = postService.showSinglePost(postId);
         model.addAttribute("modifyingData", response);
+        model.addAttribute("photoList", imagePathes);
         return "/usr/post/create";
     }
 
@@ -117,6 +120,7 @@ public class PostController {
         long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
         String content = modifyingForm.getContent();
         LocalDate visitedDate = modifyingForm.getVisitedDate();
+        List<MultipartFile> images = modifyingForm.getImages();
         postService.modifyContent(postId, placeId, content, visitedDate);
 
         return "redirect:/post/list";

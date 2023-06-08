@@ -70,35 +70,46 @@ public class ImageService {
         return result;
     }
 
-    public RsData saveImages(List<MultipartFile> files, long postId) {
-        long alreadySavedImgCount = 0L;
-        Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
-        List<Images> alreadySavedImgs = new ArrayList<>();
-        if (wrappedImgs.isPresent()) {
-            alreadySavedImgs = wrappedImgs.get();
+    private long countImages(Optional<List<Images>> wrappedImgs) {
+        if (wrappedImgs.isEmpty()) {
+            return 0L;
         }
-        alreadySavedImgCount = alreadySavedImgs.size();
 
+        return wrappedImgs.get().size();
+    }
 
+    private long maxImageId(Optional<List<Images>> wrappedImgs) {
+        if (wrappedImgs.get().isEmpty()) {
+            return 0L;
+        }
+
+        return wrappedImgs.get()
+                .stream()
+                .max(Comparator.comparing(Images::getImg))
+                .get()
+                .getImg();
+    }
+
+    public RsData controlImage(List<MultipartFile> files, long postId) {
+        Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
+        long alreadySavedImgCount = countImages(wrappedImgs);
+        long maxImgId = maxImageId(wrappedImgs);
+
+        return saveImages(files, postId, alreadySavedImgCount, maxImgId);
+    }
+
+    public RsData saveImages(List<MultipartFile> files, long postId, long alreadySavedImgCount, long maxImgId) {
         RsData isValidate = validateAcceptedImage(files, alreadySavedImgCount);
         if (isValidate.isFail()) {
             return isValidate;
         }
 
-
-        long maxImgId = 0;
-        if (!alreadySavedImgs.isEmpty()) {
-            maxImgId = alreadySavedImgs
-                    .stream()
-                    .max(Comparator.comparing(Images::getImg))
-                    .get()
-                    .getImg() + 1;
-        }
         for (MultipartFile file : files) {
             if (file.isEmpty()) { continue; }
 
             String fileType = "." + file.getContentType().split("/")[1];
 
+            maxImgId++;
             Path filePath = Path.of(IMAGE_STORAGE_PATH + fileSeperator + postId + "_" + maxImgId + fileType);
             Images img = Images
                     .builder()
@@ -109,7 +120,6 @@ public class ImageService {
 
             imageRepository.save(img);
 
-            maxImgId++;
             try {
                 file.transferTo(filePath);
             } catch (IOException e) {
