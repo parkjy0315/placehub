@@ -27,7 +27,7 @@
                     </div>
                     <div class="flex flex-col justify-center gap-4">
                         <div class="flex gap-4">
-                            <span class="text-2xl font-bold" th:text="${@rq.member.username}"></span>
+                            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
                             <a href="/member/me">
                                 <i class="fa-solid fa-gear fa-xl"></i>
                             </a>
@@ -64,7 +64,7 @@
                         </div>
                     </div>
                     <div class="flex justify-center">
-                        <button class="btn btn-outline btn-sm">친구 추가하기</button>
+                        <a href="/follow/list" class="btn btn-outline btn-sm">친구 목록</a>
                     </div>
                 </div>
             </div>

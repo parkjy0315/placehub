@@ -7,6 +7,7 @@
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
 
 </head>
 
@@ -37,7 +38,7 @@
     </script>
 
     <div class="hero-content flex-col">
-        <div class="max-w-2xl w-full px-4">
+        <div class="max-w-7xl w-full px-4">
             <div>
                 <div class="flex flex-col items-center my-5">
                     <h1 th:text="${postView.getData().username}" class="text-4xl my-2 font-bold"></h1>
@@ -63,9 +64,20 @@
                 </div>
             </div>
             <div>
-                <div class="h-24 mt-10">사진넣는곳</div>
-                <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>
+                <style>
+                    .photoSize {
+                        width: 200px;
+                        height: 200px;
+                    }
+                </style>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                    <div th:each="photo : ${imageList}" class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
+                        <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
+                    </div>
+                </div>
             </div>
+
+            <div th:text="${postView.getData().content}" class="mt-20 h-96 w-full text-lg" style="width: 640px"></div>
 
 
             <!-- 댓글 -->
@@ -125,5 +137,6 @@
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
 </body>
 </html>
