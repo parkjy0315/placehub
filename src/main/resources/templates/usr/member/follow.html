@@ -47,7 +47,10 @@
                     </tr>
                     <div id="followingTableBody">
                         <tr class="hover" th:each="following, loop : ${followingList}">
-                            <td><span th:text="${following.nickname}"></span>
+                            <td>
+                                <a th:href="@{'follow/friend/' + ${following.id}}">
+                                    <span th:text="${following.nickname}"></span>
+                                </a>
                             </td>
                         </tr>
                     </div>
@@ -60,7 +63,11 @@
                         <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
                     </tr>
                     <tr class="hover" th:each="follwer, loop : ${followerList}">
-                        <td><span th:text="${follwer.nickname}"></span></td>
+                        <td>
+                            <a th:href="@{'follow/friend/' + ${follwer.id}}">
+                                <span th:text="${follwer.nickname}"></span>
+                            </a>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -94,10 +101,12 @@
                     const returnMessage = response.message;
 
                     if (xhr.status === 200) {
+                        location.reload();
                         toastNotice(returnMessage);
                     } else {
                         toastWarning(returnMessage);
                     }
+
                 }
             };
 
