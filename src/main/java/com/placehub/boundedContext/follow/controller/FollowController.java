@@ -6,6 +6,11 @@ import com.placehub.boundedContext.follow.entity.Follow;
 import com.placehub.boundedContext.follow.service.FollowService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.service.PlaceService;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,14 +27,18 @@ public class FollowController {
 
     private final FollowService followService;
     private final MemberService memberService;
+    private final PostService postService;
+    private final PlaceService placeService;
     private final Rq rq;
 
     @GetMapping("/list")
     public String showFollow(Model model) {
         List<Member> followingList = followService.findFollowing(rq.getMember().getId());
         List<Member> followerList = followService.findFollower(rq.getMember().getId());
+
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
+
         return "usr/member/follow";
     }
 
@@ -45,4 +54,26 @@ public class FollowController {
 
         return ResponseEntity.ok().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
     }
+
+    @GetMapping("/friend/{id}")
+    public String showFriendPage(Model model, @PathVariable Long id) {
+
+        Member friend = memberService.findById(id).orElse(null);
+
+        List<Post> postList = postService.findByMember(id);
+        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<Member> followingList = followService.findFollowing(id);
+        List<Member> followerList = followService.findFollower(id);
+
+        model.addAttribute("friend", friend);
+        model.addAttribute("postList", postList);
+        model.addAttribute("placeInfoList", placeInfoList);
+        model.addAttribute("followingList",followingList);
+        model.addAttribute("followerList",followerList);
+
+        return "usr/member/friendPage";
+    }
+
+
 }

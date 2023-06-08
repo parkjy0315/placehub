@@ -6,6 +6,7 @@ import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.Ut;
+import com.placehub.boundedContext.follow.service.FollowService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.PlaceInfo;
@@ -38,6 +39,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
+    private final FollowService followService;
     private final Rq rq;
 
     @Autowired
@@ -62,6 +64,8 @@ public class MemberController {
         @Email(message = "유효하지 않은 이메일입니다.")
         private final String email;
         private final String name;
+        @NotBlank
+        @Size(min = AppConfig.Constraints.NICKNAME_MIN_LENGTH, max = AppConfig.Constraints.NICKNAME_MAX_LENGTH)
         private final String nickname;
     }
 
@@ -118,6 +122,12 @@ public class MemberController {
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
         model.addAttribute("placeInfoList", placeInfoList);
+
+        List<Member> followingList = followService.findFollowing(rq.getMember().getId());
+        List<Member> followerList = followService.findFollower(rq.getMember().getId());
+        model.addAttribute("followingList",followingList);
+        model.addAttribute("followerList",followerList);
+
         return "usr/member/myPage";
     }
 
