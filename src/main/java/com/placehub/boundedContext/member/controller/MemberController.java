@@ -125,8 +125,10 @@ public class MemberController {
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
 
         model.addAttribute("friend", friend);
+        model.addAttribute("follow", follow);
         model.addAttribute("postList", postList);
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
