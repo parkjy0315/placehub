@@ -27,7 +27,7 @@ public class PlaceLikeService {
         return placeLikeRepository.existsByPlaceIdAndMemberId(placeId, actor.getId());
     }
 
-
+    @Transactional
     public RsData<PlaceLike> create(Long placeId, Member actor) {
 
         Place place = placeService.getPlace(placeId);
@@ -48,6 +48,7 @@ public class PlaceLikeService {
         return RsData.of("S-1", "%s에 대한 좋아요가 등록되었습니다.".formatted(placeName));
     }
 
+    @Transactional
     public RsData<PlaceLike> delete(PlaceLike placeLike) {
 
         String placeName = placeService.getPlace(placeLike.getPlaceId()).getPlaceName();
@@ -56,6 +57,7 @@ public class PlaceLikeService {
 
         //TODO : member와 place에서 삭제
         int likeCount = findByPlaceId(placeLike.getPlaceId()).size();
+        // 다른 애그리거트를 건드는 것 수정 필요
         placeService.updateLikeCount(placeLike.getPlaceId(), likeCount);
 
         return RsData.of("F-1", "%s에 대한 좋아요가 취소되었습니다.".formatted(placeName));

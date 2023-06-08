@@ -7,6 +7,7 @@ import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ public class FriendService {
     private final FriendRepository friendRepository;
     private final MemberService memberService;
 
+    @Transactional
     public RsData<Friend> follow(Long followerId, String nickname) {
 
         Member followingMember = memberService.findByNickname(nickname).orElse(null);
@@ -35,6 +37,7 @@ public class FriendService {
         return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
     }
 
+    @Transactional
     public RsData<Friend> follow(Long followerId, Long followingId) {
 
         Member followingMember = memberService.findById(followingId).orElse(null);
@@ -72,6 +75,7 @@ public class FriendService {
         return RsData.of("S-1", "팔로우 가능합니다.");
     }
 
+    @Transactional
     public RsData<Friend> unfollow(Friend friend){
 
         if(friend == null){
