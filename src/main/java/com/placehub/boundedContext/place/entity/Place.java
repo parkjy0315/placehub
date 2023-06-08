@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.locationtech.jts.geom.Point;
 
 @SuperBuilder(toBuilder = true)
 @Getter
@@ -26,7 +27,7 @@ public class Place extends BaseEntity {
     private String placeName;
     private String phone;
     private String addressName;
-    private Double xPos;
-    private Double yPos;
+    @Column(columnDefinition = "POINT")
+    private Point point;
     private Long likeCount;
 }

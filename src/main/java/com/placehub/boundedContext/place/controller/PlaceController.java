@@ -3,6 +3,7 @@ package com.placehub.boundedContext.place.controller;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
+import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
@@ -59,7 +60,6 @@ public class PlaceController {
 
     @PostMapping("/search")
     public String search(@Valid SearchForm searchForm, Model model) {
-
         List<Place> placeList = placeService.findAll();
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
         List<BigCategory> bigCategories = bigCategoryService.findAll();

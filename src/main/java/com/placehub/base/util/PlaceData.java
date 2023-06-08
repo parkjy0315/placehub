@@ -12,6 +12,9 @@ import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -108,20 +111,19 @@ public class PlaceData {
         Long placeId = Long.parseLong((String) element.get("id"));
         Double xPos = Double.parseDouble((String) element.get("x"));
         Double yPos = Double.parseDouble((String) element.get("y"));
+        Coordinate coord = new Coordinate(xPos, yPos);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coord);
 
         Category[] categories = categoryFilter(categoryName);
 
-        return Place.builder()
-                .bigCategoryId(categories[0].getId())
-                .midCategoryId(categories[1].getId())
-                .smallCategoryId(categories[2].getId())
-                .placeId(placeId)
-                .placeName(placeName)
-                .phone(phone)
-                .addressName(addressName)
-                .xPos(xPos)
-                .yPos(yPos)
-                .build();
+        return placeService.create(
+                categories[0].getId(),
+                categories[1].getId(),
+                categories[2].getId(),
+                placeId, placeName, phone, addressName,
+                point
+        );
     }
     public void saveData(JSONObject element) {
         Place place = convertPlace(element);

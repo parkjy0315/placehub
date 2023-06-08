@@ -7,6 +7,9 @@ import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,10 @@ public class PlaceService {
     public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         Long placeId, String placeName, String phone, String addressName,
                         Double xPos, Double yPos) {
+        Coordinate coord = new Coordinate(xPos, yPos);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coord);
+
         Place place = Place.builder()
                 .bigCategoryId(bigCategoryId)
                 .midCategoryId(midCategoryId)
@@ -34,8 +41,25 @@ public class PlaceService {
                 .placeName(placeName)
                 .phone(phone)
                 .addressName(addressName)
-                .xPos(xPos)
-                .yPos(yPos)
+                .point(point)
+                //.likeCount(0L)
+                .build();
+        return placeRepository.save(place);
+    }
+
+    @Transactional
+    public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
+                        Long placeId, String placeName, String phone, String addressName,
+                        Point point) {
+        Place place = Place.builder()
+                .bigCategoryId(bigCategoryId)
+                .midCategoryId(midCategoryId)
+                .smallCategoryId(smallCategoryId)
+                .placeId(placeId)
+                .placeName(placeName)
+                .phone(phone)
+                .addressName(addressName)
+                .point(point)
                 //.likeCount(0L)
                 .build();
         return placeRepository.save(place);
@@ -64,7 +88,7 @@ public class PlaceService {
     public Place update(Place place,
                         Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         String placeName, String phone, String addressName,
-                        Double xPos, Double yPos) {
+                        Point point) {
         Place updatePlace = place.toBuilder()
                 .bigCategoryId(bigCategoryId)
                 .midCategoryId(midCategoryId)
@@ -72,8 +96,7 @@ public class PlaceService {
                 .placeName(placeName)
                 .phone(phone)
                 .addressName(addressName)
-                .xPos(xPos)
-                .yPos(yPos)
+                .point(point)
                 .build();
         return placeRepository.save(updatePlace);
     }
