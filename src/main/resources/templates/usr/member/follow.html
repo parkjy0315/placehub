@@ -20,7 +20,7 @@
             <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
         </div>
         <div class="w-full flex justify-center">
-            <form th:action="@{'/follow/' + ${nickname}}" method="post"
+            <form th:action="@{'/freiend/' + ${nickname}}" method="post"
                   onsubmit="FollowForm__submit(this); return false" class="mb-4">
                 <label class="label">
                     <span class="label-text">사용자 검색</span>
@@ -39,16 +39,16 @@
             </form>
         </div>
 
-        <div class="flex justify-center w-full max-w-sm">
-            <div>
+        <div class="flex justify-center justify-around" style="width: 800px;">
+            <div class="grow">
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
                         <th>팔로잉 <span id="followingCount" th:text="${#lists.size(followingList)}"></span></th>
                     </tr>
                     <div id="followingTableBody">
-                        <tr class="hover" th:each="following, loop : ${followingList}">
+                        <tr class="hover text-center" th:each="following, loop : ${followingList}">
                             <td>
-                                <a th:href="@{'follow/friend/' + ${following.id}}">
+                                <a th:href="@{'friend/follow/' + ${following.id}}">
                                     <span th:text="${following.nickname}"></span>
                                 </a>
                             </td>
@@ -56,15 +56,15 @@
                     </div>
                 </table>
             </div>
-            <div class="divider divider-horizontal"></div>
-            <div>
+            <div class="divider divider-horizontal grow"></div>
+            <div class="grow ">
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
                         <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
                     </tr>
-                    <tr class="hover" th:each="follwer, loop : ${followerList}">
+                    <tr class="hover text-center" th:each="follwer, loop : ${followerList}">
                         <td>
-                            <a th:href="@{'follow/friend/' + ${follwer.id}}">
+                            <a th:href="@{'friend/follow/' + ${follwer.id}}">
                                 <span th:text="${follwer.nickname}"></span>
                             </a>
                         </td>
@@ -89,7 +89,7 @@
                 return;
             }
 
-            var url = '/follow/' + nickname;
+            var url = '/friend/' + nickname;
             var xhr = new XMLHttpRequest();
 
             xhr.open('POST', url, true);

@@ -5,20 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
-import com.placehub.base.util.Ut;
-import com.placehub.boundedContext.follow.service.FollowService;
+import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.entity.Post;
-import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,7 +36,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
-    private final FollowService followService;
+    private final FriendService followService;
     private final Rq rq;
 
     @Autowired

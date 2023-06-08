@@ -1,9 +1,9 @@
-package com.placehub.boundedContext.follow.controller;
+package com.placehub.boundedContext.friend.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
-import com.placehub.boundedContext.follow.entity.Follow;
-import com.placehub.boundedContext.follow.service.FollowService;
+import com.placehub.boundedContext.friend.entity.Friend;
+import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.PlaceInfo;
@@ -18,21 +18,20 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/follow")
+@RequestMapping("/friend")
 @RequiredArgsConstructor
-public class FollowController {
+public class FriendController {
 
-    private final FollowService followService;
+    private final FriendService followService;
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
     private final Rq rq;
 
     @GetMapping("/list")
-    public String showFollow(Model model) {
+    public String showFriendList(Model model) {
         List<Member> followingList = followService.findFollowing(rq.getMember().getId());
         List<Member> followerList = followService.findFollower(rq.getMember().getId());
 
@@ -45,9 +44,7 @@ public class FollowController {
     @PostMapping("/{nickname}")
     public ResponseEntity<String> follow(@PathVariable String nickname) {
 
-        System.out.println("Received nickname: " + nickname);
-
-        RsData<Follow> followRsData = followService.follow(rq.getMember().getId(), nickname);
+        RsData<Friend> followRsData = followService.follow(rq.getMember().getId(), nickname);
         if (followRsData.isFail()) {
             return ResponseEntity.badRequest().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
         }
@@ -55,7 +52,7 @@ public class FollowController {
         return ResponseEntity.ok().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
     }
 
-    @GetMapping("/friend/{id}")
+    @GetMapping("/follow/{id}")
     public String showFriendPage(Model model, @PathVariable Long id) {
 
         Member friend = memberService.findById(id).orElse(null);

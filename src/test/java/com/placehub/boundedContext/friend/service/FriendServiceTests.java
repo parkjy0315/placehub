@@ -1,8 +1,7 @@
-package com.placehub.boundedContext.follow.service;
+package com.placehub.boundedContext.friend.service;
 
 import com.placehub.base.rsData.RsData;
-import com.placehub.boundedContext.follow.entity.Follow;
-import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.friend.entity.Friend;
 import com.placehub.boundedContext.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -19,10 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.MethodName.class)
-public class FollowServiceTests {
+public class FriendServiceTests {
 
     @Autowired
-    private FollowService followService;
+    private FriendService followService;
 
     @Autowired
     private MemberService memberService;
@@ -30,8 +29,8 @@ public class FollowServiceTests {
     @Test
     @DisplayName("사용자 팔로우 테스트")
     void t001() throws Exception{
-        RsData<Follow> followRsData = followService.follow(1L, "닉네임2");
-        Follow follow = followService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
+        RsData<Friend> followRsData = followService.follow(1L, "닉네임2");
+        Friend follow = followService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
 
         assertThat(followRsData.getResultCode()).isEqualTo("S-1");
         assertThat(follow).isNotNull();
@@ -42,14 +41,14 @@ public class FollowServiceTests {
     @Test
     @DisplayName("사용자 팔로우 - 없는 사용자")
     void t002() throws Exception{
-        RsData<Follow> followRsData = followService.follow(1L, "없는닉네임");
+        RsData<Friend> followRsData = followService.follow(1L, "없는닉네임");
         assertThat(followRsData.getResultCode()).isEqualTo("F-1");
     }
 
     @Test
     @DisplayName("사용자 팔로우 - 나 자신")
     void t003() throws Exception{
-        RsData<Follow> followRsData = followService.follow(1L, "닉네임1");
+        RsData<Friend> followRsData = followService.follow(1L, "닉네임1");
         assertThat(followRsData.getResultCode()).isEqualTo("F-2");
     }
 
@@ -57,7 +56,7 @@ public class FollowServiceTests {
     @DisplayName("사용자 팔로우 - 이미 팔로우")
     void t004() throws Exception{
         followService.follow(1L, "닉네임2");
-        RsData<Follow> followRsData = followService.follow(1L, "닉네임2");
+        RsData<Friend> followRsData = followService.follow(1L, "닉네임2");
         assertThat(followRsData.getResultCode()).isEqualTo("F-3");
     }
 }

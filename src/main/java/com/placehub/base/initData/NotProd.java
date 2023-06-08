@@ -8,8 +8,7 @@ import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
-import com.placehub.boundedContext.follow.entity.Follow;
-import com.placehub.boundedContext.follow.service.FollowService;
+import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
@@ -36,7 +35,7 @@ public class NotProd {
             SmallCategoryService smallCategoryService,
             PostService postService,
             CommentService commentService,
-            FollowService followService
+            FriendService followService
     ) {
         return new CommandLineRunner() {
             @Override
