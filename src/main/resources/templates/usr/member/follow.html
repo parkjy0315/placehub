@@ -2,7 +2,7 @@
 
 <head>
     <title>
-        로그인
+        친구 목록
     </title>
 
 </head>
@@ -15,18 +15,21 @@
             친구 목록
         </h2>
 
-        <div class="w-full">
+        <div class="flex gap-4 items-center border-2 border-blue-200 p-3 rounded mb-5">
+            나의 닉네임
+            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
+        </div>
+        <div class="w-full flex justify-center">
             <form th:action="@{'/follow/' + ${nickname}}" method="post"
                   onsubmit="FollowForm__submit(this); return false" class="mb-4">
                 <label class="label">
-                    <span class="label-text">닉네임 검색</span>
+                    <span class="label-text">사용자 검색</span>
                 </label>
                 <div class="flex gap-2">
                     <div class="form-control ">
                         <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
-                               class="input input-bordered w-full max-w-xs"
+                               class="input input-bordered w-full max-w-lg"
                                name="nickname"/>
-
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <button type="submit" class="btn">등록</button>
@@ -36,17 +39,17 @@
             </form>
         </div>
 
-        <div class="flex justify-center w-full">
+        <div class="flex justify-center w-full max-w-sm">
             <div>
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
-                        <th>팔로잉  <span th:text="${#lists.size(followingList)}"></span></th>
+                        <th>팔로잉 <span id="followingCount" th:text="${#lists.size(followingList)}"></span></th>
                     </tr>
-                    <div th:each="following, loop : ${followingList}">
-                    <tr>
-                        <td><span th:text="${following.nickname}" ></span>
-                        </td>
-                    </tr>
+                    <div id="followingTableBody">
+                        <tr class="hover" th:each="following, loop : ${followingList}">
+                            <td><span th:text="${following.nickname}"></span>
+                            </td>
+                        </tr>
                     </div>
                 </table>
             </div>
@@ -54,16 +57,14 @@
             <div>
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
-                        <th>팔로잉 <span th:text="${#lists.size(followerList)}"></span></th>
+                        <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
                     </tr>
-                    <div th:each="follwer, loop : ${followerList}">
-                        <tr>
-                            <td><span th:text="${follwer.nickname}"></span></td>
-
-                        </tr>
-                    </div>
+                    <tr class="hover" th:each="follwer, loop : ${followerList}">
+                        <td><span th:text="${follwer.nickname}"></span></td>
+                    </tr>
                 </table>
             </div>
+
         </div>
     </div>
 

@@ -5,16 +5,15 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.follow.entity.Follow;
 import com.placehub.boundedContext.follow.service.FollowService;
 import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/follow")
@@ -22,6 +21,7 @@ import java.util.List;
 public class FollowController {
 
     private final FollowService followService;
+    private final MemberService memberService;
     private final Rq rq;
 
     @GetMapping("/list")
@@ -42,8 +42,6 @@ public class FollowController {
         if (followRsData.isFail()) {
             return ResponseEntity.badRequest().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
         }
-
-        //return rq.redirectWithMsg("/follow/list", followRsData);
 
         return ResponseEntity.ok().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
     }
