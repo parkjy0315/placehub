@@ -64,6 +64,8 @@ public class MemberController {
         @Email(message = "유효하지 않은 이메일입니다.")
         private final String email;
         private final String name;
+        @NotBlank
+        @Size(min = AppConfig.Constraints.NICKNAME_MIN_LENGTH, max = AppConfig.Constraints.NICKNAME_MAX_LENGTH)
         private final String nickname;
     }
 

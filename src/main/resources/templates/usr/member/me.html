@@ -106,6 +106,13 @@
                 return;
             }
 
+            // 닉네임 길이 제한
+            if (newNickname.length < 2 || newNickname.length > 20) {
+                updateNicknameResult.style.display = "block";
+                updateNicknameResult.textContent = "2글자 이상, 20글자 이내로 입력해주세요.";
+                return;
+            }
+
             const endpoint = `/member/update/nickname/${memberId}`;
 
             const xhr = new XMLHttpRequest();
