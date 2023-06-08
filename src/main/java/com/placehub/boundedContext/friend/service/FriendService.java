@@ -44,6 +44,18 @@ public class FriendService {
         return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
     }
 
+    public RsData<Friend> unfollow(Friend friend){
+
+        if(friend == null){
+            return RsData.of("F-1", "존재하지 않는 팔로우입니다.");
+        }
+
+        friendRepository.delete(friend);
+
+        return RsData.of("S-1", "언팔로우 되었습니다.");
+    }
+
+
     public Optional<Friend> findById(Long id) {
         return friendRepository.findById(id);
     }

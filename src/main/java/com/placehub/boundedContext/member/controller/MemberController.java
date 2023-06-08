@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.friend.entity.Friend;
 import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
@@ -36,7 +37,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
-    private final FriendService followService;
+    private final FriendService friendService;
     private final Rq rq;
 
     @Autowired
@@ -102,8 +103,8 @@ public class MemberController {
         List<Post> postList = this.postService.findByMember(rq.getMember().getId());
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<Member> followingList = followService.findFollowing(rq.getMember().getId());
-        List<Member> followerList = followService.findFollower(rq.getMember().getId());
+        List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
+        List<Member> followerList = friendService.findFollower(rq.getMember().getId());
 
         model.addAttribute("postList", postList);
         model.addAttribute("placeInfoList", placeInfoList);
@@ -122,8 +123,8 @@ public class MemberController {
         List<Post> postList = postService.findByMember(id);
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<Member> followingList = followService.findFollowing(id);
-        List<Member> followerList = followService.findFollower(id);
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
 
         model.addAttribute("friend", friend);
         model.addAttribute("postList", postList);

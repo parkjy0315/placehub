@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class FriendServiceTests {
 
     @Autowired
-    private FriendService followService;
+    private FriendService friendService;
 
     @Autowired
     private MemberService memberService;
@@ -29,8 +29,8 @@ public class FriendServiceTests {
     @Test
     @DisplayName("사용자 팔로우 테스트")
     void t001() throws Exception{
-        RsData<Friend> followRsData = followService.follow(1L, "닉네임2");
-        Friend follow = followService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
+        RsData<Friend> followRsData = friendService.follow(1L, "닉네임2");
+        Friend follow = friendService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
 
         assertThat(followRsData.getResultCode()).isEqualTo("S-1");
         assertThat(follow).isNotNull();
@@ -41,22 +41,22 @@ public class FriendServiceTests {
     @Test
     @DisplayName("사용자 팔로우 - 없는 사용자")
     void t002() throws Exception{
-        RsData<Friend> followRsData = followService.follow(1L, "없는닉네임");
+        RsData<Friend> followRsData = friendService.follow(1L, "없는닉네임");
         assertThat(followRsData.getResultCode()).isEqualTo("F-1");
     }
 
     @Test
     @DisplayName("사용자 팔로우 - 나 자신")
     void t003() throws Exception{
-        RsData<Friend> followRsData = followService.follow(1L, "닉네임1");
+        RsData<Friend> followRsData = friendService.follow(1L, "닉네임1");
         assertThat(followRsData.getResultCode()).isEqualTo("F-2");
     }
 
     @Test
     @DisplayName("사용자 팔로우 - 이미 팔로우")
     void t004() throws Exception{
-        followService.follow(1L, "닉네임2");
-        RsData<Friend> followRsData = followService.follow(1L, "닉네임2");
+        friendService.follow(1L, "닉네임2");
+        RsData<Friend> followRsData = friendService.follow(1L, "닉네임2");
         assertThat(followRsData.getResultCode()).isEqualTo("F-3");
     }
 }
