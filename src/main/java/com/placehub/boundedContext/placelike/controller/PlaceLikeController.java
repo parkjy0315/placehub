@@ -19,7 +19,6 @@ public class PlaceLikeController {
     private final PlaceLikeService placeLikeService;
     private final Rq rq;
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping("/{placeId}")
     public String likePlace(@PathVariable("placeId") Long placeId){
 

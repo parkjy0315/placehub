@@ -55,8 +55,10 @@ public class PlaceController {
 
         model.addAttribute("place", place);
 
-        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
-        model.addAttribute("placeLike", placeLike);
+        if(rq.getMember() != null ){
+            PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
+            model.addAttribute("placeLike", placeLike);
+        }
 
         return "usr/place/details";
     }
