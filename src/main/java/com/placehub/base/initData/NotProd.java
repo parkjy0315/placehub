@@ -35,7 +35,7 @@ public class NotProd {
             SmallCategoryService smallCategoryService,
             PostService postService,
             CommentService commentService,
-            FriendService followService
+            FriendService friendService
     ) {
         return new CommandLineRunner() {
             @Override
@@ -79,8 +79,8 @@ public class NotProd {
                 Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
 
 
-                followService.follow(2L, "닉네임3");
-                followService.follow(3L, "닉네임2");
+                friendService.follow(2L, "닉네임3");
+                friendService.follow(3L, "닉네임2");
             }
         };
     }
