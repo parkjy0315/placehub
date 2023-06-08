@@ -97,10 +97,12 @@
                     const returnMessage = response.message;
 
                     if (xhr.status === 200) {
+                        location.reload();
                         toastNotice(returnMessage);
                     } else {
                         toastWarning(returnMessage);
                     }
+
                 }
             };
 

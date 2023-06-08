@@ -35,8 +35,10 @@ public class FollowController {
     public String showFollow(Model model) {
         List<Member> followingList = followService.findFollowing(rq.getMember().getId());
         List<Member> followerList = followService.findFollower(rq.getMember().getId());
+
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
+
         return "usr/member/follow";
     }
 
@@ -57,17 +59,16 @@ public class FollowController {
     public String showFriendPage(Model model, @PathVariable Long id) {
 
         Member friend = memberService.findById(id).orElse(null);
-        model.addAttribute("friend", friend);
 
         List<Post> postList = postService.findByMember(id);
-        model.addAttribute("postList", postList);
-
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        model.addAttribute("placeInfoList", placeInfoList);
-
         List<Member> followingList = followService.findFollowing(id);
         List<Member> followerList = followService.findFollower(id);
+
+        model.addAttribute("friend", friend);
+        model.addAttribute("postList", postList);
+        model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
 
