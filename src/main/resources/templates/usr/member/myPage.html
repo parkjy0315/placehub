@@ -73,7 +73,7 @@
             <div class="flex justify-between mt-5">
                 <div class="flex">
                     <div class="mx-2">
-                        <button id="myPlaceBtn">나의 공간 아카이빙</button>
+                        <button id="myPlaceBtn" class="font-bold">나의 공간 아카이빙</button>
                     </div>
                     <div class="divider divider-horizontal !mx-1"></div>
                     <div class="mx-2">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="flex">
                     <div class="mx-2">
-                        <button id="myPlaceTimelineBtn">타임라인으로 보기</button>
+                        <button id="myPlaceTimelineBtn" class="font-bold">타임라인으로 보기</button>
                     </div>
                     <div class="mx-2">
                         <button id="myPlaceMapBtn">지도로 보기</button>
@@ -225,6 +225,9 @@
             myPlaceMap.style.display = "none";
             myPlaceTimelineBtn.style.display = "block";
             myPlaceMapBtn.style.display = "block";
+
+            myPlaceTimelineBtn.style.fontWeight = "bold";
+            myPlaceMapBtn.style.fontWeight = "normal"
             myLikePlaceBtn.style.fontWeight = "normal";
             myPlaceBtn.style.fontWeight = "bold";
         });
@@ -233,12 +236,18 @@
             myPlaceTimeline.style.display = "block";
             myLikePlace.style.display = "none";
             myPlaceMap.style.display = "none";
+
+            myPlaceTimelineBtn.style.fontWeight = "bold";
+            myPlaceMapBtn.style.fontWeight = "normal"
         });
 
         myPlaceMapBtn.addEventListener("click", () => {
             myPlaceTimeline.style.display = "none";
             myLikePlace.style.display = "none";
             myPlaceMap.style.display = "block";
+
+            myPlaceTimelineBtn.style.fontWeight = "normal";
+            myPlaceMapBtn.style.fontWeight = "bold"
         });
 
         myLikePlaceBtn.addEventListener("click", () => {
