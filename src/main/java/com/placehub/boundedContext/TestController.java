@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class TestController {
     @GetMapping("/test")
     public String pageTest1() {
-        return "test";
+        return "usr/KaKaoMapApi/test/keywordlist-test";
     }
 }
