@@ -10,6 +10,12 @@ spring:
     active: dev
     default:
     include: secret
+  servlet:
+    multipart:
+      file-size-threshold: 1MB
+      location: resources/static/Temp
+      max-file-size: 4MB
+      max-request-size: 55MB
 
   resources:
     static-path-pattern: /static/**
@@ -88,5 +94,7 @@ custom:
       tour: AT4
       restaurant: FD6
       cafe: CE7
+
+  genFileDirPath: { Your Absolute Path }
 
 

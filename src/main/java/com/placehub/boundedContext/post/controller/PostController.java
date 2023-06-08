@@ -5,7 +5,10 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.service.CommentService;
 import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.CreatingForm;
+import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.ImageService;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -27,25 +31,7 @@ public class PostController {
     private final Rq rq;
     private final PostService postService;
     private final CommentService commentService;
-    @Data
-    class PostForm {
-        private String place;
-        //        @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy/MM/dd")
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private LocalDate visitedDate;
-        @NotBlank
-        private String isOpenToPublic;
-        private String content;
-    }
-
-    @Data
-    class ModifyingForm {
-        private String place;
-        @DateTimeFormat(pattern = "yyyy-MM-dd")
-        private LocalDate visitedDate;
-        private String content;
-    }
-
+    private final ImageService imageService;
     @GetMapping("/create")
     public String create() {
         return "usr/post/create";
@@ -53,15 +39,19 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create")
-    public String create(@Valid PostForm postForm) {
+    public String create(@Valid CreatingForm creatingForm) {
         long userId = rq.getMember().getId();
-        long placeId = postService.convertPlaceToId(postForm.getPlace());
-        boolean isOpenToPublic = postForm.getIsOpenToPublic().equals("공개");
-        String content = postForm.getContent();
-        LocalDate visitedDate = postForm.getVisitedDate();
 
+        long placeId = postService.convertPlaceToId(creatingForm.getPlace());
+        boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
+        String content = creatingForm.getContent();
+        LocalDate visitedDate = creatingForm.getVisitedDate();
+        List<MultipartFile> images = creatingForm.getImages();
 
-        postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
+        long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
+
+        RsData imageSavingResult = imageService.controlImage(images, postId);
+
         return "redirect:/post/list";
     }
 
@@ -82,9 +72,11 @@ public class PostController {
         }
 
         List<Comment> comments = commentService.findNotDeleted(postId);
+        List<String> imagePathes = imageService.callImagePathes(postId);
         model.addAttribute("comments", comments);
 
         model.addAttribute("postView", response);
+        model.addAttribute("imageList", imagePathes);
         return "usr/post/viewer";
     }
 
@@ -108,8 +100,10 @@ public class PostController {
             return postOwnerValidation.getMsg();
         }
 
+        List<String> imagePathes = imageService.callImagePathes(postId);
         RsData<Viewer> response = postService.showSinglePost(postId);
         model.addAttribute("modifyingData", response);
+        model.addAttribute("photoList", imagePathes);
         return "/usr/post/create";
     }
 
@@ -126,6 +120,7 @@ public class PostController {
         long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
         String content = modifyingForm.getContent();
         LocalDate visitedDate = modifyingForm.getVisitedDate();
+        List<MultipartFile> images = modifyingForm.getImages();
         postService.modifyContent(postId, placeId, content, visitedDate);
 
         return "redirect:/post/list";
