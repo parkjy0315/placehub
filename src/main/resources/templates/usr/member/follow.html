@@ -15,31 +15,31 @@
             친구 목록
         </h2>
 
-        <div class="flex gap-4 items-center border-2 border-blue-200 p-3 rounded mb-5">
-            나의 닉네임
-            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
-        </div>
-        <div class="w-full flex justify-center">
+        <div class="w-full flex justify-center mt-5">
             <form th:action="@{'/freiend/' + ${nickname}}" method="post"
                   onsubmit="FollowForm__submit(this); return false" class="mb-4">
-                <label class="label">
-                    <span class="label-text">사용자 검색</span>
-                </label>
                 <div class="flex gap-2">
                     <div class="form-control ">
                         <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
-                               class="input input-bordered w-full max-w-lg"
-                               name="nickname"/>
+                               class="input input-bordered w-full "
+                               name="nickname" style="width: 300px;"/>
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <button type="submit" class="btn">등록</button>
                     </div>
                 </div>
-
             </form>
         </div>
 
-        <div class="flex justify-center justify-around" style="width: 800px;">
+
+
+        <div class="flex gap-4 items-center mt-10">
+            나의 닉네임
+            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
+        </div>
+        <div>
+        <div class="divider !my-2"></div>
+        <div class="flex justify-center justify-around my-5" style="width: 800px;">
             <div class="grow">
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
@@ -71,7 +71,7 @@
                     </tr>
                 </table>
             </div>
-
+        </div>
         </div>
     </div>
 
