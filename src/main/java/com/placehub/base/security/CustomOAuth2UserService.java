@@ -66,6 +66,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String username = providerTypeCode + "__%s".formatted(oauthId);
         String nickname = providerTypeCode + "__%s".formatted(oauthId); // 소셜로그인 시 닉네임은 username과 동일하게
 
+        if(nickname.length() > 20) nickname = nickname.substring(0,20);
+
         Member member = memberService.whenSocialLogin(providerTypeCode, username, email, name, nickname).getData();
 
         return new CustomOAuth2User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
