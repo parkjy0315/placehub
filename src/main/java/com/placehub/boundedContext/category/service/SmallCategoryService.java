@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class SmallCategoryService {
-    @Autowired
     private final SmallCategoryRepository smallCategoryRepository;
 
     public SmallCategory create(String categoryName) {

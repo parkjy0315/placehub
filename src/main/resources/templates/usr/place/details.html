@@ -13,7 +13,7 @@
     <div class="max-w-2xl w-full px-4">
       <div>
         <div class="flex flex-col items-center my-5">
-          <h1 th:text="${place.placeName}" class="text-4xl my-2 font-bold"></h1>
+          <h1 onclick=test() th:text="${place.placeName}" class="text-4xl my-2 font-bold"></h1>
           <div class="flex gap-1">
             <i class="fa-regular fa-clock origin-center"></i>
             <div th:text="|${place.addressName}" class="flex justify-center"></div>

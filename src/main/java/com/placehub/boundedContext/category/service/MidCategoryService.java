@@ -8,12 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class MidCategoryService {
-    @Autowired
     private final MidCategoryRepository midCategoryRepository;
 
     public MidCategory create(String categoryName) {
@@ -26,6 +26,10 @@ public class MidCategoryService {
     public MidCategory getMidCategory(Long id) {
         Optional<MidCategory> category = midCategoryRepository.findById(id);
         return category.orElse(null);
+    }
+
+    public List<MidCategory> findAll() {
+        return midCategoryRepository.findAll();
     }
 
     public MidCategory findByCategoryName(String categoryName) {
