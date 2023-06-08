@@ -10,14 +10,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface FollowRepository extends JpaRepository<Follow, Long> {
+public interface FollowRepository extends JpaRepository<Follow, Long>, FollowRepositoryCustom {
     Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
     Optional<Follow> findByFollowerId(Long followerId);
     Optional<Follow> findByFollowingId(Long followingId);
 
-    @Query("SELECT m FROM Follow f JOIN Member m ON f.followingId = m.id WHERE f.followerId = :followerId")
-    List<Member> findFollowingByFollowerId(@Param("followerId") Long followerId);
 
-    @Query("SELECT m FROM Follow f JOIN Member m ON f.followerId = m.id WHERE f.followingId = :followingId")
-    List<Member> findFollowerByFollowingId(@Param("followingId") Long followingId);
 }
