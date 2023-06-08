@@ -3,20 +3,22 @@ package com.placehub.boundedContext.place.controller;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
+import com.placehub.boundedContext.category.entity.BigCategory;
+import com.placehub.boundedContext.category.entity.MidCategory;
+import com.placehub.boundedContext.category.service.BigCategoryService;
+import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
+import jakarta.validation.Valid;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,28 +28,52 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/place")
 public class PlaceController {
-
-    @Autowired
     private final PlaceService placeService;
-    @Autowired
-    private final PlaceData placeData;
-    @Autowired
+    private final BigCategoryService bigCategoryService;
+    private final MidCategoryService midCategoryService;
     private final PlaceLikeService placeLikeService;
-    @Autowired
+    private final PlaceData placeData;
     private final Rq rq;
 
+    @Data
+    public class SearchForm {
+        private Double latitude;
+        private Double longitude;
+        private Long bigCategoryId;
+        private Long midCategoryId;
+    }
+
     @GetMapping("/search")
-    public String list(Model model) {
+    public String search(Model model) {
         List<Place> placeList = placeService.findAll();
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<BigCategory> bigCategories = bigCategoryService.findAll();
+        List<MidCategory> midCategories = midCategoryService.findAll();
 
         model.addAttribute("placeInfoList", placeInfoList);
+        model.addAttribute("bigCategories", bigCategories);
+        model.addAttribute("midCategories", midCategories);
+
+        return "usr/place/search";
+    }
+
+    @PostMapping("/search")
+    public String search(@Valid SearchForm searchForm, Model model) {
+
+        List<Place> placeList = placeService.findAll();
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<BigCategory> bigCategories = bigCategoryService.findAll();
+        List<MidCategory> midCategories = midCategoryService.findAll();
+
+        model.addAttribute("placeInfoList", placeInfoList);
+        model.addAttribute("bigCategories", bigCategories);
+        model.addAttribute("midCategories", midCategories);
 
         return "usr/place/search";
     }
 
     @GetMapping("/details/{placeId}")
-    public String view(Model model, @PathVariable("placeId") Long id) {
+    public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
         if (place == null) {
             throw new RuntimeException("해당 장소는 없습니다.");

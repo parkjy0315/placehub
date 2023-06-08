@@ -1,15 +1,23 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
-  <title> 장소 목록 </title>
+  <title>장소 목록</title>
 </head>
 
 <body>
-<script>
-
-</script>
-
 <div layout:fragment="content">
+    <script>
+        getCurrentCoords(); // 현재 위치를 불러와 전역 변수에 저장 lat, lon
+
+        function submitCheck(form) {
+            console.log(lat);
+            console.log(lon);
+            document.getElementById("latitude").value = lat;
+            document.getElementById("longitude").value = lon;
+
+            form.submit();
+        }
+    </script>
   <div class="hero-content flex-col mb-10">
     <div class="max-w-2xl w-full px-4">
       <div class="flex flex-col items-center my-5">
@@ -19,58 +27,49 @@
         <div class="bg-gray-30">
             <div class="container mx-auto py-8">
                 <div class="grid grid-cols-3 gap-3">
-                    <form action="">
-                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+
+                    <form class="flex" th:action method="post" onsubmit= submitCheck(this); return false;">
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+
+                        <div class="w-64 mx-auto mt-8 p-4 m-2">
                             <div class="w-full">
                                 <div class="relative">
-                                    <select class="select-md form-select">
-                                        <option disabled selected>위치</option>
-                                        <option>Option 1</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
+                                    <select class="select-lg form-select">
+                                        <option disabled selected>기준 위치</option>
+                                        <option id="position1" value="current">현재 위치</option>
+                                        <option id="position2" value="search">검색 위치</option>
                                     </select>
                                     <div class="form-select-arrow"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+                        <div class="w-64 mx-auto mt-8 p-4 m-2">
                             <div class="w-full">
                                 <div class="relative">
-                                    <select class="select-md form-select">
+                                    <select class="select-lg form-select">
                                         <option disabled selected>대분류</option>
-                                        <option>Option 1</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
+                                        <option th:each="bigCategory, loop : ${bigCategories}" id="bigCategoryId" th:value="${bigCategory.id}"
+                                                th:text="${bigCategory.categoryName}"></option>
                                     </select>
                                     <div class="form-select-arrow"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-64 mx-auto mt-8 flex-shrink-0">
+                        <div class="w-64 mx-auto mt-8 p-4 m-2">
                             <div class="w-full">
                                 <div class="relative">
-                                    <select class="select-md form-select">
+                                    <select class="select-lg form-select">
                                         <option disabled selected>중분류</option>
-                                        <option>Option 1</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
+                                        <option th:each="midCategory, loop : ${midCategories}" id="midCategoryId" th:value="${midCategory.id}"
+                                                th:text="${midCategory.categoryName}"></option>
                                     </select>
                                     <div class="form-select-arrow"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-64 mx-auto mt-8">
-                            <div class="w-full">
-                                <div class="relative">
-                                    <select class="select-md form-select">
-                                        <option disabled selected>소분류</option>
-                                        <option>Option 1</option>
-                                        <option>Option 2</option>
-                                        <option>Option 3</option>
-                                    </select>
-                                    <div class="form-select-arrow"></div>
-                                </div>
-                            </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary bg-blue-700 w-50">검색</button>
                         </div>
                     </form>
                 </div>
