@@ -20,6 +20,40 @@ public class FriendService {
     public RsData<Friend> follow(Long followerId, String nickname) {
 
         Member followingMember = memberService.findByNickname(nickname).orElse(null);
+        RsData<Friend> canFollowRsData = canFollow(followerId, followingMember);
+
+        if(canFollowRsData.isFail()){
+            return canFollowRsData;
+        }
+
+        Friend newFriend = Friend.builder()
+                .followerId(followerId)
+                .followingId(followingMember.getId())
+                .build();
+
+        friendRepository.save(newFriend);
+        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
+    }
+
+    public RsData<Friend> follow(Long followerId, Long followingId) {
+
+        Member followingMember = memberService.findById(followingId).orElse(null);
+        RsData<Friend> canFollowRsData = canFollow(followerId, followingMember);
+
+        if(canFollowRsData.isFail()){
+            return canFollowRsData;
+        }
+
+        Friend newFriend = Friend.builder()
+                .followerId(followerId)
+                .followingId(followingId)
+                .build();
+
+        friendRepository.save(newFriend);
+        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
+    }
+
+    private RsData<Friend> canFollow(Long followerId, Member followingMember) {
 
         if(followingMember == null){
             return RsData.of("F-1", "존재하지 않는 사용자입니다.");
@@ -35,13 +69,7 @@ public class FriendService {
             return RsData.of("F-3", "이미 팔로우한 사용자입니다.");
         }
 
-        Friend newFriend = Friend.builder()
-                .followerId(followerId)
-                .followingId(followingMember.getId())
-                .build();
-
-        friendRepository.save(newFriend);
-        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
+        return RsData.of("S-1", "팔로우 가능합니다.");
     }
 
     public RsData<Friend> unfollow(Friend friend){
@@ -54,7 +82,6 @@ public class FriendService {
 
         return RsData.of("S-1", "언팔로우 되었습니다.");
     }
-
 
     public Optional<Friend> findById(Long id) {
         return friendRepository.findById(id);

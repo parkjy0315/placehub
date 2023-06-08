@@ -37,6 +37,7 @@ public class FriendController {
         return "usr/member/follow";
     }
 
+    // 닉네임 검색으로 팔로우하는 경우
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/follow/{nickname}")
     public ResponseEntity<String> follow(@PathVariable String nickname) {
@@ -47,6 +48,20 @@ public class FriendController {
         }
 
         return ResponseEntity.ok().body("{\"message\": \"" + followRsData.getMsg() + "\"}");
+    }
+
+    // 다른 사용자 페이지에서 팔로우 버튼으로 팔로우하는 경우
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/follow/{followingId}")
+    public String follow(@PathVariable Long followingId) {
+
+        RsData<Friend> followRsData = friendService.follow(rq.getMember().getId(), followingId);
+
+        if (followRsData.isFail()) {
+            return rq.historyBack(followRsData);
+        }
+
+        return rq.redirectWithMsg("/member/page/" + followingId ,followRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
