@@ -26,9 +26,11 @@ public class PlaceLikeService {
 
 
     // 현재 상태 확인
-    public boolean isPresent(PlaceLike placeLike) {
-        if(placeLike == null) return false;
-        return true;
+    public RsData<PlaceLike> checkStatus(PlaceLike placeLike) {
+        if(placeLike == null) {
+            return RsData.of("F-2", "이미 취소된 좋아요입니다.");
+        }
+        return RsData.of("F-1", "이미 등록된 좋아요입니다.");
     }
 
     @Transactional
@@ -47,7 +49,7 @@ public class PlaceLikeService {
 
         String placeName = place.getPlaceName();
 
-        return RsData.of("S-1", "%s에 대한 좋아요가 등록되었습니다.".formatted(placeName));
+        return RsData.of("S-1", "%s에 대한 좋아요가 등록되었습니다.".formatted(placeName), placeLike);
     }
 
     @Transactional
@@ -59,7 +61,7 @@ public class PlaceLikeService {
 
         publisher.publishEvent(new EventAfterUpdatePlaceLike(this, placeLike.getPlaceId(), false));
 
-        return RsData.of("F-1", "%s에 대한 좋아요가 취소되었습니다.".formatted(placeName));
+        return RsData.of("S-1", "%s에 대한 좋아요가 취소되었습니다.".formatted(placeName), placeLike);
     }
 
 

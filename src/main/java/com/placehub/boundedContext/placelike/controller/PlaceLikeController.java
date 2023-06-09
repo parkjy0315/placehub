@@ -20,29 +20,38 @@ public class PlaceLikeController {
     private final PlaceLikeService placeLikeService;
     private final Rq rq;
 
-    @PostMapping("/{placeId}")
-    public String likePlace(@PathVariable("placeId") Long placeId){
+    @PostMapping("/create/{placeId}")
+    public String create(@PathVariable("placeId") Long placeId){
 
         Member actor = rq.getMember();
 
         PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, actor.getId());
-        Boolean isPresent = placeLikeService.isPresent(placeLike);
+        RsData checkStatus = placeLikeService.checkStatus(placeLike);
 
-        // 존재하면 삭제
-        if(isPresent){
-            RsData canDeleteRsData = placeLikeService.canDelete(placeLike, actor);
-
-            if(canDeleteRsData.isFail()) {
-                return rq.historyBack(canDeleteRsData);
-            }
-
-            RsData deleteRsData = placeLikeService.delete(placeLike);
-            return rq.redirectWithMsg("/place/details/%s".formatted(placeId), deleteRsData);
+        if(checkStatus.getResultCode().equals("F-2")){
+            rq.historyBack(checkStatus);
         }
 
         RsData createRsData = placeLikeService.create(placeId, actor);
 
         return rq.redirectWithMsg("/place/details/%s".formatted(placeId), createRsData);
+    }
+
+    @PostMapping("/delete/{placeId}")
+    public String delete(@PathVariable("placeId") Long placeId){
+
+        Member actor = rq.getMember();
+
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, actor.getId());
+        RsData checkStatus = placeLikeService.checkStatus(placeLike);
+
+        if(checkStatus.getResultCode().equals("F-1")){
+            rq.historyBack(checkStatus);
+        }
+
+        RsData deleteRsData = placeLikeService.delete(placeLike);
+
+        return rq.redirectWithMsg("/place/details/%s".formatted(placeId), deleteRsData);
     }
 
 }
