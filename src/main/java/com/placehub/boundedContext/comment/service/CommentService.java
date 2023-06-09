@@ -18,7 +18,6 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final MemberService memberService;
 
     @Transactional
     public Comment create(Long postId, String content, Member actor){
@@ -36,7 +35,7 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    @Transactional
+
     public Comment get(Long id){
         Optional<Comment> comment = commentRepository.findById(id);
         return comment.orElse(null);
@@ -64,7 +63,6 @@ public class CommentService {
     }
 
     // 유효한 댓글인지 체크
-    @Transactional
     public RsData<Comment> isVaild(Long id) {
         Comment comment = commentRepository.findById(id).orElse(null);
 
@@ -80,7 +78,6 @@ public class CommentService {
     }
 
     // 권한 체크
-    @Transactional
     public RsData<Comment> hasPermission(Long id, Member actor) {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment.getMemberId() != actor.getId()) {

@@ -46,20 +46,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col gap-6">
+                <div class="flex items-center">
                     <div class="flex gap-4">
-                        <div class="flex flex-col justify-center items-center gap-4">
-                            팔로잉
-                            <div><span th:text="${#lists.size(followingList)}"></span></div>
+                        <div class="hover:bg-blue-50 p-2">
+                            <a href="/friend/list" class="flex flex-col justify-center items-center gap-4">
+                                팔로잉
+                                <div><span th:text="${#lists.size(followingList)}"></span></div>
+                            </a>
                         </div>
                         <div class="divider divider-horizontal !mx-1"></div>
-                        <div class="flex flex-col justify-center items-center gap-4">
+                        <div class="hover:bg-blue-50 p-2">
+                            <a href="/friend/list" class="flex flex-col justify-center items-center gap-4">
                             팔로워
                             <div><span th:text="${#lists.size(followerList)}"></span></div>
+                            </a>
                         </div>
-                    </div>
-                    <div class="flex justify-center">
-                        <a href="/follow/list" class="btn btn-outline btn-sm">친구 목록</a>
                     </div>
                 </div>
             </div>
@@ -79,6 +80,7 @@
                     <div class="mx-2">
                         <button id="myPlaceTimelineBtn" class="font-bold">타임라인으로 보기</button>
                     </div>
+                    <div class="divider divider-horizontal !mx-1"></div>
                     <div class="mx-2">
                         <button id="myPlaceMapBtn">지도로 보기</button>
                     </div>

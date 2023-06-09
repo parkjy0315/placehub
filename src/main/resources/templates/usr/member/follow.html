@@ -15,40 +15,40 @@
             친구 목록
         </h2>
 
-        <div class="flex gap-4 items-center border-2 border-blue-200 p-3 rounded mb-5">
-            나의 닉네임
-            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
-        </div>
-        <div class="w-full flex justify-center">
-            <form th:action="@{'/follow/' + ${nickname}}" method="post"
+        <div class="w-full flex justify-center mt-5">
+            <form th:action="@{'/freiend/' + ${nickname}}" method="post"
                   onsubmit="FollowForm__submit(this); return false" class="mb-4">
-                <label class="label">
-                    <span class="label-text">사용자 검색</span>
-                </label>
                 <div class="flex gap-2">
                     <div class="form-control ">
                         <input type="text" placeholder="팔로우 할 닉네임을 검색하세요"
-                               class="input input-bordered w-full max-w-lg"
-                               name="nickname"/>
+                               class="input input-bordered w-full "
+                               name="nickname" style="width: 300px;"/>
                     </div>
                     <div sec:authorize="isAuthenticated()">
                         <button type="submit" class="btn">등록</button>
                     </div>
                 </div>
-
             </form>
         </div>
 
-        <div class="flex justify-center w-full max-w-sm">
-            <div>
+
+
+        <div class="flex gap-4 items-center mt-10">
+            나의 닉네임
+            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
+        </div>
+        <div>
+        <div class="divider !my-2"></div>
+        <div class="flex justify-center justify-around my-5" style="width: 800px;">
+            <div class="grow">
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
                         <th>팔로잉 <span id="followingCount" th:text="${#lists.size(followingList)}"></span></th>
                     </tr>
                     <div id="followingTableBody">
-                        <tr class="hover" th:each="following, loop : ${followingList}">
+                        <tr class="hover text-center" th:each="following, loop : ${followingList}">
                             <td>
-                                <a th:href="@{'follow/friend/' + ${following.id}}">
+                                <a th:href="@{'member/page/' + ${following.id}}">
                                     <span th:text="${following.nickname}"></span>
                                 </a>
                             </td>
@@ -56,22 +56,22 @@
                     </div>
                 </table>
             </div>
-            <div class="divider divider-horizontal"></div>
-            <div>
+            <div class="divider divider-horizontal grow"></div>
+            <div class="grow ">
                 <table class="table w-full">
                     <tr class="text-center font-bold text-lg">
                         <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
                     </tr>
-                    <tr class="hover" th:each="follwer, loop : ${followerList}">
+                    <tr class="hover text-center" th:each="follwer, loop : ${followerList}">
                         <td>
-                            <a th:href="@{'follow/friend/' + ${follwer.id}}">
+                            <a th:href="@{'member/page/' + ${follwer.id}}">
                                 <span th:text="${follwer.nickname}"></span>
                             </a>
                         </td>
                     </tr>
                 </table>
             </div>
-
+        </div>
         </div>
     </div>
 
@@ -89,7 +89,7 @@
                 return;
             }
 
-            var url = '/follow/' + nickname;
+            var url = '/friend/follow/' + nickname;
             var xhr = new XMLHttpRequest();
 
             xhr.open('POST', url, true);

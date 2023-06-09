@@ -88,7 +88,7 @@ public class MemberService {
 
     }
 
-
+    @Transactional
     public RsData<Member> updateNickname(Member actor, Long memberId, String nickname) {
 
         if(actor.getId() != memberId) {
@@ -107,6 +107,7 @@ public class MemberService {
         return RsData.of("S-1", "닉네임이 수정되었습니다.");
     }
 
+    @Transactional
     public RsData<Member> updateBio(Member actor, String bio){
         // TODO : 검증로직
         actor = actor.toBuilder().bio(bio).build();

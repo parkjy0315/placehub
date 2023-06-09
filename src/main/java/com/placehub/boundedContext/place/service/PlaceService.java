@@ -96,6 +96,7 @@ public class PlaceService {
         return categoryNamesList;
     }
 
+    @Transactional
     public void updateLikeCount(Long placeId, int likeCount){
 //        Place place = getPlace(placeId);
 //
