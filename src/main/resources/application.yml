@@ -8,7 +8,6 @@ server:
 spring:
   profiles:
     active: dev
-    default:
     include: secret
   servlet:
     multipart:
