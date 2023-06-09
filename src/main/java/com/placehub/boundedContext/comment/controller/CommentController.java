@@ -25,7 +25,7 @@ public class CommentController {
     public String create(@PathVariable("postId") String postId ,@RequestParam String content){
         Long parsedPostId = Long.parseLong(postId);
         commentService.create(parsedPostId, content, rq.getMember());
-        return "redirect:/post/view/" + postId;
+        return "redirect:/post/view/%s".formatted(postId);
     }
 
     @GetMapping("/list/{postId}")
@@ -43,12 +43,12 @@ public class CommentController {
 
         RsData<Comment> isVaildRsData = commentService.isVaild(id);
         if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
         }
 
         RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
         if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
         }
 
         Comment comment = commentService.findById(id).orElse(null);
@@ -64,16 +64,16 @@ public class CommentController {
 
         RsData<Comment> isVaildRsData = commentService.isVaild(id);
         if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
         }
 
         RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
         if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
         }
 
         RsData<Comment> updateRsData = commentService.update(id, content);
-        return rq.redirectWithMsg("/post/view/" + postId, updateRsData);
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), updateRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -83,16 +83,16 @@ public class CommentController {
 
         RsData<Comment> isVaildRsData = commentService.isVaild(id);
         if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, isVaildRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
         }
 
         RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
         if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/" + postId, hasPermissionRsData);
+            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
         }
 
         RsData<Comment> deleteRsData = commentService.delete(id);
 
-        return rq.redirectWithMsg("/post/view/" + postId, deleteRsData);
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), deleteRsData);
     }
 }
