@@ -40,7 +40,7 @@ public class FriendControllerTests {
     @WithUserDetails("user1")
     void t001() throws Exception {
         ResultActions resultActions = mvc
-                .perform(post("/friend/follow/닉네임2")
+                .perform(post("/friend/create/닉네임2")
                         .with(csrf()))
                 .andDo(print());
 
@@ -59,7 +59,7 @@ public class FriendControllerTests {
     @WithUserDetails("user1")
     void t002() throws Exception {
         ResultActions resultActions = mvc
-                .perform(post("/friend/follow/닉네임1")
+                .perform(post("/friend/create/닉네임1")
                         .with(csrf()))
                 .andDo(print());
 
@@ -75,7 +75,7 @@ public class FriendControllerTests {
     @WithUserDetails("user2")
     void t003() throws Exception {
         ResultActions resultActions = mvc
-                .perform(post("/friend/follow/닉네임3")
+                .perform(post("/friend/create/닉네임3")
                         .with(csrf()))
                 .andDo(print());
 
@@ -91,7 +91,7 @@ public class FriendControllerTests {
     @WithUserDetails("user1")
     void t004() throws Exception {
         ResultActions resultActions = mvc
-                .perform(post("/friend/follow/없는닉네임")
+                .perform(post("/friend/create/없는닉네임")
                         .with(csrf()))
                 .andDo(print());
 
@@ -107,7 +107,8 @@ public class FriendControllerTests {
     @WithUserDetails("user2")
     void t005() throws Exception {
         ResultActions resultActions = mvc
-                .perform(get("/friend/unfollow/3"))
+                .perform(post("/friend/delete/3")
+                        .with(csrf()))
                 .andDo(print());
 
         resultActions
@@ -126,7 +127,7 @@ public class FriendControllerTests {
     @WithUserDetails("user1")
     void t006() throws Exception {
         ResultActions resultActions = mvc
-                .perform(get("/friend/follow/2"))
+                .perform(get("/friend/create/2"))
                 .andDo(print());
 
         resultActions

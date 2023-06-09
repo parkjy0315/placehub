@@ -76,6 +76,8 @@ public class PlaceController {
             placeList = placeList.stream()
                     .filter(place -> place.getMidCategoryId() == midCategoryId)
                     .collect(Collectors.toList());
+
+            placeList = placeService.findPlaceBySpecificDistance(point, 2000L);
         }
 
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
@@ -88,7 +90,6 @@ public class PlaceController {
 
         return "usr/place/search";
     }
-
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);

@@ -39,7 +39,7 @@ public class FriendController {
 
     // 닉네임 검색으로 팔로우하는 경우
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/follow/{nickname}")
+    @PostMapping("/create/{nickname}")
     public ResponseEntity<String> follow(@PathVariable String nickname) {
 
         RsData<Friend> followRsData = friendService.follow(rq.getMember().getId(), nickname);
@@ -52,7 +52,7 @@ public class FriendController {
 
     // 다른 사용자 페이지에서 팔로우 버튼으로 팔로우하는 경우
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/follow/{followingId}")
+    @GetMapping("/create/{followingId}")
     public String follow(@PathVariable Long followingId) {
 
         RsData<Friend> followRsData = friendService.follow(rq.getMember().getId(), followingId);
@@ -65,7 +65,7 @@ public class FriendController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/unfollow/{followingId}")
+    @PostMapping("/delete/{followingId}")
     public String unfollow(@PathVariable Long followingId) {
 
         Friend friend = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), followingId).orElse(null);

@@ -9,7 +9,6 @@ import java.util.List;
 
 @Data
 public class BasePostFormFromFrontToBack {
-    private String place;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate visitedDate;
     private String content;

@@ -97,7 +97,7 @@ public class MemberController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/myPage")
+    @GetMapping("/page/me")
     public String showMyPage(Model model) {
 
         List<Post> postList = this.postService.findByMember(rq.getMember().getId());
