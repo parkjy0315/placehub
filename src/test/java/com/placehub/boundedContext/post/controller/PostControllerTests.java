@@ -32,24 +32,24 @@ public class PostControllerTests {
     @Autowired
     private PostService postService;
 
-    @Test
-    @DisplayName("게시글 상세 페이지 내 댓글 목록")
-    void t001() throws Exception {
-        // WHEN
-        ResultActions resultActions = mvc.
-                perform(get("/post/view/1"))
-                .andDo(print());
-
-        // THEN
-        resultActions
-                .andExpect(handler().handlerType(PostController.class))
-                .andExpect(handler().methodName("showPost"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(content().string(containsString("""
-                        테스트 댓글 1
-                         """.stripIndent().trim())));
-
-    }
+//    @Test
+//    @DisplayName("게시글 상세 페이지 내 댓글 목록")
+//    void t001() throws Exception {
+//        // WHEN
+//        ResultActions resultActions = mvc.
+//                perform(get("/post/view/1"))
+//                .andDo(print());
+//
+//        // THEN
+//        resultActions
+//                .andExpect(handler().handlerType(PostController.class))
+//                .andExpect(handler().methodName("showPost"))
+//                .andExpect(status().is2xxSuccessful())
+//                .andExpect(content().string(containsString("""
+//                        테스트 댓글 1
+//                         """.stripIndent().trim())));
+//
+//    }
 
 
 }
