@@ -30,12 +30,11 @@ public class FriendServiceTests {
     @DisplayName("사용자 팔로우 테스트")
     void t001() throws Exception{
         RsData<Friend> followRsData = friendService.follow(1L, "닉네임2");
-        Friend follow = friendService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
 
         assertThat(followRsData.getResultCode()).isEqualTo("S-1");
-        assertThat(follow).isNotNull();
-        assertThat(follow.getFollowerId()).isEqualTo(1L);
-        assertThat(follow.getFollowingId()).isEqualTo(2L);
+        assertThat(followRsData.getData()).isNotNull();
+        assertThat(followRsData.getData().getFollowerId()).isEqualTo(1L);
+        assertThat(followRsData.getData().getFollowingId()).isEqualTo(2L);
     }
 
     @Test
@@ -58,5 +57,23 @@ public class FriendServiceTests {
         friendService.follow(1L, "닉네임2");
         RsData<Friend> followRsData = friendService.follow(1L, "닉네임2");
         assertThat(followRsData.getResultCode()).isEqualTo("F-3");
+    }
+
+    @Test
+    @DisplayName("언팔로우 - 닉네임")
+    void t005() throws Exception{
+        Friend friend = friendService.follow(1L, "닉네임2").getData();
+        friendService.unfollow(friend);
+        friend = friendService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
+        assertThat(friend).isNull();
+    }
+
+    @Test
+    @DisplayName("언팔로우 - id")
+    void t006() throws Exception{
+        Friend friend = friendService.follow(1L, 2L).getData();
+        friendService.unfollow(friend);
+        friend = friendService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
+        assertThat(friend).isNull();
     }
 }
