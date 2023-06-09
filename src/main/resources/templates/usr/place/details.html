@@ -25,12 +25,13 @@
 <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
       </div>
       <div sec:authorize="isAuthenticated()">
-        <a th:href="@{|/placeLike/${place.id}|}" class="btn btn-outline btn-sm flex gap-1">
-          좋아요
+        <form th:action="@{|/place/like/${place.id}|}" method="POST">
+          <button class="btn btn-outline btn-sm flex gap-1">좋아요
           <div th:text="${place.likeCount}"></div>
           <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
           <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
-        </a>
+          </button>
+        </form>
       </div>
 
     </div>

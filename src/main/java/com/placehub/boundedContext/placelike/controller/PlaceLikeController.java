@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/placeLike")
+@RequestMapping("/place/like")
 public class PlaceLikeController {
     private final PlaceLikeService placeLikeService;
     private final Rq rq;
 
-    @GetMapping("/{placeId}")
+    @PostMapping("/{placeId}")
     public String likePlace(@PathVariable("placeId") Long placeId){
 
         PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, rq.getMember().getId());
