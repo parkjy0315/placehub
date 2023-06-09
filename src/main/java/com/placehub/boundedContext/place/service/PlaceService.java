@@ -119,6 +119,16 @@ public class PlaceService {
         return categoryNamesList;
     }
 
+    public void isEmptyPlaceInfoList(List<PlaceInfo> placeInfoList) {
+        if (placeInfoList.get(0) == null) {
+            placeInfoList.remove(0);
+        }
+    }
+
+    public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
+        return placeRepository.findPlaceBySpecificDistance(point, distance);
+    }
+
     public void updateLikeCount(Long placeId, int likeCount){
 //        Place place = getPlace(placeId);
 //

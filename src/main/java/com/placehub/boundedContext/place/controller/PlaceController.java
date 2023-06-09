@@ -3,7 +3,6 @@ package com.placehub.boundedContext.place.controller;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
-import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
@@ -13,10 +12,12 @@ import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
-import jakarta.validation.Valid;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +46,22 @@ public class PlaceController {
     }
 
     @GetMapping("/search")
-    public String search(Model model) {
-        List<Place> placeList = placeService.findAll();
+    public String search(Model model,
+                         @RequestParam(value = "longitude", required = false) Double longitude,
+                         @RequestParam(value = "latitude", required = false) Double latitude) {
+
+        List<Place> placeList = null;
+
+        if (longitude == null && latitude == null) {
+            placeList = placeService.findAll();
+        } else {
+            Coordinate coord = new Coordinate(longitude, latitude);
+            GeometryFactory factory = new GeometryFactory();
+            Point point = factory.createPoint(coord);
+
+            placeList = placeService.findPlaceBySpecificDistance(point, 2000L);
+        }
+
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
         List<BigCategory> bigCategories = bigCategoryService.findAll();
         List<MidCategory> midCategories = midCategoryService.findAll();
@@ -57,21 +72,6 @@ public class PlaceController {
 
         return "usr/place/search";
     }
-
-    @PostMapping("/search")
-    public String search(@Valid SearchForm searchForm, Model model) {
-        List<Place> placeList = placeService.findAll();
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<BigCategory> bigCategories = bigCategoryService.findAll();
-        List<MidCategory> midCategories = midCategoryService.findAll();
-
-        model.addAttribute("placeInfoList", placeInfoList);
-        model.addAttribute("bigCategories", bigCategories);
-        model.addAttribute("midCategories", midCategories);
-
-        return "usr/place/search";
-    }
-
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
@@ -81,7 +81,7 @@ public class PlaceController {
 
         model.addAttribute("place", place);
 
-        if(rq.getMember() != null ){
+        if (rq.getMember() != null) {
             PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
             model.addAttribute("placeLike", placeLike);
         }

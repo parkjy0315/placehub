@@ -117,20 +117,28 @@ public class PlaceData {
 
         Category[] categories = categoryFilter(categoryName);
 
-        return placeService.create(
-                categories[0].getId(),
-                categories[1].getId(),
-                categories[2].getId(),
-                placeId, placeName, phone, addressName,
-                point
-        );
+        Place place = Place.builder()
+                .bigCategoryId(categories[0].getId())
+                .midCategoryId(categories[1].getId())
+                .smallCategoryId(categories[2].getId())
+                .placeId(placeId)
+                .placeName(placeName)
+                .phone(phone)
+                .addressName(addressName)
+                .point(point)
+                //.likeCount(0L)
+                .build();
+
+        return place;
     }
     public void saveData(JSONObject element) {
-        Place place = convertPlace(element);
+        Long placeId = Long.parseLong((String) element.get("id"));
 
-        if (placeService.findByPlaceId(place.getPlaceId()) != null) {
+        if (placeService.findByPlaceId(placeId) != null) {
             return;
         }
+
+        Place place = convertPlace(element);
 
         placeService.create(place);
     }
