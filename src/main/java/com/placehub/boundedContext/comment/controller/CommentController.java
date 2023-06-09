@@ -35,64 +35,63 @@ public class CommentController {
         return "/usr/comment/comment";
     }
 
+    // 수정 폼
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/update/{id}")
-    public String update(@PathVariable Long id, Model model) {
-
-        Long postId = commentService.findById(id).get().getPostId();
-
-        RsData<Comment> isVaildRsData = commentService.isVaild(id);
-        if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
-        }
-
-        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
-        if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
-        }
+    public String update(Model model, @PathVariable Long id, @RequestParam Long postId) {
 
         Comment comment = commentService.findById(id).orElse(null);
+
+        RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
+
+        if(checkRsData.isFail()){
+            return rq.historyBack(checkRsData);
+        }
+
         model.addAttribute("comment", comment);
         return "usr/comment/comment_form";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/{id}")
-    public String update(@PathVariable Long id, @RequestParam String content) {
+    public String update(@PathVariable Long id, @RequestParam Long postId, @RequestParam String content) {
 
-        Long postId = commentService.findById(id).get().getPostId();
+        Comment comment = commentService.findById(id).orElse(null);
 
-        RsData<Comment> isVaildRsData = commentService.isVaild(id);
-        if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
+        RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
+
+        if(checkRsData.isFail()){
+            return rq.historyBack(checkRsData);
         }
 
-        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
-        if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
-        }
+        RsData<Comment> updateRsData = commentService.update(comment, content);
 
-        RsData<Comment> updateRsData = commentService.update(id, content);
         return rq.redirectWithMsg("/post/view/%s".formatted(postId), updateRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{id}")
-    public String delete(@PathVariable Long id) {
-        Long postId = commentService.findById(id).get().getPostId();
+    public String delete(@PathVariable Long id, @RequestParam Long postId) {
+        Comment comment = commentService.findById(id).orElse(null);
 
-        RsData<Comment> isVaildRsData = commentService.isVaild(id);
-        if(isVaildRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), isVaildRsData);
+        RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
+
+        if(checkRsData.isFail()){
+            return rq.historyBack(checkRsData);
         }
 
-        RsData<Comment> hasPermissionRsData = commentService.hasPermission(id, rq.getMember());
-        if(hasPermissionRsData.isFail()){
-            return rq.redirectWithMsg("/post/view/%s".formatted(postId), hasPermissionRsData);
-        }
-
-        RsData<Comment> deleteRsData = commentService.delete(id);
+        RsData<Comment> deleteRsData = commentService.delete(comment);
 
         return rq.redirectWithMsg("/post/view/%s".formatted(postId), deleteRsData);
+    }
+
+    private RsData<Comment> checkPermissionAndValidity(Comment comment){
+
+        RsData<Comment> isVaildRsData = commentService.isVaild(comment);
+        if(isVaildRsData.isFail()){
+            return isVaildRsData;
+        }
+
+        return commentService.hasPermission(comment, rq.getMember());
     }
 }

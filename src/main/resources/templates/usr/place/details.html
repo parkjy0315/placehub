@@ -1,10 +1,10 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
-  <title>
-    장소 정보
-  </title>
-  <!-- jQuery CDN -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>
+        장소 정보
+    </title>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -25,18 +25,20 @@
 <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
       </div>
       <div sec:authorize="isAuthenticated()">
-        <a th:href="@{|/placeLike/${place.id}|}" class="btn btn-outline btn-sm flex gap-1">
-          좋아요
-          <div th:text="${place.likeCount}"></div>
-          <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
-          <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
-        </a>
+        <form th:action="@{|/place/like/${placeLike == null ? 'create' : 'delete'}/${place.id}|}" method="POST">
+          <button class="btn btn-outline btn-sm flex gap-1">좋아요
+            <div th:text="${place.likeCount != null ? place.likeCount : 0}"></div>
+            <i th:if="${placeLike == null}" class="fa-regular fa-heart mx-1"></i>
+            <i th:if="${placeLike != null}" class="fa-solid fa-heart text-red-400 mx-1"></i>
+          </button>
+        </form>
       </div>
     </div>
     <a th:href="@{|/post/create/${place.id}|}" class="btn btn-primary btn-sm flex gap-1">
       글쓰기
     </a>
   </div>
+
 </div>
 </body>
 </html>
