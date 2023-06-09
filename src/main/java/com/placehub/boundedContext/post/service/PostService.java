@@ -65,8 +65,8 @@ public class PostService {
         return !userId.equals(null) && !placeId.equals(null) && !visitedDate.isAfter(now);
     }
 
-    private boolean validateModifyingPost(Long placeId, LocalDate visitedDate) {
-        return !placeId.equals(null) && !visitedDate.isAfter(LocalDate.now());
+    private boolean validateModifyingPost(LocalDate visitedDate) {
+        return !visitedDate.isAfter(LocalDate.now());
     }
 
     public long convertPlaceToId(String place) {
@@ -112,8 +112,8 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 
-    public long modifyContent(long postId, long placeId, String content, LocalDate visitedDate) throws RuntimeException{
-        if (!validateModifyingPost(placeId, visitedDate)) {
+    public long modifyContent(long postId, String content, LocalDate visitedDate) throws RuntimeException{
+        if (!validateModifyingPost(visitedDate)) {
             throw new RuntimeException("올바르지 않은 포스팅");
         }
 
@@ -121,7 +121,6 @@ public class PostService {
         Post post = wrappedPost.get();
 
         post = post.toBuilder()
-                .place(placeId)
                 .content(content)
                 .visitedDate(visitedDate)
                 .build();
