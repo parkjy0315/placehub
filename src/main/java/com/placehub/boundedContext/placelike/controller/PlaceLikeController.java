@@ -39,7 +39,7 @@ public class PlaceLikeController {
 
         RsData createRsData = placeLikeService.create(placeId, rq.getMember());
 
-        return rq.redirectWithMsg("/place/details/" + placeId, createRsData);
+        return rq.redirectWithMsg("/place/details/%s".formatted(placeId), createRsData);
     }
 
 }

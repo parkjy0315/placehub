@@ -20,6 +20,14 @@
                     <div class="flex flex-col justify-center gap-4">
                         <div class="flex gap-4">
                             <span class="text-2xl font-bold" th:text="${friend.nickname}"></span>
+                            <div sec:authorize="isAuthenticated()">
+                                <a th:if="${follow} != null " th:href="@{|/friend/unfollow/${friend.id}|}" class="btn btn-warning btn-sm">
+                                    언팔로우
+                                </a>
+                                <a th:if="${follow} == null " th:href="@{|/friend/follow/${friend.id}|}" class="btn btn-success btn-sm">
+                                    팔로우
+                                </a>
+                            </div>
                         </div>
                         <div>
                             <div id="bioContainer" class="flex gap-5">
@@ -61,6 +69,7 @@
                     <div class="mx-2">
                         <button id="myPlaceTimelineBtn" class="font-bold">타임라인으로 보기</button>
                     </div>
+                    <div class="divider divider-horizontal !mx-1"></div>
                     <div class="mx-2">
                         <button id="myPlaceMapBtn">지도로 보기</button>
                     </div>
