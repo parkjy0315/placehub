@@ -17,4 +17,6 @@ import lombok.experimental.SuperBuilder;
 public class MidCategory extends Category {
     @Column(unique = true)
     private String categoryName;
+
+    private Long bigCategoryId;
 }

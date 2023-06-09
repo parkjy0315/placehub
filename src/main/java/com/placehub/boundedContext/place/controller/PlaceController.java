@@ -5,8 +5,10 @@ import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
+import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
+import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
@@ -34,6 +36,7 @@ public class PlaceController {
     private final PlaceService placeService;
     private final BigCategoryService bigCategoryService;
     private final MidCategoryService midCategoryService;
+    private final SmallCategoryService smallCategoryService;
     private final PlaceLikeService placeLikeService;
     private final PlaceData placeData;
     private final Rq rq;
@@ -54,10 +57,16 @@ public class PlaceController {
                          @RequestParam(value = "midCategoryId", required = false) Long midCategoryId) {
 
         List<Place> placeList = null;
+        List<BigCategory> bigCategories = bigCategoryService.findAll();
+        List<MidCategory> midCategories = midCategoryService.findAll();
+        List<SmallCategory> smallCategories = smallCategoryService.findAll();
+        model.addAttribute("bigCategories", bigCategories);
+        model.addAttribute("midCategories", midCategories);
+        model.addAttribute("smallCategories", smallCategories);
 
         // 위치 처리
         if (longitude == null && latitude == null) {
-            placeList = placeService.findAll();
+            return "usr/place/search";
         } else {
             Coordinate coord = new Coordinate(longitude, latitude);
             GeometryFactory factory = new GeometryFactory();
@@ -79,12 +88,7 @@ public class PlaceController {
         }
 
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<BigCategory> bigCategories = bigCategoryService.findAll();
-        List<MidCategory> midCategories = midCategoryService.findAll();
-
         model.addAttribute("placeInfoList", placeInfoList);
-        model.addAttribute("bigCategories", bigCategories);
-        model.addAttribute("midCategories", midCategories);
 
         return "usr/place/search";
     }

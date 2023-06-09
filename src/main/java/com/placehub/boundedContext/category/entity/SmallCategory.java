@@ -19,4 +19,6 @@ import java.util.Calendar;
 public class SmallCategory extends Category {
     @Column(unique = true)
     private String categoryName;
+
+    private Long midCategoryId;
 }

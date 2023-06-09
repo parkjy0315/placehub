@@ -17,6 +17,32 @@
 
             form.submit();
         }
+
+        function showRelatedOptions(selectElement) {
+            var relatedSelect = document.getElementById("midSelect");
+            var selectedValue = selectElement.value;
+            var options = relatedSelect.options;
+
+            // 관련된 옵션들을 초기화
+            relatedSelect.innerHTML = "";
+
+            for (var i = 0; i < options.length; i++) {
+                var option = options[i];
+                var classValue = option.getAttribute("class");
+                console.log(classValue);
+                if (classValue === selectedValue) {
+                    relatedSelect.appendChild(option.cloneNode(true));
+                }
+            }
+
+            if (relatedSelect.innerHTML !== "") {
+                console.log("추가");
+                relatedSelect.style.display = "block";
+            } else {
+                console.log("아님");
+                relatedSelect.style.display = "none";
+            }
+        }
     </script>
   <div class="hero-content flex-col mb-10">
     <div class="max-w-2xl w-full px-4">
@@ -26,7 +52,7 @@
 
         <div class="bg-gray-30">
             <div class="container mx-auto py-8">
-                <div class="grid grid-cols-3 gap-3">
+                <div class="grid grid-cols-5 gap-3">
                     <form class="flex" th:action method="get" onsubmit=submitCheck(this); return false;>
                         <input type="hidden" name="latitude" id="latitude">
                         <input type="hidden" name="longitude" id="longitude">
@@ -42,32 +68,39 @@
                                     <div class="form-select-arrow"></div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="w-64 mx-auto mt-8 p-4 m-2">
-                            <div class="w-full">
-                                <div class="relative">
-                                    <select class="select-lg form-select">
+                            <div class="w-64 mx-auto mt-8 p-4 m-2">
+                                <div class="w-64 mx-auto mt-8 p-4 m-2">
+                                    <select name="bigCategoryId" class="select-lg form-select">
                                         <option disabled selected>대분류</option>
-                                        <option th:each="bigCategory, loop : ${bigCategories}" id="bigCategoryId" th:value="${bigCategory.id}"
+                                        <option th:each="bigCategory, loop : ${bigCategories}"
+                                                th:value="${bigCategory.id}"
                                                 th:text="${bigCategory.categoryName}"></option>
                                     </select>
                                     <div class="form-select-arrow"></div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="w-64 mx-auto mt-8 p-4 m-2">
-                            <div class="w-full">
-                                <div class="relative">
-                                    <select class="select-lg form-select">
+                                <div class="w-64 mx-auto mt-8 p-4 m-2">
+                                    <select name="midCategoryId" id="midSelect" class="select-lg form-select">
                                         <option disabled selected>중분류</option>
-                                        <option th:each="midCategory, loop : ${midCategories}" id="midCategoryId" th:value="${midCategory.id}"
+                                        <option th:each="midCategory, loop : ${midCategories}"
+                                                th:class="${midCategory.bigCategoryId}"
+                                                th:value="${midCategory.id}"
                                                 th:text="${midCategory.categoryName}"></option>
+                                    </select>
+                                    <div class="form-select-arrow"></div>
+                                </div>
+                                <div class="w-64 mx-auto mt-8 p-4 m-2">
+                                    <select name="smallCategoryId" id="smallSelect" class="select-lg form-select">
+                                        <option disabled selected>소분류</option>
+                                        <option th:each="smallCategory, loop : ${smallCategories}"
+                                                th:class="${smallCategory.midCategoryId}"
+                                                th:value="${smallCategory.id}"
+                                                th:text="${smallCategory.categoryName}"></option>
                                     </select>
                                     <div class="form-select-arrow"></div>
                                 </div>
                             </div>
                         </div>
-                        <div class="text-center">
+                        <div class="text-center flex justify-content items-center w-64 mx-auto mt-8 p-4 m-2">
                             <button type="submit" class="btn btn-primary bg-blue-700 w-50">검색</button>
                         </div>
                     </form>

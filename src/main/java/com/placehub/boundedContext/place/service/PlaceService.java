@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PlaceService {
     private final PlaceRepository placeRepository;
     private final BigCategoryService bigCategoryService;

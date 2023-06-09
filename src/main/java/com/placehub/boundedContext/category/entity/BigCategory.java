@@ -15,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BigCategory extends Category {
-
     @Column(unique = true)
     private String categoryName;
 }
