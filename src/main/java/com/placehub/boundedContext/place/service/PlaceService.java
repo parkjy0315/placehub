@@ -60,7 +60,7 @@ public class PlaceService {
                 .phone(phone)
                 .addressName(addressName)
                 .point(point)
-                //.likeCount(0L)
+                .likeCount(0L)
                 .build();
         return placeRepository.save(place);
     }
@@ -127,32 +127,28 @@ public class PlaceService {
         );
     }
 
-
     public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
         return placeRepository.findPlaceBySpecificDistance(point, distance);
-    }
-
-    @Transactional
-    public void updateLikeCount(Long placeId, int likeCount){
-//        Place place = getPlace(placeId);
-//
-//        if(place.getLikeCount() == null){
-//            place = place.toBuilder().likeCount(0L).build();
-//        }
-//
-//        if(updateCode.equals("D")){
-//            place = place.toBuilder().likeCount(place.getLikeCount()-1).build();
-//        }
-//
-//        place = place.toBuilder().likeCount(place.getLikeCount()+1).build();
-
-        Place place = getPlace(placeId).toBuilder().likeCount((long) likeCount).build();
-
-        placeRepository.save(place);
     }
 
     public List<Place> findByPlaceLikeList_MemberId(Long memberId){
         return placeRepository.findByPlaceLikeList_MemberId(memberId);
     }
 
+    @Transactional
+    public void whenUpdatePlaceLike(Long placeId, boolean isCreated) {
+        Place place = getPlace(placeId);
+
+        if(place.getLikeCount() == null){
+            place = place.toBuilder().likeCount(0L).build();
+        }
+
+        if(isCreated){
+            place = place.toBuilder().likeCount(place.getLikeCount()+1).build();
+        }else {
+            place = place.toBuilder().likeCount(place.getLikeCount()-1).build();
+        }
+
+        placeRepository.save(place);
+    }
 }

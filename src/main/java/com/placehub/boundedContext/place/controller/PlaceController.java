@@ -92,7 +92,6 @@ public class PlaceController {
 
         return "usr/place/search";
     }
-
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);

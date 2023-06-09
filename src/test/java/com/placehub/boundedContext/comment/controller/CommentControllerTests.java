@@ -79,6 +79,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/update/1")
                         .with(csrf()) // CSRF 키 생성
+                        .param("postId", "1")
                         .param("content", "테스트 댓글 1 - 수정")
                 )
                 .andDo(print());
@@ -107,6 +108,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/update/1")
                         .with(csrf()) // CSRF 키 생성
+                        .param("postId", "1")
                         .param("content", "테스트 댓글 1 - 수정")
                 )
                 .andDo(print());
@@ -115,8 +117,7 @@ public class CommentControllerTests {
         resultActions
                 .andExpect(handler().handlerType(CommentController.class))
                 .andExpect(handler().methodName("update"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/post/view/1**"));
+                .andExpect(status().is4xxClientError());
         ;
 
         Comment comment = commentService.findById(1L).orElse(null);
@@ -135,6 +136,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/delete/1")
                         .with(csrf()) // CSRF 키 생성
+                        .param("postId", "1")
                 )
                 .andDo(print());
 
@@ -158,6 +160,7 @@ public class CommentControllerTests {
         ResultActions resultActions = mvc
                 .perform(post("/comment/delete/1")
                         .with(csrf()) // CSRF 키 생성
+                        .param("postId", "1")
                 )
                 .andDo(print());
 
@@ -165,8 +168,7 @@ public class CommentControllerTests {
         resultActions
                 .andExpect(handler().handlerType(CommentController.class))
                 .andExpect(handler().methodName("delete"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("/post/view/1**"));
+                .andExpect(status().is4xxClientError());
         ;
 
         Comment comment = commentService.findById(1L).orElse(null);

@@ -21,12 +21,12 @@
                         <div class="flex gap-4">
                             <span class="text-2xl font-bold" th:text="${friend.nickname}"></span>
                             <div sec:authorize="isAuthenticated()">
-                                <a th:if="${follow} != null " th:href="@{|/friend/unfollow/${friend.id}|}" class="btn btn-warning btn-sm">
-                                    언팔로우
-                                </a>
-                                <a th:if="${follow} == null " th:href="@{|/friend/follow/${friend.id}|}" class="btn btn-success btn-sm">
-                                    팔로우
-                                </a>
+                                <form th:if="${follow} != null " th:action="@{|/friend/delete/${friend.id}|}" method="POST">
+                                    <button type="submit" class="btn btn-warning btn-sm">언팔로우</button>
+                                </form>
+                                <form th:if="${follow} == null" th:action="@{|/friend/create/${friend.id}|}" method="GET">
+                                    <button type="submit" class="btn btn-success btn-sm">팔로우</button>
+                                </form>
                             </div>
                         </div>
                         <div>
