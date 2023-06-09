@@ -195,18 +195,18 @@
 
             <div class="flex justify-center mb-5">
                 <div class="flex flex-col gap-4">
-                    <div class="card mb-5">
-                        <div class="text-2xl font-bold mb-2">공간 추가</div>
-                        <div class="dropdown dropdown-bottom">
-                            <select name="place" id="place" class="select select-bordered w-full max-w-xs">
-                                <option th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}">서울 시청</option>
+<!--                    <div class="card mb-5">-->
+<!--                        <div class="text-2xl font-bold mb-2">공간 추가</div>-->
+<!--                        <div class="dropdown dropdown-bottom">-->
+<!--                            <select name="place" id="place" class="select select-bordered w-full max-w-xs">-->
+<!--                                <option th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}">서울 시청</option>-->
 
-                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '서울 시청'}">서울 시청</option>
+<!--                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '서울 시청'}">서울 시청</option>-->
 
-                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '부산 시청'}">부산 시청</option>
-                            </select>
-                        </div>
-                    </div>
+<!--                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '부산 시청'}">부산 시청</option>-->
+<!--                            </select>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <div class="card mb-5">
                         <div class="text-2xl font-bold mb-2">방문한 날짜</div>
