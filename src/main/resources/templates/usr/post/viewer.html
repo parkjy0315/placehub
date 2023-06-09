@@ -106,11 +106,15 @@
                             <div sec:authorize="isAuthenticated()"
                                  th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
                                 <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">
+                                    <input type="hidden" name="postId" th:value="${comment.postId}"/>
                                     <button type="submit" class="px-4 py-2 btn btn-outline btn-sm">수정</button>
                                 </form>
-                                <form th:action="@{/comment/delete/{id}(id=${comment.id})}" method="post">
-                                    <input type="hidden" name="_method" value="delete">
-                                    <button type="submit" class="px-4 py-2 btn btn-outline btn-sm ">삭제</button>
+                                <a class="px-4 py-2 btn btn-outline btn-sm"
+                                   href="javascript:;"
+                                   onclick="if ( confirm('정말로 삭제하시겠습니까?') ) $(this).next().submit();">
+                                    삭제</a>
+                                <form th:action="@{/comment/delete/{id}(id=${comment.id})}" method="POST">
+                                    <input type="hidden" name="postId" th:value="${comment.postId}"/>
                                 </form>
                             </div>
                         </div>
