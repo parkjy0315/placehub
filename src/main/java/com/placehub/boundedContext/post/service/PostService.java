@@ -113,6 +113,10 @@ public class PostService {
 
     }
 
+    public RsData<String> displayPlaceDuringCreating(long placeId) {
+        return RsData.of("S-1", "장소명 확인 성공", placeRepository.findById(placeId).get().getPlaceName());
+    }
+
     public RsData<Viewer> showSinglePost(long postid) {
         Viewer viewer = new Viewer();
         Optional<Post> tmpPost = postRepository.findById(postid);
