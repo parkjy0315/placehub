@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -48,10 +49,13 @@ public class PlaceController {
     @GetMapping("/search")
     public String search(Model model,
                          @RequestParam(value = "longitude", required = false) Double longitude,
-                         @RequestParam(value = "latitude", required = false) Double latitude) {
+                         @RequestParam(value = "latitude", required = false) Double latitude,
+                         @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
+                         @RequestParam(value = "midCategoryId", required = false) Long midCategoryId) {
 
         List<Place> placeList = null;
 
+        // 위치 처리
         if (longitude == null && latitude == null) {
             placeList = placeService.findAll();
         } else {
@@ -60,6 +64,18 @@ public class PlaceController {
             Point point = factory.createPoint(coord);
 
             placeList = placeService.findPlaceBySpecificDistance(point, 2000L);
+        }
+
+        // 카테고리 처리
+        if (bigCategoryId != null) {
+            placeList = placeList.stream()
+                    .filter(place -> place.getBigCategoryId() == bigCategoryId)
+                    .collect(Collectors.toList());
+        }
+        if (midCategoryId != null) {
+            placeList = placeList.stream()
+                    .filter(place -> place.getMidCategoryId() == midCategoryId)
+                    .collect(Collectors.toList());
         }
 
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
@@ -72,6 +88,7 @@ public class PlaceController {
 
         return "usr/place/search";
     }
+
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
@@ -79,7 +96,8 @@ public class PlaceController {
             throw new RuntimeException("해당 장소는 없습니다.");
         }
 
-        model.addAttribute("place", place);
+        PlaceInfo placeInfo = placeService.getCategoryNames(place);
+        model.addAttribute("placeInfo", placeInfo);
 
         if (rq.getMember() != null) {
             PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());

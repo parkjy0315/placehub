@@ -119,6 +119,15 @@ public class PlaceService {
         return categoryNamesList;
     }
 
+    public PlaceInfo getCategoryNames(Place place) {
+        return new PlaceInfo(place,
+                bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName(),
+                midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
+                smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
+        );
+    }
+
+
     public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
         return placeRepository.findPlaceBySpecificDistance(point, distance);
     }
