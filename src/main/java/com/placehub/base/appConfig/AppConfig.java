@@ -14,5 +14,8 @@ public class AppConfig {
         public static final int USERNAME_MAX_LENGTH = 20;
         public static final int PASSWORD_MIN_LENGTH = 4;
         public static final int PASSWORD_MAX_LENGTH = 20;
+
+        public static final int NICKNAME_MIN_LENGTH = 2;
+        public static final int NICKNAME_MAX_LENGTH = 20;
     }
 }
