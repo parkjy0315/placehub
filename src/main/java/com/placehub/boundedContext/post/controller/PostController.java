@@ -8,6 +8,7 @@ import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.ImageControlOptions;
 import com.placehub.boundedContext.post.service.ImageService;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class PostController {
 
         long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
 
-        RsData imageSavingResult = imageService.controlImage(images, postId);
+        RsData imageSavingResult = imageService.controlImage(images, postId, ImageControlOptions.CREATE);
 
         return "redirect:/post/list";
     }
@@ -82,12 +83,13 @@ public class PostController {
 
     @PostMapping("softDelete/{postId}")
     public String deletePost(@PathVariable long postId) throws RuntimeException {
-        RsData response = postService.deletePost(postId);
-        if (response.isFail()) {
+        RsData contentDelete = postService.deletePost(postId);
+        RsData imgDelete = imageService.deleteAllInPost(postId);
+        if (contentDelete.isFail() || imgDelete.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        return rq.redirectWithMsg("/post/list", response);
+        return rq.redirectWithMsg("/post/list", contentDelete);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -121,8 +123,9 @@ public class PostController {
         String content = modifyingForm.getContent();
         LocalDate visitedDate = modifyingForm.getVisitedDate();
         List<MultipartFile> images = modifyingForm.getImages();
-        postService.modifyContent(postId, placeId, content, visitedDate);
 
+        postService.modifyContent(postId, placeId, content, visitedDate);
+        imageService.controlImage(images, postId, ImageControlOptions.MODIFY);
         return "redirect:/post/list";
     }
 
