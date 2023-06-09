@@ -27,7 +27,7 @@
       <div sec:authorize="isAuthenticated()">
         <form th:action="@{|/place/like/${place.id}|}" method="POST">
           <button class="btn btn-outline btn-sm flex gap-1">좋아요
-          <div th:text="${place.likeCount}"></div>
+          <div th:text="${place.likeCount != null ? place.likeCount : 0}" ></div>
           <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
           <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
           </button>

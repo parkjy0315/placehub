@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.placelike.service;
 
+import com.placehub.base.event.EventAfterUpdatePlaceLike;
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.place.entity.Place;
@@ -7,6 +8,7 @@ import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.repository.PlaceLikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,13 @@ public class PlaceLikeService {
 
     private final PlaceLikeRepository placeLikeRepository;
     private final PlaceService placeService;
+    private final ApplicationEventPublisher publisher;
 
 
     // 현재 상태 확인
-    public boolean isPlaceLiked(Long placeId, Member actor) {
-        return placeLikeRepository.existsByPlaceIdAndMemberId(placeId, actor.getId());
+    public boolean isPresent(PlaceLike placeLike) {
+        if(placeLike == null) return false;
+        return true;
     }
 
     @Transactional
@@ -39,9 +43,7 @@ public class PlaceLikeService {
 
         placeLikeRepository.save(placeLike);
 
-        //TODO : member와 place에 등록
-        int likeCount = findByPlaceId(placeId).size();
-        placeService.updateLikeCount(placeId, likeCount);
+        publisher.publishEvent(new EventAfterUpdatePlaceLike(this, placeLike.getPlaceId(), true));
 
         String placeName = place.getPlaceName();
 
@@ -55,10 +57,7 @@ public class PlaceLikeService {
 
         placeLikeRepository.delete(placeLike);
 
-        //TODO : member와 place에서 삭제
-        int likeCount = findByPlaceId(placeLike.getPlaceId()).size();
-        // 다른 애그리거트를 건드는 것 수정 필요
-        placeService.updateLikeCount(placeLike.getPlaceId(), likeCount);
+        publisher.publishEvent(new EventAfterUpdatePlaceLike(this, placeLike.getPlaceId(), false));
 
         return RsData.of("F-1", "%s에 대한 좋아요가 취소되었습니다.".formatted(placeName));
     }
@@ -73,7 +72,7 @@ public class PlaceLikeService {
             return RsData.of("F-1", "취소 권한이 없습니다");
         }
 
-        return RsData.of("S-1", "취소 가능합니다.");
+        return RsData.of("S-1", "취소 가능합니다.", placeLike);
     }
 
 

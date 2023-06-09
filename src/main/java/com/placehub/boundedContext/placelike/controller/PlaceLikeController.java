@@ -2,6 +2,7 @@ package com.placehub.boundedContext.placelike.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
 import lombok.RequiredArgsConstructor;
@@ -22,22 +23,24 @@ public class PlaceLikeController {
     @PostMapping("/{placeId}")
     public String likePlace(@PathVariable("placeId") Long placeId){
 
-        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, rq.getMember().getId());
+        Member actor = rq.getMember();
 
-        boolean isLiked = placeLikeService.isPlaceLiked(placeId, rq.getMember());
+        PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, actor.getId());
+        Boolean isPresent = placeLikeService.isPresent(placeLike);
 
-        if(isLiked){
-            RsData canDeleteRsData = placeLikeService.canDelete(placeLike, rq.getMember());
+        // 존재하면 삭제
+        if(isPresent){
+            RsData canDeleteRsData = placeLikeService.canDelete(placeLike, actor);
 
             if(canDeleteRsData.isFail()) {
                 return rq.historyBack(canDeleteRsData);
             }
 
             RsData deleteRsData = placeLikeService.delete(placeLike);
-            return rq.historyBack(deleteRsData);
+            return rq.redirectWithMsg("/place/details/%s".formatted(placeId), deleteRsData);
         }
 
-        RsData createRsData = placeLikeService.create(placeId, rq.getMember());
+        RsData createRsData = placeLikeService.create(placeId, actor);
 
         return rq.redirectWithMsg("/place/details/%s".formatted(placeId), createRsData);
     }
