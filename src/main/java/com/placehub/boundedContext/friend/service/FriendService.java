@@ -34,7 +34,7 @@ public class FriendService {
                 .build();
 
         friendRepository.save(newFriend);
-        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
+        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()), newFriend);
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class FriendService {
                 .build();
 
         friendRepository.save(newFriend);
-        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()));
+        return RsData.of("S-1", "%s님을 팔로우합니다.".formatted(followingMember.getNickname()), newFriend);
     }
 
     private RsData<Friend> canFollow(Long followerId, Member followingMember) {
@@ -84,7 +84,7 @@ public class FriendService {
 
         friendRepository.delete(friend);
 
-        return RsData.of("S-1", "언팔로우 되었습니다.");
+        return RsData.of("S-1", "언팔로우 되었습니다.", friend);
     }
 
     public Optional<Friend> findById(Long id) {
