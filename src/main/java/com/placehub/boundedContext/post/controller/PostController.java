@@ -33,17 +33,16 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final ImageService imageService;
-    @GetMapping("/create")
+    @GetMapping("/create/{placeId}")
     public String create() {
         return "usr/post/create";
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/create")
-    public String create(@Valid CreatingForm creatingForm) {
+    @PostMapping("/create/{placeId}")
+    public String create(@Valid CreatingForm creatingForm, @PathVariable long placeId) {
         long userId = rq.getMember().getId();
 
-        long placeId = postService.convertPlaceToId(creatingForm.getPlace());
         boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
         String content = creatingForm.getContent();
         LocalDate visitedDate = creatingForm.getVisitedDate();
@@ -119,12 +118,11 @@ public class PostController {
             return postOwnerValidation.getMsg();
         }
 
-        long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
         String content = modifyingForm.getContent();
         LocalDate visitedDate = modifyingForm.getVisitedDate();
         List<MultipartFile> images = modifyingForm.getImages();
 
-        postService.modifyContent(postId, placeId, content, visitedDate);
+        postService.modifyContent(postId, content, visitedDate);
         imageService.controlImage(images, postId, ImageControlOptions.MODIFY);
         return "redirect:/post/list";
     }
