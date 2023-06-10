@@ -13,28 +13,39 @@
     <div class="max-w-2xl w-full px-4">
       <div>
         <div class="flex flex-col items-center my-5">
-          <h1 th:text="${place.placeName}" class="text-4xl my-2 font-bold"></h1>
+          <h1 th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
           <div class="flex gap-1">
             <i class="fa-regular fa-clock origin-center"></i>
-            <div th:text="|${place.addressName}" class="flex justify-center"></div>
+            <div th:text="${placeInfo.place.addressName}" class="flex justify-center"></div>
           </div>
         </div>
       </div>
       <div>
-        <div class="h-24 mt-10" th:text="${place.phone}"></div>
+        <div class="h-24 mt-10" th:text="${placeInfo.place.phone}"></div>
 <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
       </div>
+
+      <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+        <div class="badge badge-accent badge-md" th:text="${placeInfo.bigCategoryName}"></div>
+      </div>
+      <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+        <div class="badge badge-accent badge-md" th:text="${placeInfo.midCategoryName}"></div>
+      </div>
+      <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+        <div class="badge badge-accent badge-md" th:text="${placeInfo.smallCategoryName}"></div>
+      </div>
+
       <div sec:authorize="isAuthenticated()">
-        <form th:action="@{|/place/like/${placeLike == null ? 'create' : 'delete'}/${place.id}|}" method="POST">
+        <form th:action="@{|/place/like/${placeLike == null ? 'create' : 'delete'}/${placeInfo.place.id}|}" method="POST">
           <button class="btn btn-outline btn-sm flex gap-1">좋아요
-            <div th:text="${place.likeCount != null ? place.likeCount : 0}"></div>
+            <span th:text="${placeInfo.place.likeCount != null ? place.likeCount : 0}"></span>
             <i th:if="${placeLike == null}" class="fa-regular fa-heart mx-1"></i>
             <i th:if="${placeLike != null}" class="fa-solid fa-heart text-red-400 mx-1"></i>
           </button>
         </form>
       </div>
     </div>
-    <a th:href="@{|/post/create/${place.id}|}" class="btn btn-primary btn-sm flex gap-1">
+    <a th:href="@{|/post/create/${placeInfo.place.id}|}" class="btn btn-primary btn-sm flex gap-1">
       글쓰기
     </a>
   </div>
