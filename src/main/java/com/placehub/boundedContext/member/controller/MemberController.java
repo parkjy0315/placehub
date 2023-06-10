@@ -13,6 +13,7 @@ import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -106,7 +108,13 @@ public class MemberController {
         List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
         List<Member> followerList = friendService.findFollower(rq.getMember().getId());
 
+        List<Viewer> postViewerList = new ArrayList<>();
+        for (Post post : postList) {
+            postViewerList.add(postService.showSinglePost(post.getId()).getData());
+        }
+
         model.addAttribute("postList", postList);
+        model.addAttribute("postViewerList", postViewerList);
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
