@@ -79,7 +79,7 @@
 
             <div th:if="${#lists.size(postList)} > 0">
                 <a th:each="post, loop : ${postList}">
-                    <a th:href="@{|/post/view/${post.place}|}" class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
+                    <a th:href="@{|/post/view/${post.postId}|}" class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
                         <div class="card-body">
                             <div class="flex items-center gap-3">
                                 <div th:text="${post.getUsername()}" class="text-lg font-bold"></div>
