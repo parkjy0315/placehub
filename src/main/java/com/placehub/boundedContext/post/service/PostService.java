@@ -69,22 +69,6 @@ public class PostService {
         return !visitedDate.isAfter(LocalDate.now());
     }
 
-    public long convertPlaceToId(String place) {
-        if (place.equals("서울 시청")) {
-            return 1L;
-        }
-
-        return 2L;
-    }
-
-    public String convertIdToPlace(long placeId) {
-        if (placeId == 1L) {
-            return "서울 시청";
-        }
-
-        return "부산 시청";
-    }
-
     public List<Post> getPostsByPlace(long placeId) {
         Optional<List<Post>> postList = postRepository.findPostsByPlace(placeId);
 
@@ -129,9 +113,13 @@ public class PostService {
 
     }
 
-    public RsData<Viewer> showSinglePost(long postid) {
+    public RsData<String> displayPlaceDuringCreating(long placeId) {
+        return RsData.of("S-1", "장소명 확인 성공", placeRepository.findById(placeId).get().getPlaceName());
+    }
+
+    public RsData<Viewer> showSinglePost(long postId) {
         Viewer viewer = new Viewer();
-        Optional<Post> tmpPost = postRepository.findById(postid);
+        Optional<Post> tmpPost = postRepository.findById(postId);
 
         if (tmpPost.isEmpty()) {
             return RsData.of("F-2", "존재하지 않는 포스팅입니다");
@@ -144,9 +132,12 @@ public class PostService {
         viewer.setUsername(member.getNickname());
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
-        viewer.setPostId(postid);
-        viewer.setPlaceName(convertIdToPlace(post.getPlace()));
+        viewer.setPostId(postId);
+        viewer.setPlaceName(placeRepository.findById(post.getPlace()).get().getPlaceName());
         viewer.setOpenToPublic(post.isOpenToPublic());
+        viewer.setMember(post.getMember());
+        viewer.setPlace(post.getPlace());
+
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 
@@ -170,5 +161,8 @@ public class PostService {
     }
     public List<Post> findByMember(Long memberId) {
         return postRepository.findByMember(memberId);
+    }
+    public List<Post> findByPlace(Long placeId) {
+        return postRepository.findByPlace(placeId);
     }
 }

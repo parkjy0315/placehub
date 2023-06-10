@@ -9,44 +9,97 @@
 
 <body>
 <div layout:fragment="content">
-  <div class="hero-content flex-col">
-    <div class="max-w-2xl w-full px-4">
-      <div>
-        <div class="flex flex-col items-center my-5">
-          <h1 th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
-          <div class="flex gap-1">
-            <i class="fa-regular fa-clock origin-center"></i>
-            <div th:text="${placeInfo.place.addressName}" class="flex justify-center"></div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="h-24 mt-10" th:text="${placeInfo.place.phone}"></div>
-<!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
-      </div>
-      <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
-        <div class="badge badge-accent badge-md" th:text="${placeInfo.bigCategoryName}"></div>
-      </div>
-      <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
-        <div class="badge badge-accent badge-md" th:text="${placeInfo.midCategoryName}"></div>
-      </div>
-      <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
-        <div class="badge badge-accent badge-md" th:text="${placeInfo.smallCategoryName}"></div>
-      </div>
-      <div sec:authorize="isAuthenticated()">
-        <a th:href="@{|/placeLike/${placeInfo.place.id}|}" class="btn btn-outline btn-sm flex gap-1">
-          좋아요
-          <div th:text="${placeInfo.place.likeCount}"></div>
-          <i th:if="${placeLike} == null" class="fa-regular fa-heart mx-1"></i>
-          <i th:if="${placeLike} != null" class="fa-solid fa-heart text-red-400 mx-1"></i>
-        </a>
-      </div>
-    </div>
-    <a th:href="@{|/post/create/${placeInfo.place.id}|}" class="btn btn-primary btn-sm flex gap-1">
-      글쓰기
-    </a>
-  </div>
 
+    <div class="flex flex-col" style="width: 640px">
+        <div class="hero-content flex-col">
+            <div class="max-w-2xl w-full my-5">
+                <div>
+                    <div class="flex flex-col items-center my-5">
+                        <h1 th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
+                        <div class="flex gap-1">
+                            <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+                                <div class="badge badge-outline badge-md" th:text="${placeInfo.bigCategoryName}"></div>
+                                >
+                            </div>
+                            <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+                                <div class="badge badge-outline badge-md" th:text="${placeInfo.midCategoryName}"></div>
+                                >
+                            </div>
+                            <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                <div class="badge badge-outline badge-md" th:text="${placeInfo.smallCategoryName}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border border-gray-300 rounded-lg">
+                    <div class="h-96"> 지도</div>
+                </div>
+
+                <div class="flex flex-col gap-3 mt-10">
+                    <div class="flex gap-2">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div th:text="${placeInfo.place.addressName}"></div>
+                    </div>
+                    <div th:if="${placeInfo.place.phone.length()} > 0" class="flex gap-2">
+                        <i class="fa-solid fa-phone"></i>
+                        <div th:text="${placeInfo.place.phone}"></div>
+                        <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
+                    </div>
+                    <div class="flex justify-center gap-5 mt-5">
+                        <div sec:authorize="isAuthenticated()">
+                            <form th:action="@{|/place/like/${placeLike == null ? 'create' : 'delete'}/${placeInfo.place.id}|}"
+                                  method="POST">
+                                <button class="btn btn-outline flex gap-1">좋아요
+                                    <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
+                                    <i th:if="${placeLike == null}" class="fa-regular fa-heart mx-1"></i>
+                                    <i th:if="${placeLike != null}" class="fa-solid fa-heart text-red-400 mx-1"></i>
+                                </button>
+                            </form>
+                        </div>
+                        <div>
+                            <a th:href="@{|/post/create/${placeInfo.place.id}|}" class="btn btn-primary flex gap-1">
+                                나의 아카이빙에 추가하기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-5 w-2xl mt-5 mb-10 p-4">
+            <div>
+                <div class="text-lg font-bold">등록된 아카이빙</div>
+                <div class="divider !my-2"></div>
+            </div>
+            <div th:if="${#lists.size(postList)} == 0" class="hero-content">
+                <div>등록된 아카이빙이 없습니다.</div>
+            </div>
+
+            <div th:if="${#lists.size(postList)} > 0">
+                <a th:each="post, loop : ${postList}">
+                    <a th:href="@{|/post/view/${post.place}|}" class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
+                        <div class="card-body">
+                            <div class="flex items-center gap-3">
+                                <div th:text="${post.getUsername()}" class="text-lg font-bold"></div>
+                                <div class="flex gap-1">
+                                    <i class="fa-regular fa-clock origin-center"></i>
+                                    <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"
+                                    ></span>
+                                </div>
+                            </div>
+                            <div>
+                            <span th:text="${#strings.length(post.content) > 150 ?
+                            #strings.substring(post.content, 0, 150) + '...' : post.content}"
+                                  class=" text-sm text-gray-400"></span>
+                            </div>
+                        </div>
+                    </a>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

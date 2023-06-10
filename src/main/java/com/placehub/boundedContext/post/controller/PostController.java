@@ -34,7 +34,9 @@ public class PostController {
     private final CommentService commentService;
     private final ImageService imageService;
     @GetMapping("/create/{placeId}")
-    public String create() {
+    public String create(Model model, @PathVariable("placeId") long placeId) {
+        RsData<String> placeName = postService.displayPlaceDuringCreating(placeId);
+        model.addAttribute("placeName", placeName);
         return "usr/post/create";
     }
 
@@ -52,7 +54,7 @@ public class PostController {
 
         RsData imageSavingResult = imageService.controlImage(images, postId, ImageControlOptions.CREATE);
 
-        return "redirect:/post/list";
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), "아카이빙이 등록되었습니다.");
     }
 
     @GetMapping("/list")

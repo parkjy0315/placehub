@@ -41,7 +41,8 @@
         <div class="max-w-7xl w-full px-4">
             <div>
                 <div class="flex flex-col items-center my-5">
-                    <h1 th:text="${postView.getData().username}" class="text-4xl my-2 font-bold"></h1>
+                    <a th:href="@{|/place/details/${postView.getData().place}|}" th:text="${postView.getData().placeName}" class="text-4xl my-2 font-bold"></a>
+                    <a th:href="@{|/member/page/${postView.getData().member}|}" th:text="${postView.getData().username}" class="text-xl my-2 font-bold"></a>
                     <div class="flex gap-1">
                         <i class="fa-regular fa-clock origin-center"></i>
                         <div th:text="|${postView.getData().getVisitedDate()} 방문|" class="flex justify-center"></div>
@@ -70,39 +71,40 @@
                         height: 200px;
                     }
                 </style>
-                <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            </div>
+
+            <div class="flex flex-col gap-5 mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg" style="width: 800px">
+                <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div th:each="photo : ${imageList}" class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
                         <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
                     </div>
                 </div>
+                <div th:text="${postView.getData().content}"></div>
             </div>
-
-            <div th:text="${postView.getData().content}" class="mt-20 h-96 w-full text-lg" style="width: 640px"></div>
 
 
             <!-- 댓글 -->
-            <div class="divider"></div>
-            <span>댓글  </span>
-            <div class="badge badge-accent badge-lg" th:text="${#lists.size(comments)}"></div>
+
+            <div class="mt-10 pt-5">
+                <span>댓글  </span>
+                <div class="badge badge-accent badge-lg" th:text="${#lists.size(comments)}"></div>
+            </div>
 
             <!-- 댓글 리스트 -->
             <div class="flex flex-col gap-6 my-5">
                 <div th:each="comment : ${comments}">
                     <div class="card flex-shrink-0 w-full bg-base-100 border border-gray-300">
+                        <div class="flex gap-4 mx-8 mt-8">
+                            <span class="font-bold"
+                                  th:text="${comment.memberNickName}"></span>
+                            <div class="flex gap-1">
+                                <i class="fa-regular fa-clock origin-center"></i>
+                                <span class="text-sm text-gray-500"
+                                      th:text="${#temporals.format(comment.createDate, 'yy-MM-dd hh:mm')}"></span>
+                            </div>
+                        </div>
                         <div class="card-body">
                             <div class="card-text" th:text="${comment.content}"></div>
-
-                            <div class="flex flex-col items-end gap-1">
-                                <div>
-                                    작성자 : <span class="font-bold"
-                                                th:text="${comment.memberNickName}"></span>
-                                </div>
-                                <div>
-                                    작성일시 : <span class="text-sm text-gray-500"
-                                                 th:text="${#temporals.format(comment.createDate, 'yy-MM-dd hh:mm')}"></span>
-                                </div>
-                            </div>
-
                             <div sec:authorize="isAuthenticated()"
                                  th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
                                 <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">
