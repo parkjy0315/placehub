@@ -54,7 +54,7 @@ public class PostController {
 
         RsData imageSavingResult = imageService.controlImage(images, postId, ImageControlOptions.CREATE);
 
-        return "redirect:/post/list";
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), "아카이빙이 등록되었습니다.");
     }
 
     @GetMapping("/list")

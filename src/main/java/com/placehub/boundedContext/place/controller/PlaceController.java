@@ -12,6 +12,9 @@ import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.PostService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,7 @@ public class PlaceController {
     private final BigCategoryService bigCategoryService;
     private final MidCategoryService midCategoryService;
     private final PlaceLikeService placeLikeService;
+    private final PostService postService;
     private final PlaceData placeData;
     private final Rq rq;
 
@@ -102,6 +107,14 @@ public class PlaceController {
             PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
             model.addAttribute("placeLike", placeLike);
         }
+
+        List<Post> postList = postService.findByPlace(id);
+        List<Viewer> postViewerList = new ArrayList<>();
+        for (Post post : postList) {
+            postViewerList.add(postService.showSinglePost(post.getId()).getData());
+        }
+
+        model.addAttribute("postList", postViewerList);
 
         return "usr/place/details";
     }
