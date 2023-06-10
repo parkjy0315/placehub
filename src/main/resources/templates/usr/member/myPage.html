@@ -91,12 +91,12 @@
 
 
             <div id="myPlaceTimeline">
-                <div th:if="${#lists.size(postList)} == 0" class="hero-content">
+                <div th:if="${#lists.size(postViewerList)} == 0" class="hero-content">
                     <div>등록된 아카이빙이 없습니다.</div>
                 </div>
-                <ol th:unless="${#lists.size(postList)} == 0"
+                <ol th:unless="${#lists.size(postViewerList)} == 0"
                     class="relative border-l border-gray-200 dark:border-gray-700">
-                    <li th:each="post, loop : ${postList}" class="my-10 ml-6">
+                    <li th:each="post, loop : ${postViewerList}" class="my-10 ml-6">
                         <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                             <svg aria-hidden="true" class="w-3 h-3 text-blue-800 dark:text-blue-300" fill="currentColor"
                                  viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -105,18 +105,19 @@
                                       clip-rule="evenodd"></path></svg>
                         </span>
                         <div>
-                        <span th:text="${#temporals.format(post.getVisitedDate(), 'yy년 MM월 dd일')} + ' 방문'"></span>
+                        <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"></span>
                             <i th:if="${post.openToPublic}" class="fa-solid fa-lock-open mx-3"></i>
                             <i th:unless="${post.openToPublic}" class="fa-solid fa-lock mx-3"></i>
                         </div>
                         <div class="mt-5">
-                            <a th:href="@{|/post/view/${post.id}|}"
+                            <a th:href="@{|/post/view/${post.postId}|}"
                                class="card flex-shrink-0 w-full shadow-lg bg-base-100"
                                style="width: 640px">
                                 <div class="card-body">
+                                    <div th:text="${post.placeName}" class="text-lg font-bold" ></div>
                                     <div>
-                                <span th:text="${#strings.length(post.getContent()) > 150 ?
-                                #strings.substring(post.getContent(), 0, 150) + '...' : post.getContent()}"
+                                <span th:text="${#strings.length(post.content) > 150 ?
+                                #strings.substring(post.content, 0, 150) + '...' : post.content}"
                                       class=" text-sm text-gray-400"></span>
                                     </div>
                                 </div>
