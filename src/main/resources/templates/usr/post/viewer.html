@@ -79,7 +79,7 @@
                         <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
                     </div>
                 </div>
-                <div th:text="${postView.getData().content}"></div>
+                <div th:text="${postView.getData().content}" class="whitespace-pre-line"></div>
             </div>
 
 
@@ -104,7 +104,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="card-text" th:text="${comment.content}"></div>
+                            <div class="card-text whitespace-pre-line" th:text="${comment.content}"></div>
                             <div sec:authorize="isAuthenticated()"
                                  th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
                                 <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">
