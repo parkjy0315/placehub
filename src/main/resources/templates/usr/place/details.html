@@ -56,8 +56,8 @@
                         <div th:text="${placeInfo.place.phone}"></div>
                         <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
                     </div>
-                    <div class="flex justify-center gap-5 mt-5">
-                        <div sec:authorize="isAuthenticated()">
+                    <div sec:authorize="isAuthenticated()" class="flex justify-center gap-5 mt-5">
+                        <div>
                             <form th:action="@{|/place/like/${placeLike == null ? 'create' : 'delete'}/${placeInfo.place.id}|}"
                                   method="POST">
                                 <button class="btn btn-outline flex gap-1">좋아요
