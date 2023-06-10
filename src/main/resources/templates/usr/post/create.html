@@ -1,9 +1,6 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 <head>
     <title> 나의 공간 아카이빙 </title>
-    <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
-    <!-- default header name is X-CSRF-TOKEN -->
-    <meta id="_csrf_header" name="_csrf_header" th:content="${_csrf.headerName}"/>
 
 </head>
 
@@ -178,36 +175,11 @@
                         <p>1개당 최대 4MB</p>
                         <p>최대 10개</p>
                     </div>
-<!--                    <input name="images" class="hidden" type="file" accept="image/*" multiple/>-->
                     <input name="images" id="fileUpload" class="absolute w-full h-full" style="opacity:0;filter:alpha(opacity=0);" type="file" accept="image/*" multiple onchange="addImage(this)"/>
                 </div>
             </div>
-
-<!--            <script th:inline="javascript">-->
-<!--                function init() {-->
-<!--                    var imageList = /*[[${imageList}]]*/ [];-->
-<!--                    // 자바스크립트에서 imageList 사용-->
-<!--                    // 예: 첫 번째 이미지 경로 출력-->
-<!--                    console.log(imageList[0]);-->
-<!--                }-->
-<!--                -->
-<!--            </script>-->
-
             <div class="flex justify-center mb-5">
                 <div class="flex flex-col gap-4">
-<!--                    <div class="card mb-5">-->
-<!--                        <div class="text-2xl font-bold mb-2">공간 추가</div>-->
-<!--                        <div class="dropdown dropdown-bottom">-->
-<!--                            <select name="place" id="place" class="select select-bordered w-full max-w-xs">-->
-<!--                                <option th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}">서울 시청</option>-->
-
-<!--                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '서울 시청'}">서울 시청</option>-->
-
-<!--                                <option th:if="${modifyingData == null || modifyingData.getData().getPlaceName() != '부산 시청'}">부산 시청</option>-->
-<!--                            </select>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
                     <div class="card mb-5">
                         <div class="text-2xl font-bold mb-2">방문한 장소</div>
                         <div class="relative w-60 h-12">
