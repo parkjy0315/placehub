@@ -110,6 +110,7 @@ public class PlaceController {
         if (place == null) {
             throw new RuntimeException("해당 장소는 없습니다.");
         }
+        model.addAttribute("place", place);
 
         PlaceInfo placeInfo = placeService.getCategoryNames(place);
         model.addAttribute("placeInfo", placeInfo);

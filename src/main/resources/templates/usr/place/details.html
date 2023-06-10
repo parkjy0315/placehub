@@ -5,6 +5,13 @@
     </title>
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .customoverlay {position:relative;bottom:60px;border-radius:6px;border: 1px solid #ccc;border-bottom:2px solid #ddd;float:left;}
+        .customoverlay:nth-of-type(n) {border:0; box-shadow:0px 1px 2px #888;}
+        .customoverlay a {display:block;text-decoration:none;color:#000;text-align:center;border-radius:6px;font-size:14px;font-weight:bold;overflow:hidden;background: #d95050;background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;}
+        .customoverlay .title {display:block;text-align:center;background:#fff;margin-right:35px;padding:10px 15px;font-size:14px;font-weight:bold;}
+        .customoverlay:after {content:'';position:absolute;margin-left:-12px;left:50%;bottom:-12px;width:22px;height:12px;background:url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
+    </style>
 </head>
 
 <body>
@@ -15,25 +22,28 @@
             <div class="max-w-2xl w-full my-5">
                 <div>
                     <div class="flex flex-col items-center my-5">
-                        <h1 th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
+                        <h1 id="placeName" th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
                         <div class="flex gap-1">
                             <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
                                 <div class="badge badge-outline badge-md" th:text="${placeInfo.bigCategoryName}"></div>
-                                >
                             </div>
                             <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
-                                <div class="badge badge-outline badge-md" th:text="${placeInfo.midCategoryName}"></div>
                                 >
+                                <div class="badge badge-outline badge-md" th:text="${placeInfo.midCategoryName}"></div>
                             </div>
                             <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                >
                                 <div class="badge badge-outline badge-md" th:text="${placeInfo.smallCategoryName}"></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="border border-gray-300 rounded-lg">
-                    <div class="h-96"> 지도</div>
+                <div>
+                <div id="map" class="rounded-lg border border-gray-300" style="width:640px;height:350px;"></div>
+                    <div id="xPos" class="hidden" th:text="${place.point.x}"></div>
+                    <div id="yPos" class="hidden" th:text="${place.point.y}"></div>
+                    <div id="placeId" class="hidden" th:text="${place.placeId}"></div>
                 </div>
 
                 <div class="flex flex-col gap-3 mt-10">
@@ -100,6 +110,60 @@
             </div>
         </div>
     </div>
+
+
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2652c9851bbcfcd7c014b2339462c149"></script>
+    <script>
+
+        var yPosValue = document.getElementById("yPos").textContent.trim();
+        var yPos = parseFloat(yPosValue);
+
+        var xPosValue = document.getElementById("xPos").textContent.trim();
+        var xPos = parseFloat(xPosValue);
+
+        var placeName = document.getElementById("placeName").textContent.trim();
+
+        var placeIdValue = document.getElementById("placeId").textContent.trim();
+        var placeId = parseFloat(placeIdValue);
+
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+            mapOption = {
+                center: new kakao.maps.LatLng(yPos, xPos), // 지도의 중심좌표
+                level: 4 // 지도의 확대 레벨
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 마커 위치
+        var markerPosition =  new kakao.maps.LatLng(yPos, xPos);
+
+        // 마커를 생성
+        var marker = new kakao.maps.Marker({
+            position: markerPosition,
+        });
+
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+
+        // 커스텀 오버레이에 표출될 내용으로 HTML 문자열이나 document element가 가능합니다
+        var content = '<div class="customoverlay">' +
+            '  <a href="https://place.map.kakao.com/' + placeId + '" target="_blank">' +
+            '    <span class="title">' + placeName + '</span>' +
+            '  </a>' +
+            '</div>';
+
+        // 커스텀 오버레이가 표시될 위치입니다
+        var position =  new kakao.maps.LatLng(yPos, xPos);
+
+        // 커스텀 오버레이를 생성합니다
+        var customOverlay = new kakao.maps.CustomOverlay({
+            map: map,
+            position: position,
+            content: content,
+            yAnchor: 1
+        });
+    </script>
 </div>
+
 </body>
 </html>
