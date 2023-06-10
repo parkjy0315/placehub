@@ -34,7 +34,9 @@ public class PostController {
     private final CommentService commentService;
     private final ImageService imageService;
     @GetMapping("/create/{placeId}")
-    public String create() {
+    public String create(Model model, @PathVariable("placeId") long placeId) {
+        RsData<String> placeName = postService.displayPlaceDuringCreating(placeId);
+        model.addAttribute("placeName", placeName);
         return "usr/post/create";
     }
 

@@ -209,6 +209,14 @@
 <!--                    </div>-->
 
                     <div class="card mb-5">
+                        <div class="text-2xl font-bold mb-2">방문한 장소</div>
+                        <div class="relative w-60 h-12">
+                            <div th:if="${placeName != null}" th:text="${placeName.getData()}"></div>
+                            <div th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}"></div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-5">
                         <div class="text-2xl font-bold mb-2">방문한 날짜</div>
                         <div class="relative w-60 h-12">
                             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

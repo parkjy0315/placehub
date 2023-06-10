@@ -77,6 +77,8 @@
                 </div>
             </div>
 
+
+            <div th:text="|방문 장소 : ${postView.getData().getPlaceName()}|" class="mt-20 h-auto w-full text-5xl" style="width: 640px"></div>
             <div th:text="${postView.getData().content}" class="mt-20 h-96 w-full text-lg" style="width: 640px"></div>
 
 

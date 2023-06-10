@@ -69,22 +69,6 @@ public class PostService {
         return !visitedDate.isAfter(LocalDate.now());
     }
 
-    public long convertPlaceToId(String place) {
-        if (place.equals("서울 시청")) {
-            return 1L;
-        }
-
-        return 2L;
-    }
-
-    public String convertIdToPlace(long placeId) {
-        if (placeId == 1L) {
-            return "서울 시청";
-        }
-
-        return "부산 시청";
-    }
-
     public List<Post> getPostsByPlace(long placeId) {
         Optional<List<Post>> postList = postRepository.findPostsByPlace(placeId);
 
@@ -129,6 +113,10 @@ public class PostService {
 
     }
 
+    public RsData<String> displayPlaceDuringCreating(long placeId) {
+        return RsData.of("S-1", "장소명 확인 성공", placeRepository.findById(placeId).get().getPlaceName());
+    }
+
     public RsData<Viewer> showSinglePost(long postid) {
         Viewer viewer = new Viewer();
         Optional<Post> tmpPost = postRepository.findById(postid);
@@ -145,7 +133,7 @@ public class PostService {
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
         viewer.setPostId(postid);
-        viewer.setPlaceName(convertIdToPlace(post.getPlace()));
+        viewer.setPlaceName(placeRepository.findById(post.getPlace()).get().getPlaceName());
         viewer.setOpenToPublic(post.isOpenToPublic());
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
