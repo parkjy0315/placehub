@@ -54,7 +54,8 @@ public class PlaceController {
                          @RequestParam(value = "longitude", required = false) Double longitude,
                          @RequestParam(value = "latitude", required = false) Double latitude,
                          @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
-                         @RequestParam(value = "midCategoryId", required = false) Long midCategoryId) {
+                         @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
+                         @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId) {
 
         List<Place> placeList = null;
         List<BigCategory> bigCategories = bigCategoryService.findAll();
@@ -84,6 +85,12 @@ public class PlaceController {
         if (midCategoryId != null) {
             placeList = placeList.stream()
                     .filter(place -> place.getMidCategoryId() == midCategoryId)
+                    .collect(Collectors.toList());
+        }
+
+        if (smallCategoryId != null) {
+            placeList = placeList.stream()
+                    .filter(place -> place.getSmallCategoryId() == smallCategoryId)
                     .collect(Collectors.toList());
         }
 
