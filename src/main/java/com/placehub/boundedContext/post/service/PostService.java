@@ -117,9 +117,9 @@ public class PostService {
         return RsData.of("S-1", "장소명 확인 성공", placeRepository.findById(placeId).get().getPlaceName());
     }
 
-    public RsData<Viewer> showSinglePost(long postid) {
+    public RsData<Viewer> showSinglePost(long postId) {
         Viewer viewer = new Viewer();
-        Optional<Post> tmpPost = postRepository.findById(postid);
+        Optional<Post> tmpPost = postRepository.findById(postId);
 
         if (tmpPost.isEmpty()) {
             return RsData.of("F-2", "존재하지 않는 포스팅입니다");
@@ -132,9 +132,12 @@ public class PostService {
         viewer.setUsername(member.getNickname());
         viewer.setContent(post.getContent());
         viewer.setVisitedDate(post.getVisitedDate());
-        viewer.setPostId(postid);
+        viewer.setPostId(postId);
         viewer.setPlaceName(placeRepository.findById(post.getPlace()).get().getPlaceName());
         viewer.setOpenToPublic(post.isOpenToPublic());
+        viewer.setMember(post.getMember());
+        viewer.setPlace(post.getPlace());
+
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 
