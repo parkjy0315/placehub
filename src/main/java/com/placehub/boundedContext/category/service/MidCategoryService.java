@@ -1,11 +1,9 @@
 package com.placehub.boundedContext.category.service;
 
 
-import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.repository.MidCategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +14,10 @@ import java.util.Optional;
 public class MidCategoryService {
     private final MidCategoryRepository midCategoryRepository;
 
-    public MidCategory create(String categoryName) {
+    public MidCategory create(String categoryName, Long bigCategoryId) {
         MidCategory category = MidCategory.builder()
                 .categoryName(categoryName)
+                .bigCategoryId(bigCategoryId)
                 .build();
         return midCategoryRepository.save(category);
     }
@@ -37,9 +36,10 @@ public class MidCategoryService {
         return category.orElse(null);
     }
 
-    public MidCategory update(MidCategory category, String categoryName) {
+    public MidCategory update(MidCategory category, String categoryName, Long bigCategoryId) {
         MidCategory updateCategory = category.toBuilder()
                 .categoryName(categoryName)
+                .bigCategoryId(bigCategoryId)
                 .build();
         return midCategoryRepository.save(updateCategory);
     }

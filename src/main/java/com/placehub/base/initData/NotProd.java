@@ -52,11 +52,11 @@ public class NotProd {
 
                 //
                 BigCategory bigCategory = bigCategoryService.create("여행");
-                MidCategory midCategory = midCategoryService.create("관광,명소");
-                SmallCategory smallCategory1 = smallCategoryService.create("계곡");
-                SmallCategory smallCategory2 = smallCategoryService.create("산");
-                SmallCategory smallCategory9 = smallCategoryService.create("온천");
-                SmallCategory smallCategory12 = smallCategoryService.create("수목원,식물원");
+                MidCategory midCategory = midCategoryService.create("관광,명소", bigCategory.getId());
+                SmallCategory smallCategory1 = smallCategoryService.create("계곡", midCategory.getId());
+                SmallCategory smallCategory2 = smallCategoryService.create("산", midCategory.getId());
+                SmallCategory smallCategory9 = smallCategoryService.create("온천", midCategory.getId());
+                SmallCategory smallCategory12 = smallCategoryService.create("수목원,식물원", midCategory.getId());
 
                 Place place = placeService.create(1L, 1L, 1L,
                         25235514L, "무당골", "", "경기 고양시 덕양구 내유동",

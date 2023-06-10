@@ -167,10 +167,10 @@ public class PlaceData {
             bigCategory = bigCategoryService.create(categorySplit[0]);
         }
         if (midCategory == null) {
-            midCategory = midCategoryService.create(categorySplit[1]);
+            midCategory = midCategoryService.create(categorySplit[1], bigCategory.getId());
         }
         if (smallCategory == null) {
-            smallCategory = smallCategoryService.create(categorySplit[2]);
+            smallCategory = smallCategoryService.create(categorySplit[2], midCategory.getId());
         }
 
         return new Category[]{bigCategory, midCategory, smallCategory};

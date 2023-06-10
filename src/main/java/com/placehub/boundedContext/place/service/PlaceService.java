@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class PlaceService {
     private final PlaceRepository placeRepository;
     private final BigCategoryService bigCategoryService;
@@ -126,7 +126,6 @@ public class PlaceService {
                 smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
         );
     }
-
 
     public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
         return placeRepository.findPlaceBySpecificDistance(point, distance);
