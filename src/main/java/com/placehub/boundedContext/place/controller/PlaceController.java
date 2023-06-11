@@ -92,6 +92,11 @@ public class PlaceController {
 //            return "usr/place/search";
 //        }
 
+//        // 위치 정보 에러
+//        if (longitude == -1 && latitude == -1) {
+//            return "usr/place/search";
+//        }
+
         // 위치 처리
         if (longitude == null && latitude == null) {
             placePage = placeService.findAll(pageable);
