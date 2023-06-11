@@ -19,15 +19,15 @@ spring:
   resources:
     static-path-pattern: /static/**
 
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    username: root
-#    password:
-#    url: jdbc:mysql://localhost:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password:
+    url: jdbc:mysql://localhost:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
