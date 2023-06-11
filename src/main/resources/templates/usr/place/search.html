@@ -105,10 +105,10 @@
                     </div>
                 </div>
             </div>
-            <div th:if="${!paging.isEmpty()}">
-                <ul class="pagination justify-content-center">
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center">
+                <ul class="pagination justify-content-center flex">
                     <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
-                        <a class="page-link" href="javascript:void(0);" th:data-page="${paging.number - 1}">
+                        <a class="page-link m-1 btn btn-outline btn-secondary" href="javascript:void(0);" th:data-page="${paging.number - 1}">
                             <span>이전</span>
                         </a>
                     </li>
@@ -116,10 +116,10 @@
                         th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
                         th:classappend="${page == paging.number} ? 'active'"
                         class="page-item">
-                        <a th:text="${page}" class="page-link" href="javascript:void(0);" th:data-page="${page}"></a>
+                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);" th:data-page="${page}"></a>
                     </li>
                     <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
-                        <a class="page-link" href="javascript:void(0);" th:data-page="${paging.number + 1}">
+                        <a class="page-link m-1 btn btn-outline btn-secondary" href="javascript:void(0);" th:data-page="${paging.number + 1}">
                             <span>다음</span>
                         </a>
                     </li>
@@ -129,8 +129,6 @@
     </div>
 </div>
 <script layout:fragment="script" type="text/javascript">
-    getCurrentCoords(); // 현재 위치를 불러와 전역 변수에 저장 lat, lon
-
     const page_elements = document.getElementsByClassName("page-link");
     Array.from(page_elements).forEach(function (element) {
         element.addEventListener('click', function () {
