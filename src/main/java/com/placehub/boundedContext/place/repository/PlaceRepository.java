@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface PlaceRepository extends JpaRepository<Place, Long> {
     Optional<Place> findByPlaceId(Long placeId);
 
+    Page<Place> findAll(Pageable pageable);
+
     @Query("SELECT p FROM Place p JOIN PlaceLike pl ON p.id = pl.placeId WHERE pl.memberId = :memberId")
     List<Place> findByPlaceLikeList_MemberId(@Param("memberId") Long memberId);
 

@@ -53,7 +53,7 @@
 
 <!-- footer 시작 -->
 <footer th:replace="~{footer :: footerFragment}"></footer>
-<!-- footer 끝 -->
+<th:block layout:fragment="script"></th:block><!-- footer 끝 -->
 </div>
 
 <script th:inline="javascript">
@@ -124,28 +124,6 @@
 
         relatedSelect.value = "default";
     }
-
-    // mainSelect 요소 선택
-    const mainSelect = document.getElementById("mainSelect");
-    // mainSelect 변경 이벤트 처리
-    mainSelect.addEventListener("change", function () {
-        const selectedValue = mainSelect.value;
-        // 모든 select 요소에서 'hidden' 클래스 제거
-        const secondSelect = document.querySelector("#secondSelect");
-        const options = secondSelect.options;
-
-        for (var i = 0; i < options.length; i++) {
-            const option = options[i];
-            if (option.classList.contains(mainSelect.value)) {
-                option.classList.remove("hidden");
-            }
-            else {
-                option.classList.add("hidden");
-            }
-
-        }
-    });
-
 
 </script>
 
