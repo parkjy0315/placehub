@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.post.viewer;
 
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.post.repository.PostRepository;
@@ -31,10 +32,11 @@ public class ViewerTest {
     @DisplayName("포스팅 뷰어 테스트 성공")
     void postViewerSuccessTest() {
         memberService.create("user", "12345", "홍길동", "gildong@naver.com", "빠더를빠더라부르지못하고");
-        long id = postService.createPost(1L, 1L, "content", true, LocalDate.now());
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setContent("content");
+        RsData id = postService.createPost(1L, 1L, creatingForm);
 
-        RsData<Viewer> response = postService.showSinglePost(id);
-        System.out.println(id + "================================");
+        RsData<Viewer> response = postService.showSinglePost((long) id.getData());
         assertThat(response.isSuccess()).isTrue();
         assertThat(response.getData().getContent()).isEqualTo("content");
     }
@@ -50,11 +52,13 @@ public class ViewerTest {
     @Test
     @DisplayName("포스팅 뷰어 소프트삭제 성공")
     void softDeletePostSuccessTest() {
-        long id = postService.createPost(1L, 1L, "content", true, LocalDate.now());
-        RsData response = postService.deletePost(id);
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setContent("content");
+        RsData id = postService.createPost(1L, 1L, creatingForm);
+        RsData response = postService.deletePost((long) id.getData());
 
         assertThat(response.isSuccess()).isTrue();
-        assertThat(postRepository.findById(id).get().getDeleteDate()).isNotNull();
+        assertThat(postRepository.findById((long) id.getData()).get().getDeleteDate()).isNotNull();
     }
 
     @Test

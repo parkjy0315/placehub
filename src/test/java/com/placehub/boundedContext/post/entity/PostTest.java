@@ -1,5 +1,8 @@
 package com.placehub.boundedContext.post.entity;
 
+import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.post.form.CreatingForm;
+import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import com.placehub.boundedContext.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
@@ -68,33 +71,31 @@ class PostTest {
                 .openToPublic(true)
 //                        .deleteDate(now)
                 .build();
-        long savedId = postService.createPost(1L, 1L, "content", true, now);
+        RsData savedId = postService.createPost(1L, 1L, new CreatingForm());
 
-        assertThat(postRepository.findById(savedId).get().toString()).isEqualTo(expected.toString());
+        assertThat(postRepository.findById((long) savedId.getData()).get().toString()).isEqualTo(expected.toString());
 
     }
 
     @Test
     @DisplayName("장소에 따른 게시글 얻기")
     void getPostsByPlaceTest() {
-        LocalDate now = LocalDate.now();
-        long one = postService.createPost(1L, 1L, "No.1", true, now);
-        long two = postService.createPost(1L, 2L, "No.2", false, now);
-        long three = postService.createPost(1L, 1L, "No.3", true, now);
+        RsData one = postService.createPost(1L, 1L, new CreatingForm());
+        RsData two = postService.createPost(1L, 2L, new CreatingForm());
+        RsData three = postService.createPost(1L, 1L, new CreatingForm());
 
         List<Post> posts = postService.getPostsByPlace(1L);
-        assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById(three).get().toString());
-        assertThat(posts.get(1).toString()).isEqualTo(postRepository.findById(one).get().toString());
+        assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById((long) three.getData()).get().toString());
+        assertThat(posts.get(1).toString()).isEqualTo(postRepository.findById((long) one.getData()).get().toString());
     }
 
     @Test
     @DisplayName("공개여부 변경 성공시")
     void changePublicStateTest() {
-        LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1L, 1L, "No.1", true, now);
+        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
 
         try {
-            long id = postService.changePublicShowing(postId, false);
+            long id = postService.changePublicShowing((long) postId.getData(), false);
             assertThat(postRepository.findById(id).get().isOpenToPublic()).isFalse();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -115,11 +116,11 @@ class PostTest {
     @DisplayName("게시글 내용 수정 성공시")
     void modifyContentTest() throws SQLDataException {
         LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1L, 1L, "content", true, now);
+        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
 
         try {
             String modifiedContent = "ReplacedContent";
-            long id = postService.modifyContent(postId, modifiedContent, now);
+            long id = postService.modifyContent((long) postId.getData(), new ModifyingForm());
             assertThat(postRepository.findById(id).get().getContent()).isEqualTo(modifiedContent);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -130,10 +131,10 @@ class PostTest {
     @DisplayName("수정 권한 확인 성공")
     void modifyValidationTest() {
         LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1L, 1L, "content", true, now);
-        long userId = postRepository.findById(postId).get().getMember();
+        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
+        long userId = postRepository.findById((long) postId.getData()).get().getMember();
 
-        assertThat(postService.validPostOwner(userId, postId).isSuccess()).isTrue();
+        assertThat(postService.validPostOwner(userId, (long) postId.getData()).isSuccess()).isTrue();
     }
 
     @Test
@@ -147,9 +148,9 @@ class PostTest {
     @DisplayName("게시글 내용 수정시 작성자 본인이 아닐때")
     void modifyInvalidAuthorTest() {
         LocalDate now = LocalDate.now();
-        long postId = postService.createPost(1L, 1L, "content", true, now);
+        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
 
-        assertThat(postService.validPostOwner(0L, postId).isFail()).isTrue();
-        assertThat(postService.validPostOwner(0L, postId).getMsg()).isEqualTo("이 게시글의 작성자가 아닙니다");
+        assertThat(postService.validPostOwner(0L, (long) postId.getData()).isFail()).isTrue();
+        assertThat(postService.validPostOwner(0L, (long) postId.getData()).getMsg()).isEqualTo("이 게시글의 작성자가 아닙니다");
     }
 }

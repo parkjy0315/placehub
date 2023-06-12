@@ -42,19 +42,15 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{placeId}")
-    public String create(@Valid CreatingForm creatingForm, @PathVariable long placeId) {
+    public String create(@Valid CreatingForm creatingForm, @PathVariable long placeId) throws RuntimeException {
         long userId = rq.getMember().getId();
 
-        boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
-        String content = creatingForm.getContent();
-        LocalDate visitedDate = creatingForm.getVisitedDate();
-        List<MultipartFile> images = creatingForm.getImages();
+        RsData creatingResult = postService.createPost(userId, placeId, creatingForm);
+        if (creatingResult.isFail()) {
+            throw new RuntimeException("게시글 등록이 실패하였습니다");
+        }
 
-        long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
-
-        RsData imageSavingResult = imageService.controlImage(images, postId, ImageControlOptions.CREATE);
-
-        return rq.redirectWithMsg("/post/view/%s".formatted(postId), "아카이빙이 등록되었습니다.");
+        return rq.redirectWithMsg("/post/view/%s".formatted(creatingResult.getData()), "아카이빙이 등록되었습니다.");
     }
 
     @GetMapping("/list")
@@ -85,8 +81,7 @@ public class PostController {
     @PostMapping("softDelete/{postId}")
     public String deletePost(@PathVariable long postId) throws RuntimeException {
         RsData contentDelete = postService.deletePost(postId);
-        RsData imgDelete = imageService.deleteAllInPost(postId);
-        if (contentDelete.isFail() || imgDelete.isFail()) {
+        if (contentDelete.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
@@ -112,20 +107,15 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("modify/{postId}")
-    public String modifyPost(@Valid ModifyingForm modifyingForm, @PathVariable long postId) {
+    public String modifyPost(@Valid ModifyingForm modifyingForm, @PathVariable long postId) throws RuntimeException {
         long userId = rq.getMember().getId();
 
         RsData postOwnerValidation = postService.validPostOwner(userId, postId);
         if (postOwnerValidation.isFail()) {
-            return postOwnerValidation.getMsg();
+            throw new RuntimeException(postOwnerValidation.getMsg());
         }
 
-        String content = modifyingForm.getContent();
-        LocalDate visitedDate = modifyingForm.getVisitedDate();
-        List<MultipartFile> images = modifyingForm.getImages();
-
-        postService.modifyContent(postId, content, visitedDate);
-        imageService.controlImage(images, postId, ImageControlOptions.MODIFY);
+        postService.modifyContent(postId, modifyingForm);
         return "redirect:/post/list";
     }
 
