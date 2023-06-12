@@ -23,6 +23,11 @@ import org.json.simple.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -58,17 +63,26 @@ public class PlaceController {
     public String search(Model model,
                          @RequestParam(value = "longitude", required = false) Double longitude,
                          @RequestParam(value = "latitude", required = false) Double latitude,
+                         @RequestParam(defaultValue = "1000") Long distance,
                          @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
                          @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
-                         @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId) {
+                         @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "20") int size) {
 
-        List<Place> placeList = null;
+        //List<Place> placeList = null;
+        Page<Place> placePage = null;
         List<BigCategory> bigCategories = bigCategoryService.findAll();
         List<MidCategory> midCategories = midCategoryService.findAll();
         List<SmallCategory> smallCategories = smallCategoryService.findAll();
         model.addAttribute("bigCategories", bigCategories);
         model.addAttribute("midCategories", midCategories);
         model.addAttribute("smallCategories", smallCategories);
+
+//        // 위치 정보 에러
+//        if (longitude == -1 && latitude == -1) {
+//            return "usr/place/search";
+//        }
 
         // 위치 처리
         if (longitude == null && latitude == null) {
@@ -77,33 +91,57 @@ public class PlaceController {
             Coordinate coord = new Coordinate(longitude, latitude);
             GeometryFactory factory = new GeometryFactory();
             Point point = factory.createPoint(coord);
+            Pageable pageable = PageRequest.of(page, size);
 
-            placeList = placeService.findPlaceBySpecificDistance(point, 2000L);
+            // 카테고리 처리
+            if (bigCategoryId == null &&
+                    midCategoryId == null &&
+                    smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistance(
+                        pageable,
+                        point,
+                        distance);
+            } else if (midCategoryId == null &&
+                    smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId);
+            } else if (smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId,
+                        midCategoryId);
+            } else {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId,
+                        midCategoryId,
+                        smallCategoryId);
+            }
+
+            // placeList = placeService.findPlaceBySpecificDistance(point, distance);
         }
 
-        // 카테고리 처리
-        if (bigCategoryId != null) {
-            placeList = placeList.stream()
-                    .filter(place -> place.getBigCategoryId() == bigCategoryId)
-                    .collect(Collectors.toList());
-        }
-        if (midCategoryId != null) {
-            placeList = placeList.stream()
-                    .filter(place -> place.getMidCategoryId() == midCategoryId)
-                    .collect(Collectors.toList());
-        }
 
-        if (smallCategoryId != null) {
-            placeList = placeList.stream()
-                    .filter(place -> place.getSmallCategoryId() == smallCategoryId)
-                    .collect(Collectors.toList());
-        }
-
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        // 장소 정보
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
         model.addAttribute("placeInfoList", placeInfoList);
+
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", placePage.getTotalPages());
+        model.addAttribute("totalElements", placePage.getTotalElements());
 
         return "usr/place/search";
     }
+
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
