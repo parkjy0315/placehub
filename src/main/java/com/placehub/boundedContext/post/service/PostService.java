@@ -3,12 +3,15 @@ package com.placehub.boundedContext.post.service;
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
+import com.placehub.boundedContext.post.form.CreatingForm;
+import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.member.repository.MemberRepository;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLDataException;
 import java.sql.SQLException;
@@ -27,21 +30,32 @@ public class PostService {
     private MemberRepository memberRepository;
     @Autowired
     private PlaceRepository placeRepository;
+    @Autowired
+    private ImageService imageService;
 
-    public long createPost(Long userId, Long placeId, String content, boolean openToPublic, LocalDate visitedDate) throws RuntimeException {
-        if (!validateCreatingPost(userId, placeId, visitedDate)) {
+    private static String openToPublic = "공개";
+
+    @Transactional
+    public RsData createPost(Long userId, Long placeId, CreatingForm creatingForm) throws RuntimeException {
+        if (!validateCreatingPost(userId, placeId, creatingForm.getVisitedDate())) {
             throw new RuntimeException("올바르지 않은 포스팅");
         }
 
         Post post = Post.builder()
                 .member(userId)
                 .place(placeId)
-                .content(content)
-                .openToPublic(openToPublic)
-                .visitedDate(visitedDate)
+                .content(creatingForm.getContent())
+                .openToPublic(creatingForm.getIsOpenToPublic().equals(openToPublic))
+                .visitedDate(creatingForm.getVisitedDate())
                 .build();
 
-        return postRepository.save(post).getId();
+        long postId = postRepository.save(post).getId();
+        RsData imgSavingResutl = imageService.controlImage(creatingForm.getImages(), postId, ImageControlOptions.CREATE);
+        if (imgSavingResutl.isFail()) {
+            return imgSavingResutl;
+        }
+
+        return RsData.of("S-1", "게시물 등록 성공", postId);
     }
 
     public RsData validPostOwner(long userId, long postId) {
@@ -96,8 +110,9 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 
-    public long modifyContent(long postId, String content, LocalDate visitedDate) throws RuntimeException{
-        if (!validateModifyingPost(visitedDate)) {
+    @Transactional
+    public long modifyContent(long postId, ModifyingForm modifyingForm) throws RuntimeException{
+        if (!validateModifyingPost(modifyingForm.getVisitedDate())) {
             throw new RuntimeException("올바르지 않은 포스팅");
         }
 
@@ -105,9 +120,11 @@ public class PostService {
         Post post = wrappedPost.get();
 
         post = post.toBuilder()
-                .content(content)
-                .visitedDate(visitedDate)
+                .content(modifyingForm.getContent())
+                .visitedDate(modifyingForm.getVisitedDate())
                 .build();
+
+        RsData imgModifyingResult = imageService.controlImage(modifyingForm.getImages(), postId, ImageControlOptions.MODIFY);
 
         return postRepository.save(post).getId();
 
@@ -141,6 +158,7 @@ public class PostService {
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 
+    @Transactional
     public RsData deletePost(long postId) {
         Optional<Post> wrappedPost = postRepository.findById(postId);
 
@@ -153,6 +171,13 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
+
+        RsData imagDeleteResult = imageService.deleteAllInPost(postId);
+
+        if (imagDeleteResult.isFail()) {
+            return imagDeleteResult;
+        }
+
         return RsData.of("S-1", "삭제 성공", post);
     }
 
