@@ -65,8 +65,6 @@ public class ViewerTest {
 
         RsData id = postService.createPost(1L, 1L, creatingForm);
         RsData response = postService.deletePost((long) id.getData());
-        System.out.println(response.getMsg());
-        System.out.println(response.getData());
         assertThat(response.isSuccess()).isTrue();
         assertThat(postRepository.findById((long) id.getData()).get().getDeleteDate()).isNotNull();
     }
