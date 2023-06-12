@@ -102,7 +102,7 @@ public class PostController {
         RsData<Viewer> response = postService.showSinglePost(postId);
         model.addAttribute("modifyingData", response);
         model.addAttribute("photoList", imagePathes);
-        return "/usr/post/create";
+        return "usr/post/create";
     }
 
     @PreAuthorize("isAuthenticated()")

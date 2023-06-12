@@ -16,7 +16,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password:
-    url: jdbc:mysql://localhost:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://127.0.0.1:3306/placehub__dev?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
   jpa:
     hibernate:
@@ -50,15 +50,15 @@ spring:
             scope: account_email, profile_nickname
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: https://localhost/login/oauth2/code/kakao
+            redirect-uri: '${custom.site.baseUrl}/{action}/oauth2/code/{registrationId}'
             client-authentication-method: POST
           naver:
             scope:
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: https://localhost/login/oauth2/code/naver
+            redirect-uri: '${custom.site.baseUrl}/{action}/oauth2/code/{registrationId}'
           google:
-            redirect-uri: https://localhost/login/oauth2/code/google
+            redirect-uri: '${custom.site.baseUrl}/{action}/oauth2/code/{registrationId}'
             client-name: Google
             scope: profile, email
         provider:
@@ -86,3 +86,6 @@ custom:
       tour: AT4
       restaurant: FD6
       cafe: CE7
+
+  site:
+    baseUrl: https://localhost
