@@ -17,9 +17,12 @@
 
             <div class="bg-gray-30">
                 <div>
-                    <form th:action method="get" onsubmit=submitCheck(this); return false;>
-                        <input type="hidden" name="latitude" id="latitude">
-                        <input type="hidden" name="longitude" id="longitude">
+                    <form th:action method="get"
+                          id="searchForm"
+                          onsubmit=submitCheck(this); return false;>
+                        <input type="hidden" name="latitude" id="latitude" th:value="${latitude}">
+                        <input type="hidden" name="longitude" id="longitude" th:value="${longitude}">
+                        <input type="hidden" id="page" name="page" th:value="${paging.number}">
 
                         <div class="flex justify-between">
                             <select class="select-md form-select">
@@ -38,6 +41,7 @@
                                     <option disabled selected>대분류</option>
                                     <option th:each="bigCategory, loop : ${bigCategories}"
                                             th:value="${bigCategory.id}"
+                                            th:selected="${selectedBig} == ${bigCategory.id}"
                                             th:text="${bigCategory.categoryName}"></option>
                                 </select>
                                 <div class="form-select-arrow"></div>
@@ -53,6 +57,7 @@
                                     <option th:each="midCategory, loop : ${midCategories}"
                                             th:class="${midCategory.bigCategoryId} + ' hidden'"
                                             th:value="${midCategory.id}"
+                                            th:selected="${selectedMid} == ${midCategory.id}"
                                             th:text="${midCategory.categoryName}"></option>
                                 </select>
                                 <div class="form-select-arrow"></div>
@@ -65,6 +70,7 @@
                                     <option th:each="smallCategory, loop : ${smallCategories}"
                                             th:class="${smallCategory.midCategoryId} + ' hidden'"
                                             th:value="${smallCategory.id}"
+                                            th:selected="${selectedSmall} == ${smallCategory.id}"
                                             th:text="${smallCategory.categoryName}"></option>
                                 </select>
                                 <div class="form-select-arrow"></div>
@@ -95,21 +101,41 @@
                                 </div>
 
                             </div>
-                            <div>
-                                <!--                                <span th:text="${#strings.length(place.getContent()) > 150 ?-->
-                                <!--                                #strings.substring(place.getContent(), 0, 150) + '...' : place.getContent()}"-->
-                                <!--                                      class=" text-sm text-gray-400"></span>-->
-                            </div>
-                            <!--              <div th:text="'등록일시 : ' + ${#temporals.format(place.createDate, 'yyyy-MM-dd HH:mm')}"-->
-                            <!--                   class="flex justify-end"></div>-->
                         </a>
                     </div>
                 </div>
             </div>
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center">
+                <ul class="pagination justify-content-center flex">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link m-1 btn btn-outline btn-secondary" href="javascript:void(0);" th:data-page="${paging.number - 1}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);" th:data-page="${page}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <a class="page-link m-1 btn btn-outline btn-secondary" href="javascript:void(0);" th:data-page="${paging.number + 1}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
-<script>
+<script layout:fragment="script" type="text/javascript">
+    const page_elements = document.getElementsByClassName("page-link");
+    Array.from(page_elements).forEach(function (element) {
+        element.addEventListener('click', function () {
+            document.getElementById('page').value = this.dataset.page;
+            document.getElementById('searchForm').submit();
+        });
+    });
 </script>
 </body>
 </html>

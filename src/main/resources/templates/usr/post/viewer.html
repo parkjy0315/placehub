@@ -64,14 +64,6 @@
                     </form>
                 </div>
             </div>
-            <div>
-                <style>
-                    .photoSize {
-                        width: 200px;
-                        height: 200px;
-                    }
-                </style>
-            </div>
 
             <div class="flex flex-col gap-5 mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg" style="width: 800px">
                 <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -79,12 +71,10 @@
                         <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
                     </div>
                 </div>
-                <div th:text="${postView.getData().content}"></div>
+                <div th:text="${postView.getData().content}" class="whitespace-pre-line"></div>
             </div>
 
-
             <!-- 댓글 -->
-
             <div class="mt-10 pt-5">
                 <span>댓글  </span>
                 <div class="badge badge-accent badge-lg" th:text="${#lists.size(comments)}"></div>
@@ -104,7 +94,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="card-text" th:text="${comment.content}"></div>
+                            <div class="card-text whitespace-pre-line" th:text="${comment.content}"></div>
                             <div sec:authorize="isAuthenticated()"
                                  th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
                                 <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">

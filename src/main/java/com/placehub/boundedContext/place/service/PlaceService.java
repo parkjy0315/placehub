@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,6 +86,10 @@ public class PlaceService {
         return placeRepository.findAll();
     }
 
+    public Page<Place> findAll(Pageable pageable) {
+        return placeRepository.findAll(pageable);
+    }
+
     @Transactional
     public Place update(Place place,
                         Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
@@ -127,8 +133,57 @@ public class PlaceService {
         );
     }
 
-    public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
+    public List<Place> findPlaceBySpecificDistance(Point point,
+                                                   Long distance) {
         return placeRepository.findPlaceBySpecificDistance(point, distance);
+    }
+
+    public Page<Place> findPlaceBySpecificDistance(Pageable pageable,
+                                                   Point point,
+                                                   Long distance) {
+        return placeRepository.findPlaceBySpecificDistance(
+                pageable,
+                point,
+                distance);
+    }
+
+    public Page<Place> findPlaceBySpecificDistanceAndBigId(Pageable pageable,
+                                                           Point point,
+                                                           Long distance,
+                                                           Long bigCategoryId) {
+        return placeRepository.findPlaceBySpecificDistanceAndBigId(
+                pageable,
+                point,
+                distance,
+                bigCategoryId);
+    }
+
+    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidId(Pageable pageable,
+                                                                   Point point,
+                                                                   Long distance,
+                                                                   Long bigCategoryId,
+                                                                   Long midCategoryId) {
+        return placeRepository.findPlaceBySpecificDistanceAndBigIdAndMidId(
+                pageable,
+                point,
+                distance,
+                bigCategoryId,
+                midCategoryId);
+    }
+
+    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(Pageable pageable,
+                                                                             Point point,
+                                                                             Long distance,
+                                                                             Long bigCategoryId,
+                                                                             Long midCategoryId,
+                                                                             Long smallCategoryId) {
+        return placeRepository.findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(
+                pageable,
+                point,
+                distance,
+                bigCategoryId,
+                midCategoryId,
+                smallCategoryId);
     }
 
     public List<Place> findByPlaceLikeList_MemberId(Long memberId){

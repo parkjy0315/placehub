@@ -28,7 +28,7 @@ public class Place extends BaseEntity {
     private String placeName;
     private String phone;
     private String addressName;
-    @Column(columnDefinition = "POINT")
+    @Column(columnDefinition = "GEOMETRY")
     private Point point;
     private Long likeCount;
 
