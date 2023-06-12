@@ -66,6 +66,7 @@ spring:
   thymeleaf:
     cache: false
     prefix: file:src/main/resources/templates/
+    suffix : .html
     devtools:
       livereload:
         enabled: true

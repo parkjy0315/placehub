@@ -151,4 +151,8 @@ public class PlaceService {
 
         placeRepository.save(place);
     }
+
+    public List<Place> findPlacesByMemberId(Long id) {
+        return placeRepository.findPlacesByMemberId(id);
+    }
 }

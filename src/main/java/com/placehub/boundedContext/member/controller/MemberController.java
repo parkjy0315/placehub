@@ -113,8 +113,12 @@ public class MemberController {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
+        List<Place> visitedPlaces = placeService.findPlacesByMemberId(rq.getMember().getId());
+
         model.addAttribute("postList", postList);
         model.addAttribute("postViewerList", postViewerList);
+        model.addAttribute("placeList", placeList);
+        model.addAttribute("visitedPlaces", visitedPlaces);
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
