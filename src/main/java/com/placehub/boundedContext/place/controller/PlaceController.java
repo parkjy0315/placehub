@@ -68,16 +68,29 @@ public class PlaceController {
                          @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
                          @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
                          @RequestParam(defaultValue = "0") int page,
-                         @RequestParam(defaultValue = "20") int size) {
+                         @RequestParam(defaultValue = "12") int size) {
 
-        //List<Place> placeList = null;
-        Page<Place> placePage = null;
         List<BigCategory> bigCategories = bigCategoryService.findAll();
         List<MidCategory> midCategories = midCategoryService.findAll();
         List<SmallCategory> smallCategories = smallCategoryService.findAll();
+        model.addAttribute("latitude", latitude);
+        model.addAttribute("longitude", longitude);
         model.addAttribute("bigCategories", bigCategories);
         model.addAttribute("midCategories", midCategories);
         model.addAttribute("smallCategories", smallCategories);
+        model.addAttribute("selectedBig", bigCategoryId);
+        model.addAttribute("selectedMid", midCategoryId);
+        model.addAttribute("selectedSmall", smallCategoryId);
+
+        //List<Place> placeList = null;
+        List<PlaceInfo> placeInfoList = null;
+        Page<Place> placePage = null;
+        Pageable pageable = PageRequest.of(page, size);
+
+//        // 위치 정보 에러
+//        if (longitude == -1 && latitude == -1) {
+//            return "usr/place/search";
+//        }
 
 //        // 위치 정보 에러
 //        if (longitude == -1 && latitude == -1) {
@@ -86,12 +99,15 @@ public class PlaceController {
 
         // 위치 처리
         if (longitude == null && latitude == null) {
+            placePage = placeService.findAll(pageable);
+            placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+            model.addAttribute("paging", placePage);
+            model.addAttribute("placeInfoList", placeInfoList);
             return "usr/place/search";
         } else {
             Coordinate coord = new Coordinate(longitude, latitude);
             GeometryFactory factory = new GeometryFactory();
             Point point = factory.createPoint(coord);
-            Pageable pageable = PageRequest.of(page, size);
 
             // 카테고리 처리
             if (bigCategoryId == null &&
@@ -130,7 +146,8 @@ public class PlaceController {
 
 
         // 장소 정보
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+        placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+        model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
 
         // 페이징 정보
