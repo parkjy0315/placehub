@@ -86,6 +86,10 @@ public class PlaceService {
         return placeRepository.findAll();
     }
 
+    public Page<Place> findAll(Pageable pageable) {
+        return placeRepository.findAll(pageable);
+    }
+
     @Transactional
     public Place update(Place place,
                         Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
@@ -201,5 +205,9 @@ public class PlaceService {
         }
 
         placeRepository.save(place);
+    }
+
+    public List<Place> findPlacesByMemberId(Long id) {
+        return placeRepository.findPlacesByMemberId(id);
     }
 }
