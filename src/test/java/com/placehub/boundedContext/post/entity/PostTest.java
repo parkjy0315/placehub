@@ -16,6 +16,7 @@ import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -71,7 +72,14 @@ class PostTest {
                 .openToPublic(true)
 //                        .deleteDate(now)
                 .build();
-        RsData savedId = postService.createPost(1L, 1L, new CreatingForm());
+
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setContent("content");
+
+        RsData savedId = postService.createPost(1L, 1L, creatingForm);
 
         assertThat(postRepository.findById((long) savedId.getData()).get().toString()).isEqualTo(expected.toString());
 
@@ -80,9 +88,23 @@ class PostTest {
     @Test
     @DisplayName("장소에 따른 게시글 얻기")
     void getPostsByPlaceTest() {
-        RsData one = postService.createPost(1L, 1L, new CreatingForm());
-        RsData two = postService.createPost(1L, 2L, new CreatingForm());
-        RsData three = postService.createPost(1L, 1L, new CreatingForm());
+        CreatingForm creatingForm1 = new CreatingForm();
+        creatingForm1.setVisitedDate(LocalDate.now());
+        creatingForm1.setIsOpenToPublic("공개");
+        creatingForm1.setImages(new ArrayList<>());
+
+        CreatingForm creatingForm2 = new CreatingForm();
+        creatingForm2.setVisitedDate(LocalDate.now());
+        creatingForm2.setIsOpenToPublic("공개");
+        creatingForm2.setImages(new ArrayList<>());
+
+        CreatingForm creatingForm3 = new CreatingForm();
+        creatingForm3.setVisitedDate(LocalDate.now());
+        creatingForm3.setIsOpenToPublic("공개");
+        creatingForm3.setImages(new ArrayList<>());
+        RsData one = postService.createPost(1L, 1L, creatingForm1);
+        RsData two = postService.createPost(1L, 2L, creatingForm2);
+        RsData three = postService.createPost(1L, 1L, creatingForm3);
 
         List<Post> posts = postService.getPostsByPlace(1L);
         assertThat(posts.get(0).toString()).isEqualTo(postRepository.findById((long) three.getData()).get().toString());
@@ -92,7 +114,11 @@ class PostTest {
     @Test
     @DisplayName("공개여부 변경 성공시")
     void changePublicStateTest() {
-        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+        RsData postId = postService.createPost(1L, 1L, creatingForm);
 
         try {
             long id = postService.changePublicShowing((long) postId.getData(), false);
@@ -115,12 +141,23 @@ class PostTest {
     @Test
     @DisplayName("게시글 내용 수정 성공시")
     void modifyContentTest() throws SQLDataException {
-        LocalDate now = LocalDate.now();
-        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+
+        RsData postId = postService.createPost(1L, 1L, creatingForm);
+
+        ModifyingForm modifyingForm = new ModifyingForm();
+        modifyingForm.setImages(new ArrayList<>());
+        modifyingForm.setVisitedDate(LocalDate.now());
+
+        String modifiedContent = "ReplacedContent";
+        modifyingForm.setContent(modifiedContent);
 
         try {
-            String modifiedContent = "ReplacedContent";
-            long id = postService.modifyContent((long) postId.getData(), new ModifyingForm());
+
+            long id = postService.modifyContent((long) postId.getData(), modifyingForm);
             assertThat(postRepository.findById(id).get().getContent()).isEqualTo(modifiedContent);
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -130,8 +167,12 @@ class PostTest {
     @Test
     @DisplayName("수정 권한 확인 성공")
     void modifyValidationTest() {
-        LocalDate now = LocalDate.now();
-        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+
+        RsData postId = postService.createPost(1L, 1L, creatingForm);
         long userId = postRepository.findById((long) postId.getData()).get().getMember();
 
         assertThat(postService.validPostOwner(userId, (long) postId.getData()).isSuccess()).isTrue();
@@ -147,8 +188,11 @@ class PostTest {
     @Test
     @DisplayName("게시글 내용 수정시 작성자 본인이 아닐때")
     void modifyInvalidAuthorTest() {
-        LocalDate now = LocalDate.now();
-        RsData postId = postService.createPost(1L, 1L, new CreatingForm());
+        CreatingForm creatingForm = new CreatingForm();
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+        RsData postId = postService.createPost(1L, 1L, creatingForm);
 
         assertThat(postService.validPostOwner(0L, (long) postId.getData()).isFail()).isTrue();
         assertThat(postService.validPostOwner(0L, (long) postId.getData()).getMsg()).isEqualTo("이 게시글의 작성자가 아닙니다");

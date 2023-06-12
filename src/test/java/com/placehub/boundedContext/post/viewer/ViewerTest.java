@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,6 +35,10 @@ public class ViewerTest {
         memberService.create("user", "12345", "홍길동", "gildong@naver.com", "빠더를빠더라부르지못하고");
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setContent("content");
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+
         RsData id = postService.createPost(1L, 1L, creatingForm);
 
         RsData<Viewer> response = postService.showSinglePost((long) id.getData());
@@ -54,9 +59,14 @@ public class ViewerTest {
     void softDeletePostSuccessTest() {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setContent("content");
+        creatingForm.setVisitedDate(LocalDate.now());
+        creatingForm.setIsOpenToPublic("공개");
+        creatingForm.setImages(new ArrayList<>());
+
         RsData id = postService.createPost(1L, 1L, creatingForm);
         RsData response = postService.deletePost((long) id.getData());
-
+        System.out.println(response.getMsg());
+        System.out.println(response.getData());
         assertThat(response.isSuccess()).isTrue();
         assertThat(postRepository.findById((long) id.getData()).get().getDeleteDate()).isNotNull();
     }

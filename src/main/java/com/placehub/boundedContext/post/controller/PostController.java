@@ -42,7 +42,7 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{placeId}")
-    public String create(@Valid CreatingForm creatingForm, @PathVariable long placeId) throws RuntimeException {
+    public String create(@Valid CreatingForm creatingForm, @PathVariable("placeId") long placeId) throws RuntimeException {
         long userId = rq.getMember().getId();
 
         RsData creatingResult = postService.createPost(userId, placeId, creatingForm);

@@ -50,13 +50,12 @@ public class PostService {
                 .build();
 
         long postId = postRepository.save(post).getId();
-        RsData savingResult = imageService.controlImage(creatingForm.getImages(), postId, ImageControlOptions.CREATE);
-        if (savingResult.isFail()) {
-            return savingResult;
+        RsData imgSavingResutl = imageService.controlImage(creatingForm.getImages(), postId, ImageControlOptions.CREATE);
+        if (imgSavingResutl.isFail()) {
+            return imgSavingResutl;
         }
 
-
-        return RsData.of("S-1", "게시물 등록 성공", post);
+        return RsData.of("S-1", "게시물 등록 성공", postId);
     }
 
     public RsData validPostOwner(long userId, long postId) {
@@ -111,6 +110,7 @@ public class PostService {
         throw new SQLDataException("존재하지 않는 포스트입니다");
     }
 
+    @Transactional
     public long modifyContent(long postId, ModifyingForm modifyingForm) throws RuntimeException{
         if (!validateModifyingPost(modifyingForm.getVisitedDate())) {
             throw new RuntimeException("올바르지 않은 포스팅");
@@ -125,6 +125,7 @@ public class PostService {
                 .build();
 
         RsData imgModifyingResult = imageService.controlImage(modifyingForm.getImages(), postId, ImageControlOptions.MODIFY);
+
         return postRepository.save(post).getId();
 
     }
@@ -157,6 +158,7 @@ public class PostService {
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
 
+    @Transactional
     public RsData deletePost(long postId) {
         Optional<Post> wrappedPost = postRepository.findById(postId);
 
@@ -169,10 +171,13 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
+
         RsData imagDeleteResult = imageService.deleteAllInPost(postId);
+
         if (imagDeleteResult.isFail()) {
-            return RsData.of("F-2", "이미지 오류로 삭제 실패");
+            return imagDeleteResult;
         }
+
         return RsData.of("S-1", "삭제 성공", post);
     }
 

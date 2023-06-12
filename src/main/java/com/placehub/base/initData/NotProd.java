@@ -73,14 +73,14 @@ public class NotProd {
                         127.1015513297845, 37.65107359115661);
 
 
-                CreatingForm sampleCreatingForm = new CreatingForm();
-                sampleCreatingForm.setContent("테스트용 게시물입니다");
-                sampleCreatingForm.setIsOpenToPublic("공개");
-                sampleCreatingForm.setVisitedDate(LocalDate.now());
-                //Post post1 =
-                        postService.createPost(memberJinyeongKakao.getId(), place.getId(), sampleCreatingForm);
-
-                Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
+//                CreatingForm sampleCreatingForm = new CreatingForm();
+//                sampleCreatingForm.setContent("테스트용 게시물입니다");
+//                sampleCreatingForm.setIsOpenToPublic("공개");
+//                sampleCreatingForm.setVisitedDate(LocalDate.now());
+//                //Post post1 =
+//                        postService.createPost(memberJinyeongKakao.getId(), place.getId(), sampleCreatingForm);
+//
+//                Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
 
 
                 friendService.follow(2L, "닉네임3");

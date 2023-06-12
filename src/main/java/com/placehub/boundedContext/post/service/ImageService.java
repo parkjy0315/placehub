@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 @Service
 public class ImageService {
@@ -53,6 +54,9 @@ public class ImageService {
     }
 
     private long maxImageId(List<Images> imagesList) {
+        if (imagesList.isEmpty()) {
+            return 0L;
+        }
         return imagesList
                 .stream()
                 .max(Comparator.comparing(Images::getImg))
@@ -61,7 +65,7 @@ public class ImageService {
     }
 
     @Transactional
-    public RsData controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
+    public RsData<List<Images>> controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
         for (MultipartFile singleFile : files) {
             if (!singleFile.getContentType().equals("application/octet-stream")
                     && !singleFile.getContentType().startsWith("image/")) {
@@ -70,13 +74,17 @@ public class ImageService {
         }
         List<Images> images = imageRepository.findImagesByPost(postId);
         long maxImgId = maxImageId(images);
+
         if (control == ImageControlOptions.MODIFY) {
             return modifyPost(files, postId, maxImgId, images);
         }
 
+        if (control == ImageControlOptions.CREATE) {
+            long alreadySavedImages = images.size();
+            return saveImages(files, postId, alreadySavedImages, maxImgId);
+        }
 
-        long alreadySavedImages = images.size();
-        return saveImages(files, postId, alreadySavedImages, maxImgId);
+        return RsData.of("F-1", "이미지 저장 실패");
     }
 
     private RsData modifyPost(List<MultipartFile> files, long postId, long maxImgId, List<Images> images) {
@@ -142,9 +150,6 @@ public class ImageService {
     @Transactional
     public RsData deleteAllInPost(long postId) {
         List<Images> images = imageRepository.findImagesByPost(postId);
-        if (images.isEmpty()) {
-            return RsData.of("F-3", "존재하지 않는 게시글입니다");
-        }
 
         for (Images image : images) {
             Images deleted = image.toBuilder()
