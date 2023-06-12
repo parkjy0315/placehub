@@ -7,12 +7,7 @@ spring:
 
   thymeleaf:
     cache: false
-    prefix: file:src/main/resources/templates/
-    devtools:
-      livereload:
-        enabled: true
-      restart:
-        enabled: true
+    prefix: classpath:/templates/
 
   jpa:
     hibernate:
