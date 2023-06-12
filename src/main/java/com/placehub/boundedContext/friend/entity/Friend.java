@@ -1,4 +1,4 @@
-package com.placehub.boundedContext.follow.entity;
+package com.placehub.boundedContext.friend.entity;
 
 import com.placehub.base.entity.BaseEntity;
 import jakarta.persistence.Entity;
@@ -12,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder(toBuilder = true)
-public class Follow extends BaseEntity {
+public class Friend extends BaseEntity {
     private Long followerId;
     private Long followingId;
 }

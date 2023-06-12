@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -21,21 +22,6 @@ public class ImageService {
     private final String rootAddress = "https://localhost:8080/";
     @Autowired
     private ImageRepository imageRepository;
-
-    private RsData validateAcceptedImage(List<MultipartFile> files, long savedImgsCount) {
-        for (MultipartFile singleFile : files) {
-            if (!singleFile.getContentType().startsWith("image/")) {
-                return RsData.of("F-4", "이미지 파일이 아닌 것이 있습니다.");
-            }
-        }
-
-        if (files.size() + savedImgsCount > 10) {
-            return RsData.of("F-4", "이미지는 최대 10개까지만 첨부가능합니다.");
-        }
-
-        return RsData.of("S-4", "정상입니다");
-    }
-
     private void mkImageDir() {
         File imageDir = new File(IMAGE_STORAGE_PATH);
         if (!imageDir.exists()) {
@@ -90,18 +76,121 @@ public class ImageService {
                 .getImg();
     }
 
-    public RsData controlImage(List<MultipartFile> files, long postId) {
+    public RsData controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
+        for (MultipartFile singleFile : files) {
+            if (!singleFile.getContentType().equals("application/octet-stream")
+                    && !singleFile.getContentType().startsWith("image/")) {
+                return RsData.of("F-4", "이미지 파일이 아닌 것이 있습니다.");
+            }
+        }
         Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
-        long alreadySavedImgCount = countImages(wrappedImgs);
-        long maxImgId = maxImageId(wrappedImgs);
+        List<Images> images = wrappedImgs.get();
 
+        if (control == ImageControlOptions.MODIFY) {
+            Set<Long> sentImgs = new HashSet<>();
+            List<MultipartFile> readyToSave = new ArrayList<>();
+            Set<Long> idSetFromDb = getImIdsFromDB(images);
+            distinguishImages(files, sentImgs, readyToSave, idSetFromDb);
+
+            RsData deleteResult = deleteParticially(idSetFromDb, sentImgs, images);
+            if (deleteResult.isFail()) {
+                return deleteResult;
+            }
+
+            long alreadySavedImgCount = idSetFromDb.size();
+            long maxImgId = maxImageId(wrappedImgs);
+
+            return saveImages(readyToSave, postId, alreadySavedImgCount, maxImgId);
+        }
+
+        long alreadySavedImgCount = images.size();
+        long maxImgId = maxImageId(wrappedImgs);
         return saveImages(files, postId, alreadySavedImgCount, maxImgId);
     }
 
-    public RsData saveImages(List<MultipartFile> files, long postId, long alreadySavedImgCount, long maxImgId) {
-        RsData isValidate = validateAcceptedImage(files, alreadySavedImgCount);
-        if (isValidate.isFail()) {
-            return isValidate;
+    private Set<Long> getImIdsFromDB(List<Images> images) {
+        Set<Long> result = new HashSet<>();
+        for (Images image : images) {
+            result.add(image.getImg());
+        }
+
+        return result;
+    }
+    
+    private boolean validateFileNameFromClient(String multiPartFileName) {
+        if (!multiPartFileName.contains(".")) {
+            return false;
+        }
+        
+        String beforeDot = multiPartFileName.split("\\.")[0];
+        if (!beforeDot.matches("^[0-9]+_[0-9]+$")) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private void distinguishImages(List<MultipartFile> inputFiles, Set<Long> sentImgs
+                                    , List<MultipartFile> readyToSave, Set<Long> idSetFromDb) {
+        for (MultipartFile multipartFile : inputFiles) {
+            String fileName = multipartFile.getOriginalFilename();
+
+            if (!validateFileNameFromClient(fileName)) {
+                readyToSave.add(multipartFile);
+                continue;
+            }
+
+            String beforeDot = fileName.split("\\.")[0];
+            long imgNum = Long.parseLong(beforeDot.split("_")[1]);
+
+            if (!idSetFromDb.contains(imgNum)) {
+                readyToSave.add(multipartFile);
+                continue;
+            }
+
+            sentImgs.add(imgNum);
+        }
+    }
+
+    public RsData deleteAllInPost(long postId) {
+        Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
+        if (wrappedImgs.isEmpty()) {
+            return RsData.of("F-3", "존재하지 않는 게시글입니다");
+        }
+
+        List<Images> images = wrappedImgs.get();
+        for (Images image : images) {
+            Images deleted = image.toBuilder()
+                    .deleteDate(LocalDateTime.now())
+                    .build();
+
+            imageRepository.save(deleted);
+        }
+
+        return RsData.of("S-1", "포스트 내 이미지 삭제 성공");
+    }
+
+    private RsData deleteParticially (Set<Long> storedImages, Set<Long> sentImages, List<Images> images) {
+        storedImages.removeAll(sentImages);
+        for (Images image : images) {
+            if (!storedImages.contains(image.getImg())) {
+                continue;
+            }
+
+            Images deleted = image.toBuilder()
+                    .deleteDate(LocalDateTime.now())
+                    .build();
+
+            imageRepository.save(deleted);
+        }
+
+        return RsData.of("S-1", "삭제 성공");
+    }
+
+    private RsData saveImages(List<MultipartFile> files, long postId, long alreadySavedImgCount, long maxImgId) {
+
+        if (files.size() + alreadySavedImgCount > 10) {
+            return RsData.of("F-4", "이미지는 최대 10개까지만 첨부가능합니다.");
         }
 
         for (MultipartFile file : files) {

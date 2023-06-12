@@ -5,24 +5,38 @@ import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
+import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
+import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.place.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
-import jakarta.validation.Valid;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.PostService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -31,7 +45,9 @@ public class PlaceController {
     private final PlaceService placeService;
     private final BigCategoryService bigCategoryService;
     private final MidCategoryService midCategoryService;
+    private final SmallCategoryService smallCategoryService;
     private final PlaceLikeService placeLikeService;
+    private final PostService postService;
     private final PlaceData placeData;
     private final Rq rq;
 
@@ -44,30 +60,101 @@ public class PlaceController {
     }
 
     @GetMapping("/search")
-    public String search(Model model) {
-        List<Place> placeList = placeService.findAll();
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+    public String search(Model model,
+                         @RequestParam(value = "longitude", required = false) Double longitude,
+                         @RequestParam(value = "latitude", required = false) Double latitude,
+                         @RequestParam(defaultValue = "1000") Long distance,
+                         @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
+                         @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
+                         @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
+                         @RequestParam(defaultValue = "0") int page,
+                         @RequestParam(defaultValue = "12") int size) {
+
         List<BigCategory> bigCategories = bigCategoryService.findAll();
         List<MidCategory> midCategories = midCategoryService.findAll();
-
-        model.addAttribute("placeInfoList", placeInfoList);
+        List<SmallCategory> smallCategories = smallCategoryService.findAll();
+        model.addAttribute("latitude", latitude);
+        model.addAttribute("longitude", longitude);
         model.addAttribute("bigCategories", bigCategories);
         model.addAttribute("midCategories", midCategories);
+        model.addAttribute("smallCategories", smallCategories);
+        model.addAttribute("selectedBig", bigCategoryId);
+        model.addAttribute("selectedMid", midCategoryId);
+        model.addAttribute("selectedSmall", smallCategoryId);
 
-        return "usr/place/search";
-    }
+        //List<Place> placeList = null;
+        List<PlaceInfo> placeInfoList = null;
+        Page<Place> placePage = null;
+        Pageable pageable = PageRequest.of(page, size);
 
-    @PostMapping("/search")
-    public String search(@Valid SearchForm searchForm, Model model) {
+//        // 위치 정보 에러
+//        if (longitude == -1 && latitude == -1) {
+//            return "usr/place/search";
+//        }
 
-        List<Place> placeList = placeService.findAll();
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        List<BigCategory> bigCategories = bigCategoryService.findAll();
-        List<MidCategory> midCategories = midCategoryService.findAll();
+//        // 위치 정보 에러
+//        if (longitude == -1 && latitude == -1) {
+//            return "usr/place/search";
+//        }
 
+        // 위치 처리
+        if (longitude == null && latitude == null) {
+            placePage = placeService.findAll(pageable);
+            placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+            model.addAttribute("paging", placePage);
+            model.addAttribute("placeInfoList", placeInfoList);
+            return "usr/place/search";
+        } else {
+            Coordinate coord = new Coordinate(longitude, latitude);
+            GeometryFactory factory = new GeometryFactory();
+            Point point = factory.createPoint(coord);
+
+            // 카테고리 처리
+            if (bigCategoryId == null &&
+                    midCategoryId == null &&
+                    smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistance(
+                        pageable,
+                        point,
+                        distance);
+            } else if (midCategoryId == null &&
+                    smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId);
+            } else if (smallCategoryId == null) {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId,
+                        midCategoryId);
+            } else {
+                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(
+                        pageable,
+                        point,
+                        distance,
+                        bigCategoryId,
+                        midCategoryId,
+                        smallCategoryId);
+            }
+
+            // placeList = placeService.findPlaceBySpecificDistance(point, distance);
+        }
+
+
+        // 장소 정보
+        placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+        model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
-        model.addAttribute("bigCategories", bigCategories);
-        model.addAttribute("midCategories", midCategories);
+
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", placePage.getTotalPages());
+        model.addAttribute("totalElements", placePage.getTotalElements());
 
         return "usr/place/search";
     }
@@ -78,13 +165,23 @@ public class PlaceController {
         if (place == null) {
             throw new RuntimeException("해당 장소는 없습니다.");
         }
-
         model.addAttribute("place", place);
 
-        if(rq.getMember() != null ){
+        PlaceInfo placeInfo = placeService.getCategoryNames(place);
+        model.addAttribute("placeInfo", placeInfo);
+
+        if (rq.getMember() != null) {
             PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(id, rq.getMember().getId());
             model.addAttribute("placeLike", placeLike);
         }
+
+        List<Post> postList = postService.findByPlace(id);
+        List<Viewer> postViewerList = new ArrayList<>();
+        for (Post post : postList) {
+            postViewerList.add(postService.showSinglePost(post.getId()).getData());
+        }
+
+        model.addAttribute("postList", postViewerList);
 
         return "usr/place/details";
     }

@@ -17,6 +17,7 @@
             <div class="flex flex-col gap-5 w-full">
                 <form th:action=@{/comment/update/{id}(id=${comment.id})} method="post" class="mb-4 ">
                     <input type="hidden" name="id" th:value="${comment.id}"/>
+                    <input type="hidden" name="postId" th:value="${comment.postId}"/>
                     <textarea name="content"
                               class="textarea textarea-bordered textarea-md w-full px-4 py-2 rounded-lg  focus:ring-2 focus:ring-blue-400"
                               th:text="${comment.content}" style="height: 200px; width: 600px"></textarea>

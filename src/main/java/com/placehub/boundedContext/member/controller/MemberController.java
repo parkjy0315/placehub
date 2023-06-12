@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
-import com.placehub.base.util.Ut;
-import com.placehub.boundedContext.follow.service.FollowService;
+import com.placehub.boundedContext.friend.entity.Friend;
+import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.PlaceInfo;
@@ -18,7 +18,6 @@ import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,6 +29,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -39,7 +39,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
-    private final FollowService followService;
+    private final FriendService friendService;
     private final Rq rq;
 
     @Autowired
@@ -86,21 +86,6 @@ public class MemberController {
         return rq.redirectWithMsg("/member/login", joinRs);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @PostMapping("/update/nickname/{id}")
-    public ResponseEntity<String> updateNickname(@PathVariable Long id ,@RequestParam("nickname") String nickname) {
-        Member member = rq.getMember();
-
-        RsData updateRsData = memberService.updateNickname(member, id, nickname);
-
-        if(updateRsData.isFail()){
-            return ResponseEntity.badRequest().body("{\"message\": \"" + updateRsData.getMsg() + "\"}");
-        }
-
-        return ResponseEntity.ok().body("{\"message\": \"닉네임이 %s(으)로 수정되었습니다.\"}".formatted(nickname));
-    }
-
-
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
     public String showLogin() {
@@ -114,21 +99,64 @@ public class MemberController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/myPage")
+    @GetMapping("/page/me")
     public String showMyPage(Model model) {
-        List<Post> postList = this.postService.findByMember(rq.getMember().getId());
-        model.addAttribute("postList", postList);
 
+        List<Post> postList = this.postService.findByMember(rq.getMember().getId());
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
         List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
-        model.addAttribute("placeInfoList", placeInfoList);
+        List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
+        List<Member> followerList = friendService.findFollower(rq.getMember().getId());
 
-        List<Member> followingList = followService.findFollowing(rq.getMember().getId());
-        List<Member> followerList = followService.findFollower(rq.getMember().getId());
+        List<Viewer> postViewerList = new ArrayList<>();
+        for (Post post : postList) {
+            postViewerList.add(postService.showSinglePost(post.getId()).getData());
+        }
+
+        model.addAttribute("postList", postList);
+        model.addAttribute("postViewerList", postViewerList);
+        model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
 
         return "usr/member/myPage";
+    }
+
+    // 다른 사용자의 페이지
+    @GetMapping("/page/{id}")
+    public String showOtherMember(Model model, @PathVariable Long id) {
+
+        Member friend = memberService.findById(id).orElse(null);
+
+        List<Post> postList = postService.findByMember(id);
+        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
+        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
+
+        model.addAttribute("friend", friend);
+        model.addAttribute("follow", follow);
+        model.addAttribute("postList", postList);
+        model.addAttribute("placeInfoList", placeInfoList);
+        model.addAttribute("followingList",followingList);
+        model.addAttribute("followerList",followerList);
+
+        return "usr/member/otherMemberPage";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/update/nickname/{id}")
+    public ResponseEntity<String> updateNickname(@PathVariable Long id ,@RequestParam("nickname") String nickname) {
+        Member member = rq.getMember();
+
+        RsData updateRsData = memberService.updateNickname(member, id, nickname);
+
+        if(updateRsData.isFail()){
+            return ResponseEntity.badRequest().body("{\"message\": \"" + updateRsData.getMsg() + "\"}");
+        }
+
+        return ResponseEntity.ok().body("{\"message\": \"닉네임이 %s(으)로 수정되었습니다.\"}".formatted(nickname));
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -18,7 +18,6 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
-    private final MemberService memberService;
 
     @Transactional
     public Comment create(Long postId, String content, Member actor){
@@ -37,25 +36,17 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment get(Long id){
-        Optional<Comment> comment = commentRepository.findById(id);
-        return comment.orElse(null);
-    }
-
-    @Transactional
-    public RsData<Comment> update(Long id, String content){
-        Comment comment = commentRepository.findById(id).orElse(null);
+    public RsData<Comment> update(Comment comment, String content){
 
         comment = comment.toBuilder().content(content).build();
         commentRepository.save(comment);
 
-        return RsData.of("S-1", "댓글이 수정되었습니다.");
+        return RsData.of("S-1", "댓글이 수정되었습니다.", comment);
     }
 
     //Soft Delete로 구현
     @Transactional
-    public RsData<Comment> delete(Long id) {
-        Comment comment = commentRepository.findById(id).get();
+    public RsData<Comment> delete(Comment comment) {
 
         comment = comment.toBuilder().deleteDate(LocalDateTime.now()).build();
         commentRepository.save(comment);
@@ -64,9 +55,7 @@ public class CommentService {
     }
 
     // 유효한 댓글인지 체크
-    @Transactional
-    public RsData<Comment> isVaild(Long id) {
-        Comment comment = commentRepository.findById(id).orElse(null);
+    public RsData<Comment> isVaild(Comment comment) {
 
         if (comment == null) {
             return RsData.of("F-2", "존재하지 않는 댓글입니다.");
@@ -76,17 +65,15 @@ public class CommentService {
             return RsData.of("F-1", "삭제된 댓글입니다.");
         }
 
-        return RsData.of("S-1", "유효한 댓글입니다.");
+        return RsData.of("S-1", "유효한 댓글입니다.", comment);
     }
 
     // 권한 체크
-    @Transactional
-    public RsData<Comment> hasPermission(Long id, Member actor) {
-        Comment comment = commentRepository.findById(id).orElse(null);
+    public RsData<Comment> hasPermission(Comment comment, Member actor) {
         if (comment.getMemberId() != actor.getId()) {
             return RsData.of("F-1", "수정 및 삭제 권한이 없습니다.");
         }
-        return RsData.of("S-1","수정 및 삭제가 가능합니다.");
+        return RsData.of("S-1","수정 및 삭제가 가능합니다.", comment);
     }
 
 

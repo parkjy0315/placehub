@@ -6,9 +6,11 @@ import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.locationtech.jts.geom.Point;
 
 @SuperBuilder(toBuilder = true)
 @Getter
@@ -26,7 +28,22 @@ public class Place extends BaseEntity {
     private String placeName;
     private String phone;
     private String addressName;
-    private Double xPos;
-    private Double yPos;
+    @Column(columnDefinition = "GEOMETRY")
+    private Point point;
     private Long likeCount;
+
+    @Override
+    public String toString() {
+        return "Place{" +
+                "bigCategoryId=" + bigCategoryId +
+                ", midCategoryId=" + midCategoryId +
+                ", smallCategoryId=" + smallCategoryId +
+                ", placeId=" + placeId +
+                ", placeName='" + placeName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", addressName='" + addressName + '\'' +
+                ", point=" + point +
+                ", likeCount=" + likeCount +
+                '}';
+    }
 }

@@ -6,7 +6,7 @@
 
 
 <head>
-    <base href="/" />
+    <base href="/"/>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"/>
@@ -31,29 +31,29 @@
     <!-- 공통 CSS 불러오기 -->
     <link rel="stylesheet" href="/resource/common/common.css">
 
-        <title>PlaceHub</title>
-    </head>
-    <body class="min-h-screen flex flex-col">
+    <title>PlaceHub</title>
+</head>
+<body class="min-h-screen flex flex-col">
 
-    <!-- 데이지 UI 불러오기 -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
-    <!-- 테일윈드 불러오기 -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<!-- 데이지 UI 불러오기 -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
+<!-- 테일윈드 불러오기 -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- nav-bar 시작 -->
-    <header th:replace="~{header :: headerFragment}"></header>
-    <!-- nav-bar 끝 -->
+<!-- nav-bar 시작 -->
+<header th:replace="~{header :: headerFragment}"></header>
+<!-- nav-bar 끝 -->
 
-    <!-- 데이지 UI 불러오기 -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
-    <!-- 테일윈드 불러오기 -->
-    <script src="https://cdn.tailwindcss.com"></script>
+<!-- 데이지 UI 불러오기 -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css" rel="stylesheet" type="text/css"/>
+<!-- 테일윈드 불러오기 -->
+<script src="https://cdn.tailwindcss.com"></script>
 
-    <div layout:fragment="content" class="flex-grow flex items-center justify-center"></div>
+<div layout:fragment="content" class="flex-grow flex items-center justify-center"></div>
 
-    <!-- footer 시작 -->
-    <footer th:replace="~{footer :: footerFragment}"></footer>
-    <!-- footer 끝 -->
+<!-- footer 시작 -->
+<footer th:replace="~{footer :: footerFragment}"></footer>
+<th:block layout:fragment="script"></th:block><!-- footer 끝 -->
 </div>
 
 <script th:inline="javascript">
@@ -76,6 +76,55 @@
             localStorage.removeItem(localStorageKeyAboutHistoryBackErrorMsg);
         }
     });
+
+    function submitCheck(form) {
+        console.log(lat);
+        console.log(lon);
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lon;
+
+        form.submit();
+    }
+
+    function showRelatedMidOptions(selectElement) {
+        var selectedValue = selectElement.value;
+        var relatedSelect = document.getElementById("midSelect");
+        var options = relatedSelect.options;
+        // 관련된 옵션들을 초기화
+
+        for (var i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.classList.contains(selectedValue)) {
+                option.classList.remove("hidden");
+            }
+            else {
+                option.classList.add("hidden");
+            }
+        }
+
+        relatedSelect.value = "default";
+        document.getElementById("smallSelect").value = "default";
+    }
+
+    function showRelatedSmallOptions(selectElement) {
+        var selectedValue = selectElement.value;
+        var relatedSelect = document.getElementById("smallSelect");
+        var options = relatedSelect.options;
+        // 관련된 옵션들을 초기화
+
+        for (var i = 0; i < options.length; i++) {
+            const option = options[i];
+            if (option.classList.contains(selectedValue)) {
+                option.classList.remove("hidden");
+            }
+            else {
+                option.classList.add("hidden");
+            }
+        }
+
+        relatedSelect.value = "default";
+    }
+
 </script>
 
 </body>

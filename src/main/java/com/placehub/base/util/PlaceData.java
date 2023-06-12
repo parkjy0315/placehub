@@ -12,6 +12,9 @@ import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -108,10 +111,13 @@ public class PlaceData {
         Long placeId = Long.parseLong((String) element.get("id"));
         Double xPos = Double.parseDouble((String) element.get("x"));
         Double yPos = Double.parseDouble((String) element.get("y"));
+        Coordinate coord = new Coordinate(xPos, yPos);
+        GeometryFactory factory = new GeometryFactory();
+        Point point = factory.createPoint(coord);
 
         Category[] categories = categoryFilter(categoryName);
 
-        return Place.builder()
+        Place place = Place.builder()
                 .bigCategoryId(categories[0].getId())
                 .midCategoryId(categories[1].getId())
                 .smallCategoryId(categories[2].getId())
@@ -119,16 +125,20 @@ public class PlaceData {
                 .placeName(placeName)
                 .phone(phone)
                 .addressName(addressName)
-                .xPos(xPos)
-                .yPos(yPos)
+                .point(point)
+                //.likeCount(0L)
                 .build();
+
+        return place;
     }
     public void saveData(JSONObject element) {
-        Place place = convertPlace(element);
+        Long placeId = Long.parseLong((String) element.get("id"));
 
-        if (placeService.findByPlaceId(place.getPlaceId()) != null) {
+        if (placeService.findByPlaceId(placeId) != null) {
             return;
         }
+
+        Place place = convertPlace(element);
 
         placeService.create(place);
     }
@@ -157,10 +167,10 @@ public class PlaceData {
             bigCategory = bigCategoryService.create(categorySplit[0]);
         }
         if (midCategory == null) {
-            midCategory = midCategoryService.create(categorySplit[1]);
+            midCategory = midCategoryService.create(categorySplit[1], bigCategory.getId());
         }
         if (smallCategory == null) {
-            smallCategory = smallCategoryService.create(categorySplit[2]);
+            smallCategory = smallCategoryService.create(categorySplit[2], midCategory.getId());
         }
 
         return new Category[]{bigCategory, midCategory, smallCategory};

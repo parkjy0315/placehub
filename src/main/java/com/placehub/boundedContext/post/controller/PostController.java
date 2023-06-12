@@ -8,6 +8,7 @@ import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
+import com.placehub.boundedContext.post.service.ImageControlOptions;
 import com.placehub.boundedContext.post.service.ImageService;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
@@ -32,17 +33,18 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final ImageService imageService;
-    @GetMapping("/create")
-    public String create() {
+    @GetMapping("/create/{placeId}")
+    public String create(Model model, @PathVariable("placeId") long placeId) {
+        RsData<String> placeName = postService.displayPlaceDuringCreating(placeId);
+        model.addAttribute("placeName", placeName);
         return "usr/post/create";
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/create")
-    public String create(@Valid CreatingForm creatingForm) {
+    @PostMapping("/create/{placeId}")
+    public String create(@Valid CreatingForm creatingForm, @PathVariable long placeId) {
         long userId = rq.getMember().getId();
 
-        long placeId = postService.convertPlaceToId(creatingForm.getPlace());
         boolean isOpenToPublic = creatingForm.getIsOpenToPublic().equals("공개");
         String content = creatingForm.getContent();
         LocalDate visitedDate = creatingForm.getVisitedDate();
@@ -50,9 +52,9 @@ public class PostController {
 
         long postId = postService.createPost(userId, placeId, content, isOpenToPublic, visitedDate);
 
-        RsData imageSavingResult = imageService.controlImage(images, postId);
+        RsData imageSavingResult = imageService.controlImage(images, postId, ImageControlOptions.CREATE);
 
-        return "redirect:/post/list";
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), "아카이빙이 등록되었습니다.");
     }
 
     @GetMapping("/list")
@@ -82,12 +84,13 @@ public class PostController {
 
     @PostMapping("softDelete/{postId}")
     public String deletePost(@PathVariable long postId) throws RuntimeException {
-        RsData response = postService.deletePost(postId);
-        if (response.isFail()) {
+        RsData contentDelete = postService.deletePost(postId);
+        RsData imgDelete = imageService.deleteAllInPost(postId);
+        if (contentDelete.isFail() || imgDelete.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        return rq.redirectWithMsg("/post/list", response);
+        return rq.redirectWithMsg("/post/list", contentDelete);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -117,12 +120,12 @@ public class PostController {
             return postOwnerValidation.getMsg();
         }
 
-        long placeId = postService.convertPlaceToId(modifyingForm.getPlace());
         String content = modifyingForm.getContent();
         LocalDate visitedDate = modifyingForm.getVisitedDate();
         List<MultipartFile> images = modifyingForm.getImages();
-        postService.modifyContent(postId, placeId, content, visitedDate);
 
+        postService.modifyContent(postId, content, visitedDate);
+        imageService.controlImage(images, postId, ImageControlOptions.MODIFY);
         return "redirect:/post/list";
     }
 

@@ -60,7 +60,7 @@ public class ViewerTest {
     @Test
     @DisplayName("포스팅 뷰어 소프트삭제 실패")
     void softDeletePostFailTest() {
-        RsData response = postService.deletePost(1L);
+        RsData response = postService.deletePost(0L);
 
         assertThat(response.isSuccess()).isFalse();
     }
