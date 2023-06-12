@@ -114,6 +114,17 @@ public class MemberController {
         }
 
         List<Place> visitedPlaces = placeService.findPlacesByMemberId(rq.getMember().getId());
+        double xPosAverage = visitedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getX())
+                .average()
+                .orElse(0);
+
+        double yPosAverage = visitedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getY())
+                .average()
+                .orElse(0);
+        model.addAttribute("xPosAverage", xPosAverage);
+        model.addAttribute("yPosAverage", yPosAverage);
 
         model.addAttribute("postList", postList);
         model.addAttribute("postViewerList", postViewerList);

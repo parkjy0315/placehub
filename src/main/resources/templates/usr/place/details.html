@@ -130,7 +130,7 @@
                 <div>등록된 아카이빙이 없습니다.</div>
             </div>
 
-            <div th:if="${#lists.size(postList)} > 0">
+            <div th:if="${#lists.size(postList)} > 0" class="flex flex-col gap-3 ">
                 <a th:each="post, loop : ${postList}">
                     <a th:href="@{|/post/view/${post.postId}|}"
                        class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
