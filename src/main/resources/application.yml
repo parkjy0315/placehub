@@ -1,10 +1,3 @@
-server:
-  ssl:
-    enabled: true
-    key-store-type: PKCS12
-    key-store-password: 123456
-    key-store: keystore.p12
-
 spring:
   profiles:
     active: dev
@@ -57,15 +50,15 @@ spring:
             scope: account_email, profile_nickname
             client-name: Kakao
             authorization-grant-type: authorization_code
-            redirect-uri: https://localhost:8080/login/oauth2/code/kakao
+            redirect-uri: https://localhost/login/oauth2/code/kakao
             client-authentication-method: POST
           naver:
             scope:
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: https://localhost:8080/login/oauth2/code/naver
+            redirect-uri: https://localhost/login/oauth2/code/naver
           google:
-            redirect-uri: https://localhost:8080/login/oauth2/code/google
+            redirect-uri: https://localhost/login/oauth2/code/google
             client-name: Google
             scope: profile, email
         provider:
