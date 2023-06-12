@@ -20,6 +20,7 @@ public class PlaceLikeController {
     private final PlaceLikeService placeLikeService;
     private final Rq rq;
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{placeId}")
     public String create(@PathVariable("placeId") Long placeId){
 
@@ -37,6 +38,7 @@ public class PlaceLikeController {
         return rq.redirectWithMsg("/place/details/%s".formatted(placeId), createRsData);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{placeId}")
     public String delete(@PathVariable("placeId") Long placeId){
 

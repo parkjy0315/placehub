@@ -13,6 +13,7 @@ import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
+import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.service.PostService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -72,11 +73,14 @@ public class NotProd {
                         127.1015513297845, 37.65107359115661);
 
 
-                //Post post1 =
-                        postService.createPost(memberJinyeongKakao.getId(), place.getId(),
-                        "테스트용 게시물입니다.", true, LocalDate.now());
-
-                Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
+//                CreatingForm sampleCreatingForm = new CreatingForm();
+//                sampleCreatingForm.setContent("테스트용 게시물입니다");
+//                sampleCreatingForm.setIsOpenToPublic("공개");
+//                sampleCreatingForm.setVisitedDate(LocalDate.now());
+//                //Post post1 =
+//                        postService.createPost(memberJinyeongKakao.getId(), place.getId(), sampleCreatingForm);
+//
+//                Comment comment = commentService.create(1L, "테스트 댓글 1", member1);
 
 
                 friendService.follow(2L, "닉네임3");

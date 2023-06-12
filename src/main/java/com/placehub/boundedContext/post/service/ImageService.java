@@ -6,6 +6,7 @@ import com.placehub.boundedContext.post.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 
 @Service
 public class ImageService {
@@ -34,12 +36,7 @@ public class ImageService {
     }
 
     public List<String> callImagePathes(long postId) {
-        Optional<List<Images>> wrappedImages = imageRepository.findImagesByPost(postId);
-        List<Images> images = new ArrayList<>();
-        if (wrappedImages.isPresent()) {
-            images = wrappedImages.get();
-        }
-
+        List<Images> images = imageRepository.findImagesByPost(postId);
         List<String> result = new ArrayList<>();
 
         for (Images image : images) {
@@ -56,59 +53,57 @@ public class ImageService {
         return result;
     }
 
-    private long countImages(Optional<List<Images>> wrappedImgs) {
-        if (wrappedImgs.isEmpty()) {
+    private long maxImageId(List<Images> imagesList) {
+        if (imagesList.isEmpty()) {
             return 0L;
         }
-
-        return wrappedImgs.get().size();
-    }
-
-    private long maxImageId(Optional<List<Images>> wrappedImgs) {
-        if (wrappedImgs.get().isEmpty()) {
-            return 0L;
-        }
-
-        return wrappedImgs.get()
+        return imagesList
                 .stream()
                 .max(Comparator.comparing(Images::getImg))
                 .get()
                 .getImg();
     }
 
-    public RsData controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
+    @Transactional
+    public RsData<List<Images>> controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
         for (MultipartFile singleFile : files) {
             if (!singleFile.getContentType().equals("application/octet-stream")
                     && !singleFile.getContentType().startsWith("image/")) {
                 return RsData.of("F-4", "이미지 파일이 아닌 것이 있습니다.");
             }
         }
-        Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
-        List<Images> images = wrappedImgs.get();
+        List<Images> images = imageRepository.findImagesByPost(postId);
+        long maxImgId = maxImageId(images);
 
         if (control == ImageControlOptions.MODIFY) {
-            Set<Long> sentImgs = new HashSet<>();
-            List<MultipartFile> readyToSave = new ArrayList<>();
-            Set<Long> idSetFromDb = getImIdsFromDB(images);
-            distinguishImages(files, sentImgs, readyToSave, idSetFromDb);
-
-            RsData deleteResult = deleteParticially(idSetFromDb, sentImgs, images);
-            if (deleteResult.isFail()) {
-                return deleteResult;
-            }
-
-            long alreadySavedImgCount = idSetFromDb.size();
-            long maxImgId = maxImageId(wrappedImgs);
-
-            return saveImages(readyToSave, postId, alreadySavedImgCount, maxImgId);
+            return modifyPost(files, postId, maxImgId, images);
         }
 
-        long alreadySavedImgCount = images.size();
-        long maxImgId = maxImageId(wrappedImgs);
-        return saveImages(files, postId, alreadySavedImgCount, maxImgId);
+        if (control == ImageControlOptions.CREATE) {
+            long alreadySavedImages = images.size();
+            return saveImages(files, postId, alreadySavedImages, maxImgId);
+        }
+
+        return RsData.of("F-1", "이미지 저장 실패");
     }
 
-    private Set<Long> getImIdsFromDB(List<Images> images) {
+    private RsData modifyPost(List<MultipartFile> files, long postId, long maxImgId, List<Images> images) {
+        Set<Long> sentImgs = new HashSet<>();
+        List<MultipartFile> readyToSave = new ArrayList<>();
+        Set<Long> idSetFromDb = getImgIdsFromDB(images);
+        distinguishImages(files, sentImgs, readyToSave, idSetFromDb);
+
+        RsData deleteResult = deleteParticially(idSetFromDb, sentImgs, images);
+        if (deleteResult.isFail()) {
+            return deleteResult;
+        }
+
+        long alreadySavedImgCount = idSetFromDb.size();
+
+        return saveImages(readyToSave, postId, alreadySavedImgCount, maxImgId);
+    }
+
+    private Set<Long> getImgIdsFromDB(List<Images> images) {
         Set<Long> result = new HashSet<>();
         for (Images image : images) {
             result.add(image.getImg());
@@ -152,13 +147,10 @@ public class ImageService {
         }
     }
 
+    @Transactional
     public RsData deleteAllInPost(long postId) {
-        Optional<List<Images>> wrappedImgs = imageRepository.findImagesByPost(postId);
-        if (wrappedImgs.isEmpty()) {
-            return RsData.of("F-3", "존재하지 않는 게시글입니다");
-        }
+        List<Images> images = imageRepository.findImagesByPost(postId);
 
-        List<Images> images = wrappedImgs.get();
         for (Images image : images) {
             Images deleted = image.toBuilder()
                     .deleteDate(LocalDateTime.now())
@@ -187,9 +179,9 @@ public class ImageService {
         return RsData.of("S-1", "삭제 성공");
     }
 
-    private RsData saveImages(List<MultipartFile> files, long postId, long alreadySavedImgCount, long maxImgId) {
+    private RsData saveImages(List<MultipartFile> files, long postId, long alreadySavedImages, long maxImgId) {
 
-        if (files.size() + alreadySavedImgCount > 10) {
+        if (files.size() + alreadySavedImages > 10) {
             return RsData.of("F-4", "이미지는 최대 10개까지만 첨부가능합니다.");
         }
 
