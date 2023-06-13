@@ -24,7 +24,7 @@ import org.springframework.core.annotation.Order;
 import java.time.LocalDate;
 
 @Configuration
-@Profile({"dev", "test"})
+@Profile({"test"})
 public class NotProd {
     @Bean
     @Order(1)
