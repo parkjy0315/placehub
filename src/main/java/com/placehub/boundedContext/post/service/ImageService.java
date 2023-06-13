@@ -2,7 +2,11 @@ package com.placehub.boundedContext.post.service;
 
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.post.entity.Images;
+import com.placehub.boundedContext.post.entity.Post;
+import com.placehub.boundedContext.post.form.PreSignedUrlRequestForm;
+import com.placehub.boundedContext.post.form.PreSignedUrlResponseForm;
 import com.placehub.boundedContext.post.repository.ImageRepository;
+import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,12 @@ public class ImageService {
     private final String rootAddress = "https://localhost/";
     @Autowired
     private ImageRepository imageRepository;
+    @Autowired
+    private PostRepository postRepository;
+    @Autowired
+    private S3Pre_signedUrl s3PreSignedUrl;
+    @Value("${cloud.aws.bucket}")
+    public String bucket;
 
     public List<String> callImagePathes(long postId) {
         List<Images> images = imageRepository.findImagesByPost(postId);
@@ -54,6 +64,76 @@ public class ImageService {
                 .getImg();
     }
 
+    public RsData<List<Integer>> filterBeforePreSignedUrl(List<PreSignedUrlRequestForm> inputImgNames, List<Images> imagesFromDb) {
+        for (PreSignedUrlRequestForm singleData : inputImgNames) {
+            PreSignedUrlRequestForm.FileData fileData = singleData.getFileData();
+
+            String type = fileData.getContentType();
+            if (!type.startsWith("image/") && !type.equals("application/octet-stream")) {
+                return RsData.of("F-4", "이미지 파일이 아닌 것이 있습니다.");
+            }
+        }
+
+        List<Integer> validNames = new ArrayList<>();
+        for (PreSignedUrlRequestForm singleData : inputImgNames) {
+            PreSignedUrlRequestForm.FileData fileData = singleData.getFileData();
+
+            String fileName = fileData.getFileName();
+
+            if (!fileName.contains(".")) {
+                return RsData.of("F-4", "이미지 파일이 아닌 것이 있습니다.");
+            }
+
+            String beforeDot = fileName.split("\\.")[0];
+            if (!beforeDot.matches("^[0-9]+_[0-9]+$")) {
+                validNames.add(singleData.getId());
+                continue;
+            }
+
+            Set<Long> imgIdFromDb = getImgIdsFromDB(imagesFromDb);
+            long imgNum = Long.parseLong(beforeDot.split("_")[1]);
+
+            if (!imgIdFromDb.contains(imgNum)) {
+                validNames.add(singleData.getId());
+            }
+        }
+
+        return RsData.of("S-3", "PreSigned 필터링 이상 무", validNames);
+    }
+
+    public List<PreSignedUrlResponseForm>  getPreSignedUrlFromFilteredData(List<PreSignedUrlRequestForm> inputImgNames) {
+        Optional<Post> wrappedMaxPostId = postRepository.findFirstByOrderByIdDesc();
+        long postId = 0L;
+        if (wrappedMaxPostId.isPresent()) {
+            postId = wrappedMaxPostId.get().getId();
+        }
+        postId++;
+
+        List<PreSignedUrlResponseForm> result = new ArrayList<>();
+        List<Images> imagesFromDb = imageRepository.findImagesByPost(postId);
+        RsData<List<Integer>> validNames = filterBeforePreSignedUrl(inputImgNames, imagesFromDb);
+
+        if (validNames.isFail()) {
+            throw new RuntimeException("올바르지 않은 파일");
+        }
+
+        List<Integer> validatedName = validNames.getData();
+        long maxImgId = maxImageId(imagesFromDb);
+        for (int imgIdx : validatedName) {
+            maxImgId++;
+            String fileName = postId + "_" + maxImgId;
+            String preSignedUrl = s3PreSignedUrl.getPreSignedUrl(bucket, "", fileName);
+
+            PreSignedUrlResponseForm preSignedUrlResponseForm = new PreSignedUrlResponseForm();
+            preSignedUrlResponseForm.setIdx(imgIdx);
+            preSignedUrlResponseForm.setFileName(fileName);
+            preSignedUrlResponseForm.setPreSignedUrl(preSignedUrl);
+            result.add(preSignedUrlResponseForm);
+        }
+
+        return result;
+    }
+
     @Transactional
     public RsData<List<Images>> controlImage(List<MultipartFile> files, long postId, ImageControlOptions control) {
         for (MultipartFile singleFile : files) {
@@ -76,6 +156,7 @@ public class ImageService {
 
         return RsData.of("F-1", "이미지 저장 실패");
     }
+
 
     private RsData modifyPost(List<MultipartFile> files, long postId, long maxImgId, List<Images> images) {
         Set<Long> sentImgs = new HashSet<>();

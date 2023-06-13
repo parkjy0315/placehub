@@ -2,6 +2,8 @@
 <head>
     <title> 나의 공간 아카이빙 </title>
 
+    <meta name="_csrf" th:content="${_csrf.token}">
+    <meta name="_csrf_header" th:content="${_csrf.headerName}">
 </head>
 
 <body>
@@ -31,6 +33,10 @@
         </style>
 
         <script th:inline="javascript">
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+            $(document).ajaxSend(function(e, xhr, options) { xhr.setRequestHeader(header, token); });
+
             const imageLimit = 10;
             let imageFiles = new Array();
             const dataTransfer = new DataTransfer();
@@ -93,6 +99,40 @@
                     return false;
                 }
                 return true;
+            }
+
+            function getPreSignedUrl() {
+                const urlOfThisPage = "https://localhost";
+                const jsonArray = [];
+                const postId = window.location.href.split('/').slice(-1);
+                let imgData = dataTransfer.files;
+                for (let imgIdx = 0; imgIdx < imgData.length; imgIdx++) {
+                    const element = {'id' : imgIdx,
+                                    'fileData' : {
+                                        'fileName' : imgData[imgIdx].name,
+                                        'contentType' : imgData[imgIdx].type
+                                    }
+                    }
+
+                    jsonArray.push(element);
+                }
+
+                $.ajax({
+                    url: urlOfThisPage + "/post/get_Pre_Signed_Url",
+                    type: "POST",
+                    data: JSON.stringify(jsonArray),
+                    contentType: "application/json",
+                    success: function (response) {
+                        for (let i = 0; i < response.length; i++) {
+                            let singleData = response[i];
+                            alert(JSON.stringify(singleData));
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('실패')
+                    }
+
+                });
             }
 
             function upload(form) {
@@ -233,6 +273,8 @@
                 <button type="submit" class="btn btn-primary bg-blue-700 my-7 w-60">등록하기</button>
             </div>
         </form>
+
+        <button onclick="getPreSignedUrl()">테스트</button>
 
     </div>
 </div>
