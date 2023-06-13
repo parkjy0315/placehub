@@ -9,7 +9,7 @@ import com.placehub.boundedContext.friend.entity.Friend;
 import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
-import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.dto.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.entity.Post;

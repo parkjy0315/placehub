@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.place.repository;
 
+import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
@@ -9,9 +10,7 @@ import java.util.List;
 
 public interface PlaceRepositoryCustom {
 
-    List<Place> findPlaceBySpecificDistance(Point point, Long distance);
-    Page<Place> findPlaceBySpecificDistance(Pageable pageable, Point point, Long distance);
-    Page<Place> findPlaceBySpecificDistanceAndBigId(Pageable pageable, Point point, Long distance, Long bigCategoryId);
-    Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidId(Pageable pageable, Point point, Long distance, Long bigCategoryId, Long midCategoryId);
-    Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(Pageable pageable, Point point, Long distance, Long bigCategoryId, Long midCategoryId, Long smallCategoryId);
+    List<Place> findPlaceByDistance(Point point, Long distance);
+    Page<Place> findPlaceByDistance(Pageable pageable, Point point, Long distance);
+    Page<Place> findPlaceByDistanceAndIds(Pageable pageable, SearchCriteria searchCriteria);
 }

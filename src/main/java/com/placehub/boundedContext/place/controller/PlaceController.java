@@ -4,13 +4,15 @@ import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
+import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
-import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.dto.PlaceInfo;
+import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
@@ -28,7 +30,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -60,19 +61,22 @@ public class PlaceController {
     }
 
     @GetMapping("/search")
-    public String search(Model model,
-                         @RequestParam(value = "longitude", required = false) Double longitude,
-                         @RequestParam(value = "latitude", required = false) Double latitude,
-                         @RequestParam(defaultValue = "2000") Long distance,
-                         @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
-                         @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
-                         @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
-                         @RequestParam(defaultValue = "0") int page,
-                         @RequestParam(defaultValue = "12") int size) {
+    public String search(
+            Model model,
+            @RequestParam(value = "longitude", required = false) Double longitude,
+            @RequestParam(value = "latitude", required = false) Double latitude,
+            @RequestParam(defaultValue = "2000") Long distance,
+            @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
+            @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
+            @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
 
+        // 카테고리 정보
         List<BigCategory> bigCategories = bigCategoryService.findAll();
         List<MidCategory> midCategories = midCategoryService.findAll();
         List<SmallCategory> smallCategories = smallCategoryService.findAll();
+
         model.addAttribute("latitude", latitude);
         model.addAttribute("longitude", longitude);
         model.addAttribute("bigCategories", bigCategories);
@@ -82,67 +86,35 @@ public class PlaceController {
         model.addAttribute("selectedMid", midCategoryId);
         model.addAttribute("selectedSmall", smallCategoryId);
 
-        //List<Place> placeList = null;
-        List<PlaceInfo> placeInfoList = null;
-        Page<Place> placePage = null;
+        // 페이징 정보
         Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // 위치 처리
-        if (longitude == null && latitude == null) {
-            placePage = placeService.findAll(pageable);
-            placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
-            model.addAttribute("paging", placePage);
-            model.addAttribute("placeInfoList", placeInfoList);
-            return "usr/place/search";
-        } else {
-            // 위치 정보 에러
-            RsData validRs =  placeService.isValidCoordinate(longitude, latitude);
-            if (validRs.isFail()) {
+        // 검색 결과 정보
+        List<PlaceInfo> placeInfoList = null;
+        Page<Place> placePage = null;
+
+        // 좌표 유효성 검사
+        RsData validRs = placeService.isValidCoordinate(longitude, latitude);
+
+        switch (validRs.getResultCode()) {
+            case "F-1": // 초기화면 요청
+            case "F-2": // 좌표설정 오류
+            case "F-3": // 좌표범위 오류
                 placePage = placeService.findAll(pageable);
                 placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
+                // 다음과 같은 처리를 하면 url을 통한 접근 시 붕뜸
                 return rq.historyBack(validRs);
-            }
 
-            Coordinate coord = new Coordinate(longitude, latitude);
-            GeometryFactory factory = new GeometryFactory();
-            Point point = factory.createPoint(coord);
+            case "S-1": // 정상 좌표
+                Point point = Ut.point.toPoint(longitude, latitude);
+                List<Long> categoryIds = placeService.makeCategoryList(bigCategoryId, midCategoryId, smallCategoryId);
+                SearchCriteria searchCriteria = new SearchCriteria(point, distance, categoryIds);
 
-            // 카테고리 처리
-            if (bigCategoryId == null &&
-                    midCategoryId == null &&
-                    smallCategoryId == null) {
-                placePage = placeService.findPlaceBySpecificDistance(
-                        pageable,
-                        point,
-                        distance);
-            } else if (midCategoryId == null &&
-                    smallCategoryId == null) {
-                placePage = placeService.findPlaceBySpecificDistanceAndBigId(
-                        pageable,
-                        point,
-                        distance,
-                        bigCategoryId);
-            } else if (smallCategoryId == null) {
-                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidId(
-                        pageable,
-                        point,
-                        distance,
-                        bigCategoryId,
-                        midCategoryId);
-            } else {
-                placePage = placeService.findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(
-                        pageable,
-                        point,
-                        distance,
-                        bigCategoryId,
-                        midCategoryId,
-                        smallCategoryId);
-            }
-
-            // placeList = placeService.findPlaceBySpecificDistance(point, distance);
+                placePage = placeService.findPlace(pageable, searchCriteria);
+                break;
         }
 
         // 장소 정보
@@ -162,9 +134,11 @@ public class PlaceController {
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
+
         if (place == null) {
-            throw new RuntimeException("해당 장소는 없습니다.");
+            return rq.historyBack("해당 장소는 없습니다.");
         }
+
         model.addAttribute("place", place);
 
         PlaceInfo placeInfo = placeService.getCategoryNames(place);
@@ -184,33 +158,6 @@ public class PlaceController {
         model.addAttribute("postList", postViewerList);
 
         return "usr/place/details";
-    }
-
-
-    @GetMapping("/keyWordTest/{keyWord}/{radius}")
-    @ResponseBody
-    public String getKeyWord(@PathVariable("keyWord") String keyWord, @PathVariable("radius") Integer radius) {
-        double xLng = 37.532878; // 경도
-        double yLat = 126.981969; // 위도
-        int page = 1; // 페이지 수
-        int size = 15; // 한 페이지 내 결과 개수
-
-        JSONObject result = LocalApi.KeyWord.getAll(xLng, yLat, keyWord, radius, page, size);
-
-        return result.toJSONString();
-    }
-
-    @GetMapping("/categoryTest/{category}/{radius}")
-    @ResponseBody
-    public String getCategory(@PathVariable("category") String category, @PathVariable("radius") Integer radius) {
-        double xLng = 37.532878; // 경도
-        double yLat = 126.981969; // 위도
-        int page = 1; // 페이지 수
-        int size = 15; // 한 페이지 내 결과 개수
-
-        JSONObject result = LocalApi.Category.getAll(xLng, yLat, category, radius, page, size);
-
-        return result.toJSONString();
     }
 
     @GetMapping("/data-save-test/{categoryName}")

@@ -4,7 +4,8 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
-import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.dto.PlaceInfo;
+import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +46,7 @@ public class PlaceService {
                 .phone(phone)
                 .addressName(addressName)
                 .point(point)
-                //.likeCount(0L)
+                .likeCount(0L)
                 .build();
         return placeRepository.save(place);
     }
@@ -115,15 +115,8 @@ public class PlaceService {
 
     public List<PlaceInfo> getCategoryNamesList(List<Place> placeList) {
         List<PlaceInfo> categoryNamesList = new ArrayList<>();
-        placeList.stream()
-                .forEach(place -> {
-                    categoryNamesList.add(new PlaceInfo(place,
-                                bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName(),
-                                midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
-                                smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
-                            )
-                    );
-                });
+        placeList.stream().forEach(place -> categoryNamesList.add(getCategoryNames(place)));
+
         return categoryNamesList;
     }
 
@@ -133,59 +126,6 @@ public class PlaceService {
                 midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
                 smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
         );
-    }
-
-    public List<Place> findPlaceBySpecificDistance(Point point,
-                                                   Long distance) {
-        return placeRepository.findPlaceBySpecificDistance(point, distance);
-    }
-
-    public Page<Place> findPlaceBySpecificDistance(Pageable pageable,
-                                                   Point point,
-                                                   Long distance) {
-        return placeRepository.findPlaceBySpecificDistance(
-                pageable,
-                point,
-                distance);
-    }
-
-    public Page<Place> findPlaceBySpecificDistanceAndBigId(Pageable pageable,
-                                                           Point point,
-                                                           Long distance,
-                                                           Long bigCategoryId) {
-        return placeRepository.findPlaceBySpecificDistanceAndBigId(
-                pageable,
-                point,
-                distance,
-                bigCategoryId);
-    }
-
-    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidId(Pageable pageable,
-                                                                   Point point,
-                                                                   Long distance,
-                                                                   Long bigCategoryId,
-                                                                   Long midCategoryId) {
-        return placeRepository.findPlaceBySpecificDistanceAndBigIdAndMidId(
-                pageable,
-                point,
-                distance,
-                bigCategoryId,
-                midCategoryId);
-    }
-
-    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(Pageable pageable,
-                                                                             Point point,
-                                                                             Long distance,
-                                                                             Long bigCategoryId,
-                                                                             Long midCategoryId,
-                                                                             Long smallCategoryId) {
-        return placeRepository.findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(
-                pageable,
-                point,
-                distance,
-                bigCategoryId,
-                midCategoryId,
-                smallCategoryId);
     }
 
     public List<Place> findByPlaceLikeList_MemberId(Long memberId){
@@ -213,11 +153,31 @@ public class PlaceService {
         return placeRepository.findPlacesByMemberId(id);
     }
 
-    public RsData<Place> isValidCoordinate(double longitude, double latitude) {
+    public RsData<Place> isValidCoordinate(Double longitude, Double latitude) {
+        if (longitude == null || latitude == null) {
+            return RsData.of("F-1", "검색 요청이 아닌 초기화면 요청입니다.");
+        }
         if (longitude == -1 || latitude == -1) {
-            return RsData.of("F-1", "좌표 정보가 유효하지 않습니다.");
+            return RsData.of("F-2", "좌표설정이 올바르지 않습니다. 재설정해주세요.");
+        } else if (!((-90 <= latitude && latitude <= 90) && (-180 <= longitude && longitude <= 180))) {
+            return RsData.of("F-3", "좌표가 유효한 범위를 벗어납니다.");
         }
 
         return RsData.of("S-1", "정상적인 좌표입니다.");
+    }
+
+
+    public List<Long> makeCategoryList(Long bigCategoryId, Long midCategoryId, Long smallCategoryId) {
+        List<Long> categoryIds = new ArrayList<>();
+
+        if (bigCategoryId != null) categoryIds.add(bigCategoryId);
+        if (midCategoryId != null) categoryIds.add(midCategoryId);
+        if (smallCategoryId != null) categoryIds.add(smallCategoryId);
+
+        return categoryIds;
+    }
+
+    public Page<Place> findPlace(Pageable pageable, SearchCriteria searchCriteria) {
+        return placeRepository.findPlaceByDistanceAndIds(pageable, searchCriteria);
     }
 }
