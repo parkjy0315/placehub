@@ -40,6 +40,7 @@
                                                 onchange="showRelatedMidOptions(this)">
                                             <option disabled selected>대분류</option>
                                             <option th:each="bigCategory, loop : ${bigCategories}"
+                                                    th:if="${bigCategory.categoryName != null}"
                                                     th:value="${bigCategory.id}"
                                                     th:selected="${selectedBig} == ${bigCategory.id}"
                                                     th:text="${bigCategory.categoryName}"></option>
@@ -57,6 +58,7 @@
                                                     value="default">중분류
                                             </option>
                                             <option th:each="midCategory, loop : ${midCategories}"
+                                                    th:if="${midCategory.categoryName != null}"
                                                     th:class="${midCategory.bigCategoryId} + ' hidden'"
                                                     th:value="${midCategory.id}"
                                                     th:selected="${selectedMid} == ${midCategory.id}"
@@ -74,6 +76,7 @@
                                                     value="default">소분류
                                             </option>
                                             <option th:each="smallCategory, loop : ${smallCategories}"
+                                                    th:if="${smallCategory.categoryName != null}"
                                                     th:class="${smallCategory.midCategoryId} + ' hidden'"
                                                     th:value="${smallCategory.id}"
                                                     th:selected="${selectedSmall} == ${smallCategory.id}"
