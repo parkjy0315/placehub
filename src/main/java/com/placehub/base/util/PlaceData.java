@@ -52,9 +52,17 @@ public class PlaceData {
         END_Y = Double.parseDouble(environment.getProperty("custom.api.coord.end-y"));
     }
 
+    public double getXdist() {
+        return END_X - START_X;
+    }
+
+    public double getYdist() {
+        return END_Y - START_Y;
+    }
+
     public void saveAllCategoryData(String categoryCode) {
-        double xDist = END_X - START_X;
-        double yDist = END_Y - START_Y;
+        double xDist = getXdist();
+        double yDist = getYdist();
 
         double criteria = 0.005;
 
