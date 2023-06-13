@@ -92,10 +92,6 @@ public class PlaceController {
 //            return "usr/place/search";
 //        }
 
-//        // 위치 정보 에러
-//        if (longitude == -1 && latitude == -1) {
-//            return "usr/place/search";
-//        }
 
         // 위치 처리
         if (longitude == null && latitude == null) {
@@ -143,7 +139,6 @@ public class PlaceController {
 
             // placeList = placeService.findPlaceBySpecificDistance(point, distance);
         }
-
 
         // 장소 정보
         placeInfoList = placeService.getCategoryNamesList(placePage.getContent());

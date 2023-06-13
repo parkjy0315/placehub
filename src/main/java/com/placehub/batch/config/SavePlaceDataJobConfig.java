@@ -8,9 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepContribution;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.batch.core.explore.JobExplorer;
@@ -20,6 +18,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.support.ListItemReader;
@@ -37,6 +36,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Configuration
 @RequiredArgsConstructor
@@ -49,20 +49,17 @@ public class SavePlaceDataJobConfig {
     class MyTasklet implements Tasklet {
         @Override
         public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-            System.out.println("tasklet test");
-            int page = 1;
-            int size = 15;
-            double[] coords = placeData.getNextCoord(13, 12, 0.005);
-            String rect = placeData.convertRectString(coords);
-            JSONObject result = LocalApi.Category.getAllRect(rect, "FD6", page, size);
-            List<JSONObject> data = (List<JSONObject>) ((JSONArray) result.get("documents"))
-                    .stream()
-                    .collect(Collectors.toList());
+            JobParameters jobParameters = chunkContext.getStepContext().getStepExecution().getJobParameters();
+            String code = jobParameters.getString("categoryCode");
+            double criteria = jobParameters.getDouble("criteria");
+            int i = jobParameters.getDouble("i").intValue();
+            double xDist = placeData.getXdist();
 
-            data.stream()
-                    .filter(element -> placeService.findByPlaceId(Long.parseLong((String) element.get("id"))) == null)
-                    .map(element -> placeData.convertPlace(element))
-                    .forEach(place -> placeService.create(place));
+            IntStream.range(0, (int) (xDist / criteria) + 1)
+                    .mapToObj(j -> new int[]{i, j})
+                    .forEach(coords -> {
+                        placeData.fetchPlaceInfo(code, coords[0], coords[1], criteria);
+                    });
 
             return RepeatStatus.FINISHED;
         }
