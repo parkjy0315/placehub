@@ -5,6 +5,9 @@ spring:
 #    password: 1234
 #    url: jdbc:mysql://172.17.0.1:3306/placehub__prod?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 
+  autoconfigure:
+    exclude:
+
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
