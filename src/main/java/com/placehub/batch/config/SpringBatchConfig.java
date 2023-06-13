@@ -14,9 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 @Component
@@ -64,7 +62,7 @@ public class SpringBatchConfig {
 //                });
 //    }
 
-    @Scheduled(cron = "0 0 4 * * MON,WED,FRI")
+    @Scheduled(cron = "0 0 3 * * MON,WED,FRI")
     public void placeDataSaveBatch() {
         List<String> categoryCode = new ArrayList<>() {{
             add("AT4"); // 1111

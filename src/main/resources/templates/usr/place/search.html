@@ -50,7 +50,8 @@
                                 <select name="midCategoryId"
                                         id="midSelect"
                                         class="select-md form-select"
-                                        onchange="showRelatedSmallOptions(this)">
+                                        onchange="showRelatedSmallOptions(this)"
+                                        onfocus="showRelatedMidOptions(document.getElementById('bigSelect'))">
                                     <option disabled
                                             selected
                                             value="default">중분류</option>
@@ -63,7 +64,10 @@
                                 <div class="form-select-arrow"></div>
                             </div>
                             <div class="w-64 mx-auto mt-8 p-4 m-2">
-                                <select name="smallCategoryId" id="smallSelect" class="select-md form-select">
+                                <select name="smallCategoryId"
+                                        id="smallSelect"
+                                        class="select-md form-select"
+                                        onfocus="showRelatedSmallOptions(document.getElementById('midSelect'))">
                                     <option disabled
                                             selected
                                             value="default">소분류</option>
