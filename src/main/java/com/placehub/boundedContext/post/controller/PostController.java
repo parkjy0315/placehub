@@ -116,7 +116,7 @@ public class PostController {
         }
 
         postService.modifyContent(postId, modifyingForm);
-        return "redirect:/post/list";
+        return rq.redirectWithMsg("/post/view/%s".formatted(postId), "아카이빙이 수정되었습니다.");
     }
 
 }
