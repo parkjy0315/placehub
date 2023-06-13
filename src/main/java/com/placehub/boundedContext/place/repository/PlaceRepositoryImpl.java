@@ -64,7 +64,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
                         place.point,
                         searchCriteria.getPoint());
 
-        BooleanExpression whereClause = null;
+        BooleanExpression whereClause = distanceExpression.loe(searchCriteria.getDistance());
         List<Long> categoryIds = searchCriteria.getCategoryIds();
 
         switch (categoryIds.size()) {

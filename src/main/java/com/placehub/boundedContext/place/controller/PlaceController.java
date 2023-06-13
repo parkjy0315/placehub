@@ -13,6 +13,7 @@ import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.place.dto.PlaceInfo;
 import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.service.PlaceInfoService;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.placelike.entity.PlaceLike;
 import com.placehub.boundedContext.placelike.service.PlaceLikeService;
@@ -40,6 +41,7 @@ import java.util.Map;
 @RequestMapping("/place")
 public class PlaceController {
     private final PlaceService placeService;
+    private final PlaceInfoService placeInfoService;
     private final BigCategoryService bigCategoryService;
     private final MidCategoryService midCategoryService;
     private final SmallCategoryService smallCategoryService;
@@ -94,17 +96,23 @@ public class PlaceController {
         RsData validRs = placeService.isValidCoordinate(longitude, latitude);
 
         switch (validRs.getResultCode()) {
-            case "F-1": // 초기화면 요청
-            case "F-2": // 좌표설정 오류
-            case "F-3": // 좌표범위 오류
+            case "F-1": // 좌표설정 오류
+            case "F-2": // 좌표범위 오류
                 placePage = placeService.findAll(pageable);
-                placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+                placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
                 // 다음과 같은 처리를 하면 url을 통한 접근 시 붕뜸
                 return rq.historyBack(validRs);
 
-            case "S-1": // 정상 좌표
+            case "S-1": // 초기화면 요청
+                placePage = placeService.findAll(pageable);
+                placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
+                model.addAttribute("paging", placePage);
+                model.addAttribute("placeInfoList", placeInfoList);
+                return "usr/place/search";
+
+            case "S-2": // 정상 좌표
                 Point point = Ut.point.toPoint(longitude, latitude);
                 List<Long> categoryIds = placeService.makeCategoryList(bigCategoryId, midCategoryId, smallCategoryId);
                 SearchCriteria searchCriteria = new SearchCriteria(point, distance, categoryIds);
@@ -114,7 +122,7 @@ public class PlaceController {
         }
 
         // 장소 정보
-        placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+        placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
         model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
 
@@ -137,7 +145,7 @@ public class PlaceController {
 
         model.addAttribute("place", place);
 
-        PlaceInfo placeInfo = placeService.getCategoryNames(place);
+        PlaceInfo placeInfo = placeInfoService.getCategoryNames(place);
         model.addAttribute("placeInfo", placeInfo);
 
         if (rq.getMember() != null) {

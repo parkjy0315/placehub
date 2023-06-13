@@ -4,7 +4,6 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
-import com.placehub.boundedContext.place.dto.PlaceInfo;
 import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.factory.PlaceFactory;
@@ -119,20 +118,7 @@ public class PlaceService {
     public Page<Place> findAll(Pageable pageable) {
         return placeRepository.findAll(pageable);
     }
-    public List<PlaceInfo> getCategoryNamesList(List<Place> placeList) {
-        List<PlaceInfo> categoryNamesList = new ArrayList<>();
-        placeList.stream().forEach(place -> categoryNamesList.add(getCategoryNames(place)));
 
-        return categoryNamesList;
-    }
-
-    public PlaceInfo getCategoryNames(Place place) {
-        return new PlaceInfo(place,
-                bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName(),
-                midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
-                smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
-        );
-    }
 
     public List<Place> findByPlaceLikeList_MemberId(Long memberId){
         return placeRepository.findByPlaceLikeList_MemberId(memberId);
@@ -161,15 +147,15 @@ public class PlaceService {
 
     public RsData<Place> isValidCoordinate(Double longitude, Double latitude) {
         if (longitude == null || latitude == null) {
-            return RsData.of("F-1", "검색 요청이 아닌 초기화면 요청입니다.");
+            return RsData.of("S-1", "검색 요청이 아닌 초기화면 요청입니다.");
         }
         if (longitude == -1 || latitude == -1) {
-            return RsData.of("F-2", "좌표설정이 올바르지 않습니다. 재설정해주세요.");
+            return RsData.of("F-1", "좌표설정이 올바르지 않습니다. 재설정해주세요.");
         } else if (!((-90 <= latitude && latitude <= 90) && (-180 <= longitude && longitude <= 180))) {
-            return RsData.of("F-3", "좌표가 유효한 범위를 벗어납니다.");
+            return RsData.of("F-2", "좌표가 유효한 범위를 벗어납니다.");
         }
 
-        return RsData.of("S-1", "정상적인 좌표입니다.");
+        return RsData.of("S-2", "정상적인 좌표입니다.");
     }
 
 
