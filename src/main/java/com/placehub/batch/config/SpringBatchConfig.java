@@ -1,6 +1,6 @@
 package com.placehub.batch.config;
 
-import com.placehub.base.util.PlaceData;
+import com.placehub.base.util.PlaceProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -20,7 +20,7 @@ import java.util.stream.IntStream;
 @Component
 @RequiredArgsConstructor
 public class SpringBatchConfig {
-    private final PlaceData placeData;
+    private final PlaceProcessor placeProcessor;
     private final JobLauncher jobLauncher;
     private final Job job1;
 
@@ -71,7 +71,7 @@ public class SpringBatchConfig {
             add("FD6"); // 135651
         }};
 
-        double yDist = placeData.getYdist();
+        double yDist = placeProcessor.getYdist();
         double criteria = 0.005;
 
         categoryCode.stream()

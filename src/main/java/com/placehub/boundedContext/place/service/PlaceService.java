@@ -7,6 +7,7 @@ import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.place.dto.PlaceInfo;
 import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.factory.PlaceFactory;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
@@ -31,65 +32,39 @@ public class PlaceService {
 
     @Transactional
     public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
-                        Long placeId, String placeName, String phone, String addressName,
+                        Long placeId, String placeName,
+                        String phone, String addressName,
                         Double xPos, Double yPos) {
         Coordinate coord = new Coordinate(xPos, yPos);
         GeometryFactory factory = new GeometryFactory();
         Point point = factory.createPoint(coord);
 
-        Place place = Place.builder()
-                .bigCategoryId(bigCategoryId)
-                .midCategoryId(midCategoryId)
-                .smallCategoryId(smallCategoryId)
-                .placeId(placeId)
-                .placeName(placeName)
-                .phone(phone)
-                .addressName(addressName)
-                .point(point)
-                .likeCount(0L)
-                .build();
+        Place place = PlaceFactory.createPlace(
+                bigCategoryId, midCategoryId, smallCategoryId,
+                placeId, placeName,
+                phone, addressName,
+                point);
+
         return placeRepository.save(place);
     }
 
     @Transactional
     public Place create(Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
-                        Long placeId, String placeName, String phone, String addressName,
+                        Long placeId, String placeName,
+                        String phone, String addressName,
                         Point point) {
-        Place place = Place.builder()
-                .bigCategoryId(bigCategoryId)
-                .midCategoryId(midCategoryId)
-                .smallCategoryId(smallCategoryId)
-                .placeId(placeId)
-                .placeName(placeName)
-                .phone(phone)
-                .addressName(addressName)
-                .point(point)
-                .likeCount(0L)
-                .build();
+        Place place = PlaceFactory.createPlace(
+                bigCategoryId, midCategoryId, smallCategoryId,
+                placeId, placeName,
+                phone, addressName,
+                point);
+
         return placeRepository.save(place);
     }
 
     @Transactional
     public Place create(Place place) {
         return placeRepository.save(place);
-    }
-
-    public Place getPlace(Long id) {
-        Optional<Place> place = placeRepository.findById(id);
-        return place.orElse(null);
-    }
-
-    public Place findByPlaceId(Long placeId) {
-        Optional<Place> place = placeRepository.findByPlaceId(placeId);
-        return place.orElse(null);
-    }
-
-    public List<Place> findAll() {
-        return placeRepository.findAll();
-    }
-
-    public Page<Place> findAll(Pageable pageable) {
-        return placeRepository.findAll(pageable);
     }
 
     @Transactional
@@ -109,10 +84,41 @@ public class PlaceService {
         return placeRepository.save(updatePlace);
     }
 
+    @Transactional
+    public Place update(Place place, Place updatedPlace) {
+        Place updated = place.toBuilder()
+                .bigCategoryId(updatedPlace.getBigCategoryId())
+                .midCategoryId(updatedPlace.getMidCategoryId())
+                .smallCategoryId(updatedPlace.getSmallCategoryId())
+                .placeName(updatedPlace.getPlaceName())
+                .phone(updatedPlace.getPhone())
+                .addressName(updatedPlace.getAddressName())
+                .point(updatedPlace.getPoint())
+                .build();
+        return placeRepository.save(updated);
+    }
+
     public void delete(Place place) {
         placeRepository.delete(place);
     }
 
+    public Place getPlace(Long id) {
+        Optional<Place> place = placeRepository.findById(id);
+        return place.orElse(null);
+    }
+
+    public Place findByPlaceId(Long placeId) {
+        Optional<Place> place = placeRepository.findByPlaceId(placeId);
+        return place.orElse(null);
+    }
+
+    public List<Place> findAll() {
+        return placeRepository.findAll();
+    }
+
+    public Page<Place> findAll(Pageable pageable) {
+        return placeRepository.findAll(pageable);
+    }
     public List<PlaceInfo> getCategoryNamesList(List<Place> placeList) {
         List<PlaceInfo> categoryNamesList = new ArrayList<>();
         placeList.stream().forEach(place -> categoryNamesList.add(getCategoryNames(place)));

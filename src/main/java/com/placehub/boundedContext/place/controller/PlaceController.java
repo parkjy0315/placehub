@@ -2,8 +2,7 @@ package com.placehub.boundedContext.place.controller;
 
 import com.placehub.base.rq.Rq;
 import com.placehub.base.rsData.RsData;
-import com.placehub.base.util.LocalApi;
-import com.placehub.base.util.PlaceData;
+import com.placehub.base.util.PlaceProcessor;
 import com.placehub.base.util.Ut;
 import com.placehub.boundedContext.category.entity.BigCategory;
 import com.placehub.boundedContext.category.entity.MidCategory;
@@ -22,9 +21,6 @@ import com.placehub.boundedContext.post.form.Viewer;
 import com.placehub.boundedContext.post.service.PostService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.json.simple.JSONObject;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,7 +45,7 @@ public class PlaceController {
     private final SmallCategoryService smallCategoryService;
     private final PlaceLikeService placeLikeService;
     private final PostService postService;
-    private final PlaceData placeData;
+    private final PlaceProcessor placeProcessor;
     private final Rq rq;
 
     @Data
@@ -170,7 +166,7 @@ public class PlaceController {
             put("카페", "CE7"); // 33501
         }};
 
-        placeData.saveAllCategoryData(categoryCode.get(categoryName));
+        placeProcessor.saveAllCategoryData(categoryCode.get(categoryName));
         return "Success";
     }
 }
