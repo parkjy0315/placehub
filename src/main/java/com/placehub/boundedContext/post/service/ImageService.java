@@ -24,16 +24,6 @@ public class ImageService {
     private final String rootAddress = "https://localhost/";
     @Autowired
     private ImageRepository imageRepository;
-    private void mkImageDir() {
-        File imageDir = new File(IMAGE_STORAGE_PATH);
-        if (!imageDir.exists()) {
-            try {
-                imageDir.mkdir();
-            } catch (Exception mkDirException) {
-                mkDirException.getStackTrace();
-            }
-        }
-    }
 
     public List<String> callImagePathes(long postId) {
         List<Images> images = imageRepository.findImagesByPost(postId);
