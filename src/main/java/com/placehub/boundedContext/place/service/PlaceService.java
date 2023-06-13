@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.place.service;
 
+import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
@@ -209,5 +210,13 @@ public class PlaceService {
 
     public List<Place> findPlacesByMemberId(Long id) {
         return placeRepository.findPlacesByMemberId(id);
+    }
+
+    public RsData<Place> isValidCoordinate(double longitude, double latitude) {
+        if (longitude == -1 || latitude == -1) {
+            return RsData.of("F-1", "좌표 정보가 유효하지 않습니다.");
+        }
+
+        return RsData.of("S-1", "정상적인 좌표입니다.");
     }
 }

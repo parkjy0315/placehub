@@ -1,6 +1,7 @@
 package com.placehub.boundedContext.place.controller;
 
 import com.placehub.base.rq.Rq;
+import com.placehub.base.rsData.RsData;
 import com.placehub.base.util.LocalApi;
 import com.placehub.base.util.PlaceData;
 import com.placehub.boundedContext.category.entity.BigCategory;
@@ -26,6 +27,7 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +62,7 @@ public class PlaceController {
     public String search(Model model,
                          @RequestParam(value = "longitude", required = false) Double longitude,
                          @RequestParam(value = "latitude", required = false) Double latitude,
-                         @RequestParam(defaultValue = "1000") Long distance,
+                         @RequestParam(defaultValue = "2000") Long distance,
                          @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
                          @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
                          @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
@@ -84,12 +86,6 @@ public class PlaceController {
         Page<Place> placePage = null;
         Pageable pageable = PageRequest.of(page, size);
 
-//        // 위치 정보 에러
-//        if (longitude == -1 && latitude == -1) {
-//            return "usr/place/search";
-//        }
-
-
         // 위치 처리
         if (longitude == null && latitude == null) {
             placePage = placeService.findAll(pageable);
@@ -98,6 +94,16 @@ public class PlaceController {
             model.addAttribute("placeInfoList", placeInfoList);
             return "usr/place/search";
         } else {
+            // 위치 정보 에러
+            RsData validRs =  placeService.isValidCoordinate(longitude, latitude);
+            if (validRs.isFail()) {
+                placePage = placeService.findAll(pageable);
+                placeInfoList = placeService.getCategoryNamesList(placePage.getContent());
+                model.addAttribute("paging", placePage);
+                model.addAttribute("placeInfoList", placeInfoList);
+                return rq.historyBack(validRs);
+            }
+
             Coordinate coord = new Coordinate(longitude, latitude);
             GeometryFactory factory = new GeometryFactory();
             Point point = factory.createPoint(coord);
