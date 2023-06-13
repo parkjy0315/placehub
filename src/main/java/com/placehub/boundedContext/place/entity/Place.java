@@ -31,7 +31,6 @@ public class Place extends BaseEntity {
     private String placeName;
     private String phone;
     private String addressName;
-
     @Column(columnDefinition = "GEOMETRY", nullable = false)
     @Index(name = "idx_point")
     private Point point;

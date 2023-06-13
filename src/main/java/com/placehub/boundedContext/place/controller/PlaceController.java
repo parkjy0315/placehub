@@ -92,6 +92,7 @@ public class PlaceController {
 //            return "usr/place/search";
 //        }
 
+
         // 위치 처리
         if (longitude == null && latitude == null) {
             placePage = placeService.findAll(pageable);
@@ -138,7 +139,6 @@ public class PlaceController {
 
             // placeList = placeService.findPlaceBySpecificDistance(point, distance);
         }
-
 
         // 장소 정보
         placeInfoList = placeService.getCategoryNamesList(placePage.getContent());

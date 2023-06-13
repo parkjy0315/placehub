@@ -32,7 +32,7 @@ public class CommentController {
     public String getList(Model model) {
         List<Comment> comments = commentService.findAll();
         model.addAttribute("comments", comments);
-        return "/usr/comment/comment";
+        return "usr/comment/comment";
     }
 
     // 수정 폼
