@@ -21,7 +21,7 @@ public class ImageService {
     private static final String fileSeperator = File.separator;
     @Value("${custom.genFileDirPath}")
     private String IMAGE_STORAGE_PATH;
-    private final String rootAddress = "https://localhost:8080/";
+    private final String rootAddress = "https://localhost/";
     @Autowired
     private ImageRepository imageRepository;
     private void mkImageDir() {
