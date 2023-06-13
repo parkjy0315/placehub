@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -84,7 +85,8 @@ public class PlaceController {
         //List<Place> placeList = null;
         List<PlaceInfo> placeInfoList = null;
         Page<Place> placePage = null;
-        Pageable pageable = PageRequest.of(page, size);
+        Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
+        Pageable pageable = PageRequest.of(page, size, sort);
 
         // 위치 처리
         if (longitude == null && latitude == null) {
