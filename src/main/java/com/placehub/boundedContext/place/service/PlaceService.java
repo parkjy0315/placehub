@@ -124,6 +124,10 @@ public class PlaceService {
         return placeRepository.findByPlaceLikeList_MemberId(memberId);
     }
 
+    public Page<Place> findByPlaceLikeList_MemberId(Long id, Pageable pageable){
+        return placeRepository.findByPlaceLikeList_MemberId(id, pageable);
+    }
+
     @Transactional
     public void whenUpdatePlaceLike(Long placeId, boolean isCreated) {
         Place place = getPlace(placeId);

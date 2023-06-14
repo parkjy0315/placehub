@@ -18,8 +18,12 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     Page<Place> findAll(Pageable pageable);
     @Query("SELECT p FROM Place p JOIN PlaceLike pl ON p.id = pl.placeId WHERE pl.memberId = :memberId")
     List<Place> findByPlaceLikeList_MemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT p FROM Place p JOIN PlaceLike pl ON p.id = pl.placeId WHERE pl.memberId = :memberId")
+    Page<Place> findByPlaceLikeList_MemberId(@Param("memberId") Long memberId, Pageable pageable);
     @Query("SELECT pl FROM Post p JOIN Place pl ON p.place = pl.id JOIN Member m ON p.member = m.id WHERE m.id = :memberId")
     List<Place> findPlacesByMemberId(@Param("memberId") Long memberId);
+
     List<Place> findPlaceByDistance(Point point, Long distance);
     Page<Place> findPlaceByDistance(Pageable pageable, Point point, Long distance);
     Page<Place> findPlaceByDistanceAndIds(Pageable pageable, SearchCriteria searchCriteria);

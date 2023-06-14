@@ -24,6 +24,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -103,47 +107,102 @@ public class MemberController {
     // 다른 사용자의 페이지
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/{id}")
-    public String showOtherMember(Model model, @PathVariable Long id) {
+    public String showUserPage(Model model, @PathVariable Long id,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size) {
 
         Member member = memberService.findById(id).orElse(null);
 
-        List<Post> postList = postService.findByMember(id);
-        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
-        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
-        List<Member> followingList = friendService.findFollowing(id);
-        List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+        // 등록한 아카이빙
+        Sort sortPost = Sort.by(Sort.Direction.DESC, "visitedDate");
+        Pageable pageablePost = PageRequest.of(page, size, sortPost);
+
+        Page<Post> postPages =  this.postService.findByMember(id, pageablePost);
+        List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postList) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
+        model.addAttribute("postPaging", postPages);
+        model.addAttribute("postList", postList);
+        model.addAttribute("postViewerList", postViewerList);
+
         List<Place> visitedPlaces = placeService.findPlacesByMemberId(member.getId());
-        double xPosAverage = visitedPlaces.stream()
+        double xPosAverageByvisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getX())
                 .average()
                 .orElse(0);
 
-        double yPosAverage = visitedPlaces.stream()
+        double yPosAverageByvisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getY())
                 .average()
                 .orElse(0);
-        model.addAttribute("xPosAverage", xPosAverage);
-        model.addAttribute("yPosAverage", yPosAverage);
+
+        model.addAttribute("visitedPlaces", visitedPlaces);
+        model.addAttribute("xPosAverageByvisitedPlaces", xPosAverageByvisitedPlaces);
+        model.addAttribute("yPosAverageByvisitedPlaces", yPosAverageByvisitedPlaces);
+
+        // 친구
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
 
-        model.addAttribute("postList", postList);
-        model.addAttribute("postViewerList", postViewerList);
-        model.addAttribute("placeList", placeList);
-        model.addAttribute("visitedPlaces", visitedPlaces);
-        model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
 
-        return "usr/member/userPage";
+        return "usr/member/userPagePost";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/page/like-list/{id}")
+    public String showUserPageWithLikedPlace(Model model, @PathVariable Long id,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "9") int size) {
+
+        Member member = memberService.findById(id).orElse(null);
+
+        // 등록한 좋아요 장소
+        Sort sortPlace = Sort.by(Sort.Direction.ASC, "likeCount");
+        Pageable pageablePlace = PageRequest.of(page, size, sortPlace);
+
+        Page<Place> likedPlacesPages = placeService.findByPlaceLikeList_MemberId(id, pageablePlace);
+        List<Place> likedPlaces = likedPlacesPages.getContent();
+        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(likedPlaces);
+
+        double xPosAverageByLikedPlaces = likedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getX())
+                .average()
+                .orElse(0);
+
+        double yPosAverageByLikedPlaces = likedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getY())
+                .average()
+                .orElse(0);
+
+        model.addAttribute("PlacePaging", likedPlacesPages);
+        model.addAttribute("likedPlaces", likedPlaces);
+        model.addAttribute("placeInfoList", placeInfoList);
+        model.addAttribute("xPosAverageByLikedPlaces", xPosAverageByLikedPlaces);
+        model.addAttribute("yPosAverageByLikedPlaces", yPosAverageByLikedPlaces);
+
+
+        // 친구
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+
+        model.addAttribute("member", member);
+        model.addAttribute("follow", follow);
+
+        model.addAttribute("followingList",followingList);
+        model.addAttribute("followerList",followerList);
+
+        return "usr/member/userPageLike";
     }
 
     @PreAuthorize("isAuthenticated()")
