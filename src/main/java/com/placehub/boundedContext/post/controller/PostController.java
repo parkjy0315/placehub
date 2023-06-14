@@ -11,6 +11,7 @@ import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.*;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,11 +34,15 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final ImageService imageService;
+    @Value("${custom.site.baseUrl}")
+    public String baseUrl;
+
 
     @GetMapping("/create/{placeId}")
     public String create(Model model, @PathVariable("placeId") long placeId) {
         RsData<String> placeName = postService.displayPlaceDuringCreating(placeId);
         model.addAttribute("placeName", placeName);
+        model.addAttribute("baseUrl", baseUrl);
         return "usr/post/create";
     }
 
@@ -93,6 +98,7 @@ public class PostController {
 
         model.addAttribute("postView", response);
         model.addAttribute("imageList", imagePathes);
+        model.addAttribute("baseUrl", baseUrl);
         return "usr/post/viewer";
     }
 
@@ -120,6 +126,7 @@ public class PostController {
         RsData<Viewer> response = postService.showSinglePost(postId);
         model.addAttribute("modifyingData", response);
         model.addAttribute("photoList", imagePathes);
+        model.addAttribute("baseUrl", baseUrl);
         return "usr/post/create";
     }
 
