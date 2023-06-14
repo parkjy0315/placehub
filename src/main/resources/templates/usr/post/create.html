@@ -177,12 +177,35 @@
                     return false;
                 }
 
+
+                let alreadyExisted = [];
+                if (images != null) {
+                    const modifyGiven = [];
+                    for (let idx = 0; idx < images.length; idx++) {
+                        modifyGiven.push(images[idx].split('/').slice(-1)[0]);
+                    }
+
+                    const afterModified = [];
+                    for(let idx = 0; idx < imgData.length; idx++) {
+                        afterModified.push(imgData[idx].name);
+                    }
+
+                    for (let idx = 0; idx < afterModified.length; idx++) {
+                        const after = afterModified[idx];
+                        if (modifyGiven.indexOf(after) !== -1 && alreadyExisted.indexOf(after) === -1) {
+                            alreadyExisted.push(after.split('_')[1]);
+                        }
+                    }
+                }
+
                 const imgIds = [];
                 for (let idx = 0; idx < response.length; idx++) {
                     imgIds.push(response[idx].fileName);
                 }
 
-                form.imgIds.value = imgIds;
+                let merged = alreadyExisted.concat(imgIds);
+                let uniqueMerged = merged.filter((item, pos) => merged.indexOf(item) === pos);
+                form.imgIds.value = uniqueMerged;
                 form.submit();
             }
 
