@@ -49,12 +49,13 @@ public class PostService {
                 .build();
 
         long postId = postRepository.save(post).getId();
-        RsData imgSavingResult = imageService.createOrModifyImages(Arrays.stream(creatingForm.getImgIds().split(",")).map(Long::parseLong).toList(), postId);
+        if (!creatingForm.getImgIds().equals("")) {
+            RsData imgSavingResult = imageService.createOrModifyImages(Arrays.stream(creatingForm.getImgIds().split(",")).map(Long::parseLong).toList(), postId);
 
-        if (imgSavingResult.isFail()) {
-            return imgSavingResult;
+            if (imgSavingResult.isFail()) {
+                return imgSavingResult;
+            }
         }
-
         return RsData.of("S-1", "게시물 등록 성공", postId);
     }
 
@@ -124,14 +125,21 @@ public class PostService {
                 .visitedDate(modifyingForm.getVisitedDate())
                 .build();
 
-        RsData imgModifyingResult = imageService.createOrModifyImages(Arrays.stream(modifyingForm.getImgIds().split(",")).map(Long::parseLong).toList()
-                , postId);
+        RsData imgModifyingResult = imageService.createOrModifyImages(checkEmpty(modifyingForm), postId);
 
         if (imgModifyingResult.isFail()) {
             throw new RuntimeException("이미지 저장 오류");
         }
         return postRepository.save(post).getId();
 
+    }
+
+    private List<Long> checkEmpty(ModifyingForm modifyingForm) {
+        if (modifyingForm.getImgIds().equals("")) {
+            return new ArrayList<Long>();
+        }
+
+        return Arrays.stream(modifyingForm.getImgIds().split(",")).map(Long::parseLong).toList();
     }
 
     public RsData<String> displayPlaceDuringCreating(long placeId) {
