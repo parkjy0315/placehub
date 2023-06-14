@@ -130,7 +130,7 @@ public class PlaceProcessor {
     }
 
     public void savePlaceData(Place placeData) {
-        Place existingPlace = placeService.findByPlaceId(placeData.getId());
+        Place existingPlace = placeService.findByPlaceId(placeData.getPlaceId());
 
         if (existingPlace != null) {
             placeService.update(existingPlace, placeData);
