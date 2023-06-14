@@ -10,6 +10,8 @@ import com.placehub.boundedContext.member.repository.MemberRepository;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -181,8 +183,8 @@ public class PostService {
         return RsData.of("S-1", "삭제 성공", post);
     }
 
-    public List<Post> findAll() {
-        return postRepository.findAll();
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
     }
     public List<Post> findByMember(Long memberId) {
         return postRepository.findByMember(memberId);
