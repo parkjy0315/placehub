@@ -2,6 +2,9 @@ package com.placehub.base.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
@@ -18,35 +21,12 @@ import java.util.Base64;
 import java.util.Map;
 
 public class Ut {
-    public static class distance {
-        public static double calculateDistance(double lat1, double lon1, double lat2, double lon2, String unit) {
-            double theta = lon1 - lon2;
-            double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-
-            dist = Math.acos(dist);
-            dist = rad2deg(dist);
-            dist = dist * 60 * 1.1515;
-
-            if (unit.equals("kilometer")) {
-                dist = dist * 1.609344;
-            } else if (unit.equals("meter")) {
-                dist = dist * 1609.344;
-            }
-
-            return (dist);
+    public static class point {
+        public static Point toPoint(double longitude, double latitude) {
+            Coordinate coord = new Coordinate(longitude, latitude);
+            GeometryFactory factory = new GeometryFactory();
+            return factory.createPoint(coord);
         }
-
-
-        // This function converts decimal degrees to radians
-        private static double deg2rad(double deg) {
-            return (deg * Math.PI / 180.0);
-        }
-
-        // This function converts radians to decimal degrees
-        private static double rad2deg(double rad) {
-            return (rad * 180 / Math.PI);
-        }
-
     }
 
     public static class json {

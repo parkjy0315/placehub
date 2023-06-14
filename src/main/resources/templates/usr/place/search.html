@@ -1,7 +1,7 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>장소 목록</title>
+    <title>공간 큐레이션</title>
     <style>
         .customoverlay {
             position: relative;
@@ -61,7 +61,7 @@
     <div class="hero-content flex-col mb-10">
         <div class=" w-full px-4" style="width:1000px;">
             <div class="flex flex-col items-center my-5">
-                <h1 class="text-4xl my-2 font-bold">장소 목록</h1>
+                <h1 class="text-4xl my-2 font-bold">공간 큐레이션</h1>
             </div>
 
             <div class="bg-gray-30">
@@ -89,6 +89,7 @@
                                                 onchange="showRelatedMidOptions(this)">
                                             <option disabled selected>대분류</option>
                                             <option th:each="bigCategory, loop : ${bigCategories}"
+                                                    th:if="${bigCategory.categoryName != null}"
                                                     th:value="${bigCategory.id}"
                                                     th:selected="${selectedBig} == ${bigCategory.id}"
                                                     th:text="${bigCategory.categoryName}"></option>
@@ -99,12 +100,14 @@
                                         <select name="midCategoryId"
                                                 id="midSelect"
                                                 class="select-md form-select"
-                                                onchange="showRelatedSmallOptions(this)">
+                                                onchange="showRelatedSmallOptions(this)"
+                                                onfocus="showRelatedMidOptions(document.getElementById('bigSelect'))">
                                             <option disabled
                                                     selected
                                                     value="default">중분류
                                             </option>
                                             <option th:each="midCategory, loop : ${midCategories}"
+                                                    th:if="${midCategory.categoryName != null}"
                                                     th:class="${midCategory.bigCategoryId} + ' hidden'"
                                                     th:value="${midCategory.id}"
                                                     th:selected="${selectedMid} == ${midCategory.id}"
@@ -113,12 +116,16 @@
                                         <div class="form-select-arrow"></div>
                                     </div>
                                     <div class="w-64 mx-auto  m-2">
-                                        <select name="smallCategoryId" id="smallSelect" class="select-md form-select">
+                                        <select name="smallCategoryId"
+                                                id="smallSelect"
+                                                class="select-md form-select"
+                                                onfocus="showRelatedSmallOptions(document.getElementById('midSelect'))">
                                             <option disabled
                                                     selected
                                                     value="default">소분류
                                             </option>
                                             <option th:each="smallCategory, loop : ${smallCategories}"
+                                                    th:if="${smallCategory.categoryName != null}"
                                                     th:class="${smallCategory.midCategoryId} + ' hidden'"
                                                     th:value="${smallCategory.id}"
                                                     th:selected="${selectedSmall} == ${smallCategory.id}"

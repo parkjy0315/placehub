@@ -8,18 +8,16 @@
                 <ul class="flex space-x-4">
                     <li th:if="${@rq.logout}" class="flex gap-4">
                         <a href="/" class="text-white hover:text-yellow-300">홈</a>
-                        <a href="/map" class="text-white hover:text-yellow-300">지도</a>
-                        <a href="/place/search?longitude=-1&latitude=-1" class="text-white hover:text-yellow-300">큐레이션</a>
+                        <a href="/place/search" class="text-white hover:text-yellow-300">큐레이션</a>
+                        <a href="/post/list" class="text-white hover:text-yellow-300">아카이빙</a>
                         <a href="/member/join" class="text-white hover:text-yellow-300">회원가입</a>
                         <a href="/member/login" class="text-white hover:text-yellow-300">로그인</a>
                     </li>
-                    <li th:if="${@rq.login}" class="flex gap-4">
+                    <li sec:authorize="isAuthenticated()" th:if="${@rq.login}" class="flex gap-4">
                         <a href="/" class="text-white hover:text-yellow-300">홈</a>
-                        <a href="/map" class="text-white hover:text-yellow-300">지도</a>
-                        <a href="/place/search?longitude=-1&latitude=-1" class="text-white hover:text-yellow-300">큐레이션</a>
-                        <a href="/member/me" class="text-white hover:text-yellow-300">내정보</a>
-                        <a href="/member/page/me" class="text-white hover:text-yellow-300">마이페이지</a>
-                        <a href="/post/list" class="text-white hover:text-yellow-300">글목록</a>
+                        <a href="/place/search" class="text-white hover:text-yellow-300">큐레이션</a>
+                        <a href="/post/list" class="text-white hover:text-yellow-300">아카이빙</a>
+                        <a th:href="@{|/member/page/${@rq.member.id}|}" class="text-white hover:text-yellow-300">마이페이지</a>
                         <a href="javascript:;" onclick="$(this).next().submit();" class="text-white hover:text-yellow-300">로그아웃</a>
                         <form th:action="|/member/logout|" method="POST"></form>
                     </li>

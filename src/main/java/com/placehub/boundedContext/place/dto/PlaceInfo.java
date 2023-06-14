@@ -1,4 +1,4 @@
-package com.placehub.boundedContext.place;
+package com.placehub.boundedContext.place.dto;
 
 import com.placehub.boundedContext.place.entity.Place;
 
