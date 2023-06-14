@@ -74,8 +74,10 @@
                         <input type="hidden" id="page" name="page" th:value="${paging.number}">
 
                         <div class="flex gap-4">
-
-                                <div id="searchMap" class="border border-gray-400" style="width:100%;height:400px;"></div>
+                            <div id="searchMap" class="border border-gray-400" style="width:100%;height:400px;"></div>
+                            <p>
+                                <button onclick="panTo()">중심 이동</button>
+                            </p>
                             <div class="flex flex-col gap-4">
                                 <select id="positionSelect" class="select-md form-select select select-warning">
                                     <option disabled selected>기준 위치</option>
@@ -271,8 +273,9 @@
 
                     // 마커 위치를 클릭한 위치로 옮깁니다
                     marker.setPosition(latlng);
+                    map.panTo(latlng)
                 });
-                map.setCenter(markerPosition);
+
             }
         };
         // 탭 이동 관련
