@@ -40,27 +40,37 @@
     <div class="hero-content flex-col">
         <div class="max-w-7xl w-full px-4">
             <div>
-                <div class="flex flex-col items-center my-5">
-                    <a th:href="@{|/place/details/${postView.getData().placeId}|}"
-                       th:text="${postView.getData().placeName}" class="text-4xl my-2 font-bold"></a>
-                    <a th:href="@{|/member/page/${postView.getData().userId}|}" th:text="${postView.getData().username}"
-                       class="text-xl my-2 font-bold"></a>
-                    <div class="flex gap-1">
-                        <i class="fa-regular fa-clock origin-center"></i>
-                        <div th:text="|${postView.getData().visitedDate} 방문|" class="flex justify-center"></div>
+                <div class="flex flex-col items-center mt-10 mb-3">
+                    <div class="flex flex-col gap-2 ">
+                        <div class="flex gap-1 justify-center">
+                            <div th:if="${!#strings.isEmpty(postView.bigCategoryName)}">
+                                <div class="badge badge-ghost badge-md" th:text="${postView.bigCategoryName}"></div>
+                            </div>
+                            <div th:if="${!#strings.isEmpty(postView.midCategoryName)}">
+                                >
+                                <div class="badge badge-ghost badge-md" th:text="${postView.midCategoryName}"></div>
+                            </div>
+                            <div th:if="${!#strings.isEmpty(postView.smallCategoryName)}">
+                                >
+                                <div class="badge badge-ghost badge-md"
+                                     th:text="${postView.smallCategoryName}"></div>
+                            </div>
+                        </div>
+                        <a th:href="@{|/place/details/${postView.placeId}|}"
+                           th:text="${postView.placeName}" class="text-4xl my-2 font-bold  hover:text-yellow-300"></a>
                     </div>
                 </div>
 
                 <div sec:authorize="isAuthenticated()">
                     <div class="flex gap-4 justify-end"
-                         th:if="${@rq.member.id == postView.getData().userId}">
-                        <form th:action="|/post/modify/${postView.getData().postId}|" method="get">
+                         th:if="${@rq.member.id == postView.userId}">
+                        <form th:action="|/post/modify/${postView.postId}|" method="get">
                             <button type="submit" class="btn btn-outline btn-sm">
                                 수정하기
                             </button>
                         </form>
 
-                        <form th:action="|/post/softDelete/${postView.getData().postId}|" method="post"
+                        <form th:action="|/post/softDelete/${postView.postId}|" method="post"
                               onsubmit="checkDelete(this); return false">
                             <button type="submit" th:text="삭제하기"
                                     class="btn btn-outline btn-sm"></button>
@@ -69,15 +79,29 @@
                 </div>
             </div>
 
-            <div class="flex flex-col gap-5 mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg"
+            <div class="flex flex-col mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg"
                  style="width: 800px">
-                <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div th:each="photo : ${imageList}"
-                         class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
-                        <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
+                <div class="flex flex-row items-center gap-5">
+                    <a th:href="@{|/member/page/${postView.userId}|}" th:text="${postView.username}"
+                       class="text-xl font-bold hover:text-yellow-300"></a>
+                    <div class="flex items-center gap-1">
+                        <i class="fa-regular fa-clock origin-center"></i>
+                        <div th:text="|${postView.visitedDate} 방문|" class="flex justify-center"></div>
                     </div>
                 </div>
-                <div th:text="${postView.getData().content}" class="whitespace-pre-line"></div>
+                <div class="divider !my-2"></div>
+                <div class="flex flex-col gap-5 my-10">
+                    <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div th:each="photo : ${imageList}"
+                             class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
+                            <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
+                        </div>
+                    </div>
+                    <div th:text="${postView.content}" class="whitespace-pre-line"></div>
+                </div>
+                <div class="flex justify-end">
+                    <span th:text="'작성 : ' +  ${#temporals.format(postView.createDate, 'yyyy-MM-dd hh:mm')}" class="text-gray-500"></span>
+                </div>
             </div>
 
             <!-- 댓글 -->
@@ -91,8 +115,9 @@
                 <div th:each="comment : ${comments}">
                     <div class="card flex-shrink-0 w-full bg-base-100 border border-gray-300">
                         <div class="flex gap-4 mx-8 mt-8">
-                            <span class="font-bold"
-                                  th:text="${comment.memberNickName}"></span>
+                            <a class="font-bold hover:text-yellow-300"
+                               th:href="@{|/member/page/${comment.memberId}|}"
+                                  th:text="${comment.memberNickName}"></a>
                             <div class="flex gap-1">
                                 <i class="fa-regular fa-clock origin-center"></i>
                                 <span class="text-sm text-gray-500"
@@ -121,7 +146,7 @@
                 </div>
 
                 <!-- 댓글 작성 폼-->
-                <form th:action="@{/comment/create/{id}(id=${postView.getData().getPostId()})}" method="post"
+                <form th:action="@{/comment/create/{id}(id=${postView.getPostId()})}" method="post"
                       onsubmit="CommentForm__submit(this); return false" class="mb-4">
                     <div class="form-control">
                     <textarea sec:authorize="isAnonymous()" disabled name="content" placeholder="댓글 내용을 입력하세요"

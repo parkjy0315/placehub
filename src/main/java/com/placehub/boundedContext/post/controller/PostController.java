@@ -103,7 +103,7 @@ public class PostController {
         List<String> imagePathes = imageService.callImagePathes(postId);
         model.addAttribute("comments", comments);
 
-        model.addAttribute("postView", response);
+        model.addAttribute("postView", response.getData());
         model.addAttribute("imageList", imagePathes);
         model.addAttribute("baseUrl", baseUrl);
         return "usr/post/viewer";
