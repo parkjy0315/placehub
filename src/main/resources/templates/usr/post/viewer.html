@@ -7,7 +7,7 @@
 
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet"/>
 
 </head>
 
@@ -41,33 +41,39 @@
         <div class="max-w-7xl w-full px-4">
             <div>
                 <div class="flex flex-col items-center my-5">
-                    <a th:href="@{|/place/details/${postView.getData().place}|}" th:text="${postView.getData().placeName}" class="text-4xl my-2 font-bold"></a>
-                    <a th:href="@{|/member/page/${postView.getData().member}|}" th:text="${postView.getData().username}" class="text-xl my-2 font-bold"></a>
+                    <a th:href="@{|/place/details/${postView.getData().place}|}"
+                       th:text="${postView.getData().placeName}" class="text-4xl my-2 font-bold"></a>
+                    <a th:href="@{|/member/page/${postView.getData().member}|}" th:text="${postView.getData().username}"
+                       class="text-xl my-2 font-bold"></a>
                     <div class="flex gap-1">
                         <i class="fa-regular fa-clock origin-center"></i>
                         <div th:text="|${postView.getData().getVisitedDate()} 방문|" class="flex justify-center"></div>
                     </div>
                 </div>
 
-                <div class="flex gap-4 justify-end"
-                    th:if="${@rq.member.id == postView.getData().member}">
-                    <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
-                        <button type="submit" class="btn btn-outline btn-sm">
-                            수정하기
-                        </button>
-                    </form>
+                <div sec:authorize="isAuthenticated()">
+                    <div class="flex gap-4 justify-end"
+                         th:if="${@rq.member.id == postView.getData().member}">
+                        <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
+                            <button type="submit" class="btn btn-outline btn-sm">
+                                수정하기
+                            </button>
+                        </form>
 
-                    <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
-                          onsubmit="checkDelete(this); return false">
-                        <button type="submit" th:text="삭제하기"
-                                class="btn btn-outline btn-sm"></button>
-                    </form>
+                        <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
+                              onsubmit="checkDelete(this); return false">
+                            <button type="submit" th:text="삭제하기"
+                                    class="btn btn-outline btn-sm"></button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-5 mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg" style="width: 800px">
+            <div class="flex flex-col gap-5 mt-5 p-10 w-full text-lg border border-gray-300 rounded-lg"
+                 style="width: 800px">
                 <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div th:each="photo : ${imageList}" class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
+                    <div th:each="photo : ${imageList}"
+                         class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
                         <img class="rounded-lg object-contain" th:src="${photo}" alt="Image">
                     </div>
                 </div>
@@ -96,7 +102,8 @@
                         <div class="card-body">
                             <div class="card-text whitespace-pre-line" th:text="${comment.content}"></div>
                             <div sec:authorize="isAuthenticated()"
-                                 th:if="${@rq.member.id == comment.getMemberId()}" class="flex justify-end items-center gap-2">
+                                 th:if="${@rq.member.id == comment.getMemberId()}"
+                                 class="flex justify-end items-center gap-2">
                                 <form th:action="@{/comment/update/{id}(id=${comment.id})}" method="get">
                                     <input type="hidden" name="postId" th:value="${comment.postId}"/>
                                     <button type="submit" class="px-4 py-2 btn btn-outline btn-sm">수정</button>
@@ -119,8 +126,9 @@
                     <div class="form-control">
                     <textarea sec:authorize="isAnonymous()" disabled name="content" placeholder="댓글 내용을 입력하세요"
                               class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
-                    <textarea sec:authorize="isAuthenticated()" name="content" id="content" placeholder="댓글 내용을 입력하세요"
-                              class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
+                        <textarea sec:authorize="isAuthenticated()" name="content" id="content"
+                                  placeholder="댓글 내용을 입력하세요"
+                                  class="textarea textarea-bordered w-full px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-400"></textarea>
                     </div>
                     <div sec:authorize="isAuthenticated()" class="flex justify-end">
                         <button type="submit" class="px-4 py-2 btn mt-2">댓글 등록</button>

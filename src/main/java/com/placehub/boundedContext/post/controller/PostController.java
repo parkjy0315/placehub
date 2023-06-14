@@ -60,7 +60,6 @@ public class PostController {
         return "usr/post/list";
     }
 
-    //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
     public String showPost(@PathVariable Long postId, Model model) {
         RsData<Viewer> response = postService.showSinglePost(postId);
