@@ -107,17 +107,15 @@ public class MemberController {
     // 다른 사용자의 페이지
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/{id}")
-    public String showOtherMember(Model model, @PathVariable Long id,
-                                  @RequestParam(defaultValue = "0") int postPage,
-                                  @RequestParam(defaultValue = "3") int postSize,
-                                  @RequestParam(defaultValue = "0") int placePage,
-                                  @RequestParam(defaultValue = "3") int placeSize) {
+    public String showUserPage(Model model, @PathVariable Long id,
+                                  @RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size) {
 
         Member member = memberService.findById(id).orElse(null);
 
         // 등록한 아카이빙
         Sort sortPost = Sort.by(Sort.Direction.DESC, "visitedDate");
-        Pageable pageablePost = PageRequest.of(postPage, postSize, sortPost);
+        Pageable pageablePost = PageRequest.of(page, size, sortPost);
 
         Page<Post> postPages =  this.postService.findByMember(id, pageablePost);
         List<Post> postList = postPages.getContent();
@@ -146,10 +144,31 @@ public class MemberController {
         model.addAttribute("xPosAverageByvisitedPlaces", xPosAverageByvisitedPlaces);
         model.addAttribute("yPosAverageByvisitedPlaces", yPosAverageByvisitedPlaces);
 
+        // 친구
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+
+        model.addAttribute("member", member);
+        model.addAttribute("follow", follow);
+
+        model.addAttribute("followingList",followingList);
+        model.addAttribute("followerList",followerList);
+
+        return "usr/member/userPagePost";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/page/like-list/{id}")
+    public String showUserPageWithLikedPlace(Model model, @PathVariable Long id,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "9") int size) {
+
+        Member member = memberService.findById(id).orElse(null);
 
         // 등록한 좋아요 장소
         Sort sortPlace = Sort.by(Sort.Direction.ASC, "likeCount");
-        Pageable pageablePlace = PageRequest.of(placePage, placeSize, sortPlace);
+        Pageable pageablePlace = PageRequest.of(page, size, sortPlace);
 
         Page<Place> likedPlacesPages = placeService.findByPlaceLikeList_MemberId(id, pageablePlace);
         List<Place> likedPlaces = likedPlacesPages.getContent();
@@ -183,7 +202,7 @@ public class MemberController {
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
 
-        return "usr/member/userPage";
+        return "usr/member/userPageLike";
     }
 
     @PreAuthorize("isAuthenticated()")
