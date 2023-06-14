@@ -10,6 +10,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
+@Profile("prod")
 public class SpringBatchConfig {
     private final PlaceProcessor placeProcessor;
     private final JobLauncher jobLauncher;
