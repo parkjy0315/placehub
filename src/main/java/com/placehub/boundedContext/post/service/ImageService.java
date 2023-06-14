@@ -22,7 +22,6 @@ import java.util.List;
 
 @Service
 public class ImageService {
-    private static final String fileSeperator = File.separator;
     private final String rootAddress = "https://placehub-images.s3.ap-northeast-2.amazonaws.com/";
     @Autowired
     private ImageRepository imageRepository;
@@ -138,24 +137,6 @@ public class ImageService {
 
         return result;
     }
-
-//    @Transactional
-//    public RsData<List<Images>> controlImage(List<Long> files, long postId, ImageControlOptions control) {
-//        List<Images> images = imageRepository.findImagesByPost(postId);
-//        long maxImgId = maxImageId(images);
-//
-//        if (control == ImageControlOptions.MODIFY) {
-//            return modifyPost(files, postId, maxImgId, images);
-//        }
-//
-//        if (control == ImageControlOptions.CREATE) {
-//            long alreadySavedImages = images.size();
-//            return saveImages(files, postId, alreadySavedImages, maxImgId);
-//        }
-//
-//        return RsData.of("F-1", "이미지 저장 실패");
-//    }
-
 
     @Transactional
     public RsData createOrModifyImages(List<Long> sentImgs, long postId) {
