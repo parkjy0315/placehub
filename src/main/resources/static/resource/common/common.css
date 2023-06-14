@@ -86,3 +86,16 @@ html > body {
     height: 12px;
     background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')
 }
+
+.line-break {
+    white-space: pre-line;
+    word-break: break-all;
+}
+
+.clamp-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-wrap: break-word;
+}

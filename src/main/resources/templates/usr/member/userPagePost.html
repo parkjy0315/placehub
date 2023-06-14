@@ -136,18 +136,29 @@
                             <i th:if="${post.openToPublic}" class="fa-solid fa-lock-open mx-3"></i>
                             <i th:unless="${post.openToPublic}" class="fa-solid fa-lock mx-3"></i>
                         </div>
-                        <div class="mt-5">
+                        <div class="mt-5 flex flex-row gap-4">
                             <a th:href="@{|/post/view/${post.postId}|}"
-                               class="card flex-shrink-0 w-full shadow-lg bg-base-100"
+                               class="card flex-shrink-0 w-full shadow-xl bg-base-100"
                                style="width: 640px">
                                 <div class="card-body">
-                                    <div th:text="${post.placeName}" class="text-lg font-bold"></div>
+                                    <div class="flex gap-3 mt-2">
+                                        <div th:text="${post.placeName}" class="text-lg font-bold "></div>
+                                        <div th:if="${!#strings.isEmpty(post.midCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${post.midCategoryName}"></div>
+                                        </div>
+                                    </div>
                                     <div>
                                 <span th:text="${#strings.length(post.content) > 150 ?
                                 #strings.substring(post.content, 0, 150) + '...' : post.content}"
                                       class=" text-sm text-gray-400"></span>
                                     </div>
                                 </div>
+                            </a>
+                            <a th:href="@{|/post/view/${post.postId}|}" th:unless="${post.mainImage == ''}" class="flex jusify-center items-center shadow-xl rounded-xl"
+                                 style="width: 200px; height: 200px;">
+                                <img class="rounded-xl object-contain" th:src="${post.mainImage}" alt="Image"
+                                     style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
                             </a>
                         </div>
                         </form>
