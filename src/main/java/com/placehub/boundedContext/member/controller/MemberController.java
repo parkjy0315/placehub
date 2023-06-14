@@ -9,8 +9,9 @@ import com.placehub.boundedContext.friend.entity.Friend;
 import com.placehub.boundedContext.friend.service.FriendService;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
-import com.placehub.boundedContext.place.PlaceInfo;
+import com.placehub.boundedContext.place.dto.PlaceInfo;
 import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.service.PlaceInfoService;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.Viewer;
@@ -39,6 +40,7 @@ public class MemberController {
     private final MemberService memberService;
     private final PostService postService;
     private final PlaceService placeService;
+    private final PlaceInfoService placeInfoService;
     private final FriendService friendService;
     private final Rq rq;
 
@@ -104,7 +106,7 @@ public class MemberController {
 
         List<Post> postList = this.postService.findByMember(rq.getMember().getId());
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
         List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
         List<Member> followerList = friendService.findFollower(rq.getMember().getId());
 
@@ -145,7 +147,7 @@ public class MemberController {
 
         List<Post> postList = postService.findByMember(id);
         List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
-        List<PlaceInfo> placeInfoList = placeService.getCategoryNamesList(placeList);
+        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
         Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);

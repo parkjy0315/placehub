@@ -40,6 +40,7 @@
                                                 onchange="showRelatedMidOptions(this)">
                                             <option disabled selected>대분류</option>
                                             <option th:each="bigCategory, loop : ${bigCategories}"
+                                                    th:if="${bigCategory.categoryName != null}"
                                                     th:value="${bigCategory.id}"
                                                     th:selected="${selectedBig} == ${bigCategory.id}"
                                                     th:text="${bigCategory.categoryName}"></option>
@@ -50,12 +51,14 @@
                                         <select name="midCategoryId"
                                                 id="midSelect"
                                                 class="select-md form-select"
-                                                onchange="showRelatedSmallOptions(this)">
+                                                onchange="showRelatedSmallOptions(this)"
+                                                onfocus="showRelatedMidOptions(document.getElementById('bigSelect'))">
                                             <option disabled
                                                     selected
                                                     value="default">중분류
                                             </option>
                                             <option th:each="midCategory, loop : ${midCategories}"
+                                                    th:if="${midCategory.categoryName != null}"
                                                     th:class="${midCategory.bigCategoryId} + ' hidden'"
                                                     th:value="${midCategory.id}"
                                                     th:selected="${selectedMid} == ${midCategory.id}"
@@ -64,12 +67,16 @@
                                         <div class="form-select-arrow"></div>
                                     </div>
                                     <div class="w-64 mx-auto  m-2">
-                                        <select name="smallCategoryId" id="smallSelect" class="select-md form-select">
+                                        <select name="smallCategoryId"
+                                                id="smallSelect"
+                                                class="select-md form-select"
+                                                onfocus="showRelatedSmallOptions(document.getElementById('midSelect'))">
                                             <option disabled
                                                     selected
                                                     value="default">소분류
                                             </option>
                                             <option th:each="smallCategory, loop : ${smallCategories}"
+                                                    th:if="${smallCategory.categoryName != null}"
                                                     th:class="${smallCategory.midCategoryId} + ' hidden'"
                                                     th:value="${smallCategory.id}"
                                                     th:selected="${selectedSmall} == ${smallCategory.id}"

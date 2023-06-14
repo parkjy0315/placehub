@@ -1,5 +1,6 @@
 package com.placehub.boundedContext.place.repository;
 
+import com.placehub.boundedContext.place.dto.SearchCriteria;
 import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.entity.QPlace;
 import com.querydsl.core.QueryResults;
@@ -22,7 +23,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     private final QPlace place = QPlace.place;
 
     @Override
-    public List<Place> findPlaceBySpecificDistance(Point point, Long distance) {
+    public List<Place> findPlaceByDistance(Point point, Long distance) {
         NumberExpression<Double> distanceExpression = Expressions.numberTemplate(
                 Double.class,
                 "ST_distance_sphere({0}, {1})", place.point, point);
@@ -34,7 +35,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     }
 
     @Override
-    public Page<Place> findPlaceBySpecificDistance(Pageable pageable, Point point, Long distance) {
+    public Page<Place> findPlaceByDistance(Pageable pageable, Point point, Long distance) {
         NumberExpression<Double> distanceExpression = Expressions.numberTemplate(
                 Double.class,
                 "ST_distance_sphere({0}, {1})", place.point, point);
@@ -55,10 +56,23 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     }
 
     @Override
-    public Page<Place> findPlaceBySpecificDistanceAndBigId(Pageable pageable, Point point, Long distance, Long bigCategoryId) {
-        NumberExpression<Double> distanceExpression = Expressions.numberTemplate(Double.class, "ST_distance_sphere({0}, {1})", place.point, point);
-        BooleanExpression whereClause = distanceExpression.loe(distance)
-                .and(place.bigCategoryId.eq(bigCategoryId));
+    public Page<Place> findPlaceByDistanceAndIds(Pageable pageable, SearchCriteria searchCriteria) {
+        NumberExpression<Double> distanceExpression = Expressions
+                .numberTemplate(
+                        Double.class,
+                        "ST_distance_sphere({0}, {1})",
+                        place.point,
+                        searchCriteria.getPoint());
+
+        BooleanExpression whereClause = distanceExpression.loe(searchCriteria.getDistance());
+        List<Long> categoryIds = searchCriteria.getCategoryIds();
+
+        switch (categoryIds.size()) {
+            case 3: whereClause = whereClause.and(place.smallCategoryId.eq(categoryIds.get(2)));
+            case 2: whereClause = whereClause.and(place.midCategoryId.eq(categoryIds.get(1)));
+            case 1: whereClause = whereClause.and(place.bigCategoryId.eq(categoryIds.get(0)));
+                break;
+        }
 
         JPQLQuery<Place> query = jpaQueryFactory
                 .selectFrom(place)
@@ -69,54 +83,6 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        QueryResults<Place> queryResults = query.fetchResults();
-        long total = queryResults.getTotal();
-
-        return new PageImpl<>(resultList, pageable, total);
-    }
-
-    @Override
-    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidId(Pageable pageable, Point point, Long distance, Long bigCategoryId, Long midCategoryId) {
-        NumberExpression<Double> distanceExpression = Expressions.numberTemplate(Double.class, "ST_distance_sphere({0}, {1})", place.point, point);
-        BooleanExpression whereClause = distanceExpression.loe(distance)
-                .and(place.bigCategoryId.eq(bigCategoryId))
-                .and(place.midCategoryId.eq(midCategoryId));
-
-        JPQLQuery<Place> query = jpaQueryFactory
-                .selectFrom(place)
-                .where(whereClause);
-
-        List<Place> resultList = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        QueryResults<Place> queryResults = query.fetchResults();
-        long total = queryResults.getTotal();
-
-        return new PageImpl<>(resultList, pageable, total);
-    }
-
-    @Override
-    public Page<Place> findPlaceBySpecificDistanceAndBigIdAndMidIdAndSmallId(Pageable pageable, Point point, Long distance, Long bigCategoryId, Long midCategoryId, Long smallCategoryId) {
-        NumberExpression<Double> distanceExpression = Expressions.numberTemplate(Double.class, "ST_distance_sphere({0}, {1})", place.point, point);
-        BooleanExpression whereClause = distanceExpression.loe(distance)
-                .and(place.bigCategoryId.eq(bigCategoryId))
-                .and(place.midCategoryId.eq(midCategoryId))
-                .and(place.smallCategoryId.eq(smallCategoryId));
-
-        JPQLQuery<Place> query = jpaQueryFactory
-                .selectFrom(place)
-                .where(whereClause);
-
-        List<Place> resultList = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        QueryResults<Place> queryResults = query.fetchResults();
-        long total = queryResults.getTotal();
-
-        return new PageImpl<>(resultList, pageable, total);
+        return new PageImpl<>(resultList, pageable, query.fetchResults().getTotal());
     }
 }
