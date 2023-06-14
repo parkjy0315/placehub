@@ -130,7 +130,6 @@
                     <div class="mx-2">
                         <button id="myPlaceTimelineBtn" class="font-bold">타임라인으로 보기</button>
                     </div>
-                    <div class="divider divider-horizontal !mx-1"></div>
                     <div class="mx-2">
                         <button id="myPlaceMapBtn">지도로 보기</button>
                     </div>
@@ -189,19 +188,28 @@
                             <!--                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">-->
                             <div class="card-body">
                                 <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
-                                <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
-                                    <div class="badge badge-accent badge-md"
-                                         th:text="${placeInfo.bigCategoryName}"></div>
+                                <div class="flex justify-between">
+                                    <div class="flex flex-col gap-2">
+                                        <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.bigCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.midCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.smallCategoryName}"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <i  class="fa-regular fa-heart text-red-400"></i>
+                                            <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
-                                    <div class="badge badge-accent badge-md"
-                                         th:text="${placeInfo.midCategoryName}"></div>
-                                </div>
-                                <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
-                                    <div class="badge badge-accent badge-md"
-                                         th:text="${placeInfo.smallCategoryName}"></div>
-                                </div>
-
                             </div>
                         </a>
                     </div>
