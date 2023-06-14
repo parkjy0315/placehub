@@ -1,0 +1,62 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>테스트 지도</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div id="searchmap" style="width:100%;height:350px;"></div>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2652c9851bbcfcd7c014b2339462c149&libraries=services"></script>
+    <script>
+        var container = document.getElementById("searchMap"); // 카카오맵을 표시할 HTML 요소
+        var options = {
+            center: new kakao.maps.LatLng(latitude, longitude),
+            level: 3
+        };
+        var map = new kakao.maps.Map(container, options);
+
+
+        var markerPosition = new kakao.maps.LatLng(latitude, longitude);
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        marker.setMap(map);
+
+        getCurrentCoords(); // 현재 위치를 불러와 전역 변수에 저장 lat, lon
+
+        document.getElementById("positionSelect").onchange = function () {
+            var selectedOption = this.value;
+
+            if (selectedOption === "search") {
+                // 검색 위치 선택 시, 카카오맵 마커 표시 및 장소 검색
+                var latitude = parseFloat(document.getElementById("latitude").value);
+                var longitude = parseFloat(document.getElementById("longitude").value);
+
+                console.log("lal = " + latitude);
+                console.log("long = " + longitude);
+                // 카카오맵 초기화
+
+                // 마커 추가
+                var markerPosition1 = new kakao.maps.LatLng(latitude, longitude);
+                var marker1 = new kakao.maps.Marker({
+                    position: markerPosition1
+                });
+                marker1.setMap(map);
+
+                kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+                    var latlng = mouseEvent.latLng;
+
+                    // 마커 위치를 클릭한 위치로 옮깁니다
+                    marker1.setPosition(latlng);
+                });
+                map.setCenter(markerPosition1);
+
+            }
+        };
+    </script>
+</div>
+</body>
+</html>

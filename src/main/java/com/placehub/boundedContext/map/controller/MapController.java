@@ -12,4 +12,9 @@ public class MapController {
     public String showMap() {
         return "usr/KaKaoMapApi/KakaoMapApi";
     }
+
+    @GetMapping("/mapmap")
+    public String showMaptest() {
+        return "usr/KaKaoMapApi/test/testtestmap";
+    }
 }
