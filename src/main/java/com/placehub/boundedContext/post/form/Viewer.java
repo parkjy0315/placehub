@@ -21,4 +21,8 @@ public class Viewer {
     private boolean isOpenToPublic;
     private String mainImage;
 
+    private String smallCategoryName;
+    private String midCategoryName;
+    private String bigCategoryName;
+
 }

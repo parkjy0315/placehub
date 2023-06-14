@@ -18,31 +18,42 @@
                 <a th:each="post, loop : ${postViewerList}">
                     <form th:action method="GET" id="postForm">
                         <input type="hidden" id="page" name="page" th:value="${paging.number}">
-                        <a th:href="@{|/post/view/${post.postId}|}" class="card flex-shrink-0 w-full shadow-2xl bg-base-100"
+                        <a th:href="@{|/post/view/${post.postId}|}"
+                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100"
                            style="width: 800px">
                             <div class="card-body">
                                 <div class="flex justify-between gap-5">
-                                    <div>
-                                        <div class="flex flex-col gap-2">
-                                            <div th:text="${post.placeName}" class="text-2xl font-bold my-2"></div>
-                                            <div class="flex gap-1 items-center text-sm text-gray-700">
-                                                <i class="fa-regular fa-user"></i>
-                                                <div th:text="${post.username}" class="font-bold"></div>
-                                            </div>
-                                            <div class="flex gap-1 items-center text-sm text-gray-700">
-                                                <i class="fa-regular fa-clock origin-center"></i>
-                                                <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"
-                                                ></span>
+
+                                        <div class="flex flex-col justify-between items-between gap-2">
+                                            <div class="flex gap-3 mt-2">
+                                                <div th:text="${post.placeName}" class="text-2xl font-bold "></div>
+                                                <div th:if="${!#strings.isEmpty(post.midCategoryName)}">
+                                                    <div class="badge badge-ghost badge-md"
+                                                         th:text="${post.midCategoryName}"></div>
+                                                </div>
                                             </div>
                                             <div class="flex flex-row gap-4 justify-between mt-5">
                                                 <span th:text="${#strings.length(post.content) > 150 ?
                                                         #strings.substring(post.content, 0, 150) + '...' : post.content}"
                                                       class="text-sm text-gray-400 line-break clamp-lines"></span>
                                             </div>
+                                            <div class="flex flex-col gap-1">
+                                                <div class="flex gap-1 items-center text-sm text-gray-700 mt-5">
+                                                    <i class="fa-regular fa-user"></i>
+                                                    <div th:text="${post.username}" class="font-bold"></div>
+                                                </div>
+                                                <div class="flex gap-1 items-center text-sm text-gray-700">
+                                                    <i class="fa-regular fa-clock origin-center"></i>
+                                                    <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"
+                                                    ></span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div th:unless="${post.mainImage == ''}" class="flex jusify-center items-center" style="width: 200px; height: 200px;">
-                                        <img class="rounded-lg object-contain" th:src="${post.mainImage}" alt="Image" style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
+
+                                    <div th:unless="${post.mainImage == ''}" class="flex jusify-center items-center"
+                                         style="width: 200px; height: 200px;">
+                                        <img class="rounded-lg object-contain" th:src="${post.mainImage}" alt="Image"
+                                             style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
                                     </div>
 
                                 </div>

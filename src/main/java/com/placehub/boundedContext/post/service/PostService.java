@@ -3,7 +3,10 @@ package com.placehub.boundedContext.post.service;
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
 import com.placehub.boundedContext.member.service.MemberService;
+import com.placehub.boundedContext.place.dto.PlaceInfo;
+import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
+import com.placehub.boundedContext.place.service.PlaceInfoService;
 import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
@@ -33,6 +36,8 @@ public class PostService {
     private PlaceRepository placeRepository;
     @Autowired
     private PlaceService placeService;
+    @Autowired
+    private PlaceInfoService placeInfoService;
     @Autowired
     private MemberService memberService;
     @Autowired
@@ -159,6 +164,9 @@ public class PostService {
             mainImage = imagePathes.get(0);
         }
 
+        Place place = placeService.getPlace(post.getPlace());
+        PlaceInfo placeInfo = placeInfoService.getCategoryNames(place);
+
         Viewer viewer = Viewer.builder()
                 .userId(post.getMember())
                 .username(member.getNickname())
@@ -170,6 +178,9 @@ public class PostService {
                 .content(post.getContent())
                 .isOpenToPublic(post.isOpenToPublic())
                 .mainImage(mainImage)
+                .bigCategoryName(placeInfo.getBigCategoryName())
+                .midCategoryName(placeInfo.getMidCategoryName())
+                .smallCategoryName(placeInfo.getSmallCategoryName())
                 .build();
 
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
