@@ -7,6 +7,6 @@ import lombok.Setter;
 @Setter
 public class PreSignedUrlResponseForm {
     public int idx;
-    public String fileName;
+    public long fileName;
     public String preSignedUrl;
 }

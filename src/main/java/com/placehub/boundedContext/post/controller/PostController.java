@@ -114,10 +114,11 @@ public class PostController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/get_Pre_Signed_Url")
+    @PostMapping("/get_Pre_Signed_Url/{flag}")
     @ResponseBody
-    public List<PreSignedUrlResponseForm> createPreSigned(@RequestBody List<PreSignedUrlRequestForm> inputImgNames) {
-        List<PreSignedUrlResponseForm> preSignedUrl = imageService.getPreSignedUrlFromFilteredData(inputImgNames);
+    public List<PreSignedUrlResponseForm> createPreSigned(@RequestBody List<PreSignedUrlRequestForm> inputImgNames,
+                                                            @PathVariable("flag") long flag) {
+        List<PreSignedUrlResponseForm> preSignedUrl = imageService.getPreSignedUrlFromFilteredData(inputImgNames, flag);
         return preSignedUrl;
     }
 

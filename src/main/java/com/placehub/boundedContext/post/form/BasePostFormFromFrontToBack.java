@@ -12,5 +12,5 @@ public class BasePostFormFromFrontToBack {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate visitedDate;
     private String content;
-    private List<MultipartFile> images;
+    private String imgIds;
 }
