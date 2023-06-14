@@ -2,6 +2,55 @@
 
 <head>
     <title>장소 목록</title>
+    <style>
+        .customoverlay {
+            position: relative;
+            bottom: 50px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid #ddd;
+            float: left;
+        }
+
+        .customoverlay:nth-of-type(n) {
+            border: 0;
+            box-shadow: 0px 1px 2px #888;
+        }
+
+        .customoverlay a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            overflow: hidden;
+            background: #d95050;
+            background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+        }
+
+        .customoverlay .title {
+            display: block;
+            text-align: center;
+            background: #fff;
+            margin-right: 35px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .customoverlay:after {
+            content: '';
+            position: absolute;
+            margin-left: -12px;
+            left: 50%;
+            bottom: -12px;
+            width: 22px;
+            height: 12px;
+            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')
+        }
+    </style>
 </head>
 
 <body>
@@ -168,7 +217,19 @@
 
     </script>
     <script>
-        var map;
+        var container = document.getElementById("searchMap"); // 카카오맵을 표시할 HTML 요소
+        var options = {
+            center: new kakao.maps.LatLng(latitude, longitude),
+            level: 3
+        };
+        var map = new kakao.maps.Map(container, options);
+
+
+        var markerPosition = new kakao.maps.LatLng(latitude, longitude);
+        var marker = new kakao.maps.Marker({
+            position: markerPosition
+        });
+        marker.setMap(map);
 
         getCurrentCoords(); // 현재 위치를 불러와 전역 변수에 저장 lat, lon
 
@@ -183,41 +244,30 @@
                 console.log("lal = " + latitude);
                 console.log("long = " + longitude);
                 // 카카오맵 초기화
-                var container = document.getElementById("searchMap"); // 카카오맵을 표시할 HTML 요소
-                var options = {
-                    center: new kakao.maps.LatLng(latitude, longitude),
-                    level: 3
-                };
-                map = new kakao.maps.Map(container, options);
 
                 // 마커 추가
-                var markerPosition = new kakao.maps.LatLng(latitude, longitude);
-                var marker = new kakao.maps.Marker({
-                    position: markerPosition
+                var markerPosition1 = new kakao.maps.LatLng(latitude, longitude);
+                var marker1 = new kakao.maps.Marker({
+                    position: markerPosition1
                 });
-                marker.setMap(map);
+                marker1.setMap(map);
 
                 kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
 
                     var latlng = mouseEvent.latLng;
 
                     // 마커 위치를 클릭한 위치로 옮깁니다
-                    marker.setPosition(latlng);
+                    marker1.setPosition(latlng);
                 });
-                map.setCenter(markerPosition);
+                map.setCenter(markerPosition1);
 
-            } else {
-                // 검색 위치를 선택하지 않은 경우에는 지도를 숨깁니다.
-                map.style.display = "none";
             }
         };
         // 탭 이동 관련
         const searchPlaceBtn = document.getElementById("searchButton");
 
         searchPlaceBtn.addEventListener("click", () => {
-            myPlaceMap.style.display = "block";
 
-            // --------카카오 맵 지도 생성--------------
             // 마커를 표시할 위치와 title 객체 배열입니다
             var positions = [];
 
