@@ -12,6 +12,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.config.FixedDelayTask;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.stream.IntStream;
@@ -38,6 +39,7 @@ public class SavePlaceDataJobConfig {
                     .forEach(coords -> {
                         placeProcessor.processDataAndSave(code, coords[0], coords[1], criteria);
                     });
+            Thread.sleep(1000);
 
             return RepeatStatus.FINISHED;
         }
