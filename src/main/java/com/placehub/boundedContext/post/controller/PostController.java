@@ -111,12 +111,12 @@ public class PostController {
 
     @PostMapping("softDelete/{postId}")
     public String deletePost(@PathVariable long postId) throws RuntimeException {
-        RsData contentDelete = postService.deletePost(postId);
+        RsData<Post> contentDelete = postService.deletePost(postId);
         if (contentDelete.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        return rq.redirectWithMsg("/post/list", contentDelete);
+        return rq.redirectWithMsg("/member/page/%s".formatted(contentDelete.getData().getMember()), contentDelete);
     }
 
     @PreAuthorize("isAuthenticated()")
