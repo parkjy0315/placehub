@@ -122,9 +122,9 @@ public class PlaceProcessor {
         GeometryFactory factory = new GeometryFactory();
         Point point = factory.createPoint(coord);
 
-        Category[] categories = categoryFilter(categoryName);
+        Long[] categoryIds = categoryFilter(categoryName);
 
-        Place place = PlaceFactory.createPlace(categories, placeId, placeName, phone, addressName, point);
+        Place place = PlaceFactory.createPlace(categoryIds, placeId, placeName, phone, addressName, point);
 
         return place;
     }
@@ -139,8 +139,11 @@ public class PlaceProcessor {
         }
     }
 
-    public Category[] categoryFilter(String categoryStr) {
+    public Long[] categoryFilter(String categoryStr) {
+        Long[] categoryIds = new Long[3];
+        categoryIds[0] = categoryIds[1] = categoryIds[2] = null;
         Category[] categories = new Category[3];
+        categories[0] = categories[1] = categories[2] = null;
         String[] split = categoryStr.split(" > ");
 
         for (int i = 0; i < Math.min(split.length, 3); i++) {
@@ -161,7 +164,11 @@ public class PlaceProcessor {
             }
         }
 
-        return categories;
+        for(int i=0; i<3; i++) {
+            categoryIds[i] = categories[i] == null ? null : categories[i].getId();
+        }
+
+        return categoryIds;
     }
 
     public boolean isLastPage(JSONObject placeData) {
