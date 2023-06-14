@@ -104,7 +104,7 @@
             }
 
             function getPreSignedUrl() {
-                const urlOfThisPage = "https://localhost";
+                const urlOfThisPage = /*[[${baseUrl}]]*/;
                 const jsonArray = [];
                 const postId = window.location.href.split('/').slice(-1);
 
