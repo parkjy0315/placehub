@@ -1,8 +1,7 @@
-<html layout:decorate="~{layout}">
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title>마이페이지</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>유저 페이지</title>
     <style>
         .customoverlay {
             position: relative;
@@ -58,7 +57,8 @@
 
 <div layout:fragment="content">
     <div class="hero-content flex flex-col my-10">
-        <h2 class="text-4xl mt-5 mx-5 font-bold flex flex-col">
+
+        <h2 th:if="${member.id == @rq.member.id}" class="text-4xl mt-5 mx-5 font-bold flex flex-col">
             마이페이지
         </h2>
 
@@ -72,12 +72,28 @@
                     </div>
                     <div class="flex flex-col justify-center gap-4">
                         <div class="flex gap-4">
-                            <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
-                            <a href="/member/me">
+                            <span class="text-2xl font-bold" th:text="${member.nickname}"></span>
+                            <a href="/member/me" th:if="${member.id == @rq.member.id}">
                                 <i class="fa-solid fa-gear fa-xl"></i>
                             </a>
+                            <div sec:authorize="isAuthenticated()" th:if="${member.id != @rq.member.id}">
+                                <form th:if="${follow} != null " th:action="@{|/friend/delete/${member.id}|}" method="POST">
+                                    <button type="submit" class="btn btn-warning btn-sm">언팔로우</button>
+                                </form>
+                                <form th:if="${follow} == null" th:action="@{|/friend/create/${member.id}|}" method="GET">
+                                    <button type="submit" class="btn btn-success btn-sm">팔로우</button>
+                                </form>
+                            </div>
                         </div>
-                        <div>
+                        <div th:if="${member.id != @rq.member.id}">
+                            <div class="flex gap-5">
+                                <div class="min-w-sm">
+                                    <span  class="text-gray-400 text-sm"
+                                          th:text="${member.bio}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${member.id == @rq.member.id}">
                             <div id="bioContainer" class="flex gap-5">
                                 <div class="min-w-sm">
                                     <span id="bioValue" class="text-gray-400 text-sm"
@@ -97,7 +113,18 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <div class="flex gap-4">
+                    <div class="flex gap-4" th:if="${member.id != @rq.member.id}">
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로잉
+                            <div><span th:text="${#lists.size(followingList)}"></span></div>
+                        </div>
+                        <div class="divider divider-horizontal !mx-1"></div>
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로워
+                            <div><span th:text="${#lists.size(followerList)}"></span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4" th:if="${member.id == @rq.member.id}">
                         <div class="hover:bg-blue-50 p-2">
                             <a href="/friend/list" class="flex flex-col justify-center items-center gap-4">
                                 팔로잉
@@ -137,7 +164,6 @@
             </div>
 
             <div class="divider !my-2"></div>
-
 
             <div id="myPlaceTimeline">
                 <div th:if="${#lists.size(postViewerList)} == 0" class="hero-content">
@@ -216,12 +242,11 @@
                 </div>
             </div>
 
-
             <div id="myPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
-
 
         </div>
     </div>
+
 
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2652c9851bbcfcd7c014b2339462c149"></script>
@@ -246,61 +271,6 @@
 
     </script>
     <script>
-
-        // 바이오 수정 관련
-        const editBioBtn = document.getElementById("editBioBtn");
-        const bioUpdateContainer = document.getElementById("bioUpdateContainer");
-        const bioValue = document.getElementById("bioValue");
-        const bioInput = document.getElementById("bioInput");
-        const updateBioBtn = document.getElementById("updateBioBtn");
-        const memberId = editBioBtn.getAttribute("data-member-id");
-        const bioContainer = document.getElementById("bioContainer");
-
-        // csrf 토큰
-        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-        // 수정하기 버튼 클릭 시
-        editBioBtn.addEventListener("click", () => {
-            bioUpdateContainer.style.display = "block";
-            bioContainer.style.display = "none";
-            bioInput.value = bioValue.textContent;
-        });
-
-        function updateBioDisplay(newBio) {
-            const bioValue = document.getElementById("bioValue");
-            bioValue.textContent = newBio;
-        }
-
-        updateBioBtn.addEventListener("click", () => {
-            const newBio = bioInput.value;
-
-
-            const endpoint = `/member/update/bio/${memberId}`;
-
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", endpoint);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader(csrfHeader, csrfToken);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    const response = JSON.parse(xhr.responseText);
-                    const returnMessage = response.message;
-
-                    if (xhr.status === 200) {
-                        toastNotice(returnMessage);
-                        updateBioDisplay(newBio);
-                    } else {
-                        toastWarning(returnMessage);
-                    }
-                }
-            };
-            xhr.send("bio=" + encodeURIComponent(newBio));
-            bioUpdateContainer.style.display = "none";
-            bioContainer.style.display = "block";
-        });
-
-
         // 탭 이동 관련
         const myPlaceBtn = document.getElementById("myPlaceBtn");
         const myPlaceTimeline = document.getElementById("myPlaceTimeline");
@@ -414,6 +384,65 @@
         });
 
     </script>
+
+
+    <script>
+
+        // 바이오 수정 관련
+        const editBioBtn = document.getElementById("editBioBtn");
+        const bioUpdateContainer = document.getElementById("bioUpdateContainer");
+        const bioValue = document.getElementById("bioValue");
+        const bioInput = document.getElementById("bioInput");
+        const updateBioBtn = document.getElementById("updateBioBtn");
+        const memberId = editBioBtn.getAttribute("data-member-id");
+        const bioContainer = document.getElementById("bioContainer");
+
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // 수정하기 버튼 클릭 시
+        editBioBtn.addEventListener("click", () => {
+            bioUpdateContainer.style.display = "block";
+            bioContainer.style.display = "none";
+            bioInput.value = bioValue.textContent;
+        });
+
+        function updateBioDisplay(newBio) {
+            const bioValue = document.getElementById("bioValue");
+            bioValue.textContent = newBio;
+        }
+
+        updateBioBtn.addEventListener("click", () => {
+            const newBio = bioInput.value;
+
+
+            const endpoint = `/member/update/bio/${memberId}`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", endpoint);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                        updateBioDisplay(newBio);
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+            xhr.send("bio=" + encodeURIComponent(newBio));
+            bioUpdateContainer.style.display = "none";
+            bioContainer.style.display = "block";
+        });
+
+    </script>
+
 
 </div>
 </body>

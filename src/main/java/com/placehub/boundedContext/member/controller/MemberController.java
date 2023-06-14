@@ -100,22 +100,26 @@ public class MemberController {
         return "usr/member/me";
     }
 
+    // 다른 사용자의 페이지
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/page/me")
-    public String showMyPage(Model model) {
+    @GetMapping("/page/{id}")
+    public String showOtherMember(Model model, @PathVariable Long id) {
 
-        List<Post> postList = this.postService.findByMember(rq.getMember().getId());
-        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(rq.getMember().getId());
+        Member member = memberService.findById(id).orElse(null);
+
+        List<Post> postList = postService.findByMember(id);
+        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
         List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
-        List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
-        List<Member> followerList = friendService.findFollower(rq.getMember().getId());
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
 
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postList) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
-        List<Place> visitedPlaces = placeService.findPlacesByMemberId(rq.getMember().getId());
+        List<Place> visitedPlaces = placeService.findPlacesByMemberId(member.getId());
         double xPosAverage = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getX())
                 .average()
@@ -128,6 +132,9 @@ public class MemberController {
         model.addAttribute("xPosAverage", xPosAverage);
         model.addAttribute("yPosAverage", yPosAverage);
 
+        model.addAttribute("member", member);
+        model.addAttribute("follow", follow);
+
         model.addAttribute("postList", postList);
         model.addAttribute("postViewerList", postViewerList);
         model.addAttribute("placeList", placeList);
@@ -136,30 +143,7 @@ public class MemberController {
         model.addAttribute("followingList",followingList);
         model.addAttribute("followerList",followerList);
 
-        return "usr/member/myPage";
-    }
-
-    // 다른 사용자의 페이지
-    @GetMapping("/page/{id}")
-    public String showOtherMember(Model model, @PathVariable Long id) {
-
-        Member friend = memberService.findById(id).orElse(null);
-
-        List<Post> postList = postService.findByMember(id);
-        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
-        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
-        List<Member> followingList = friendService.findFollowing(id);
-        List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
-
-        model.addAttribute("friend", friend);
-        model.addAttribute("follow", follow);
-        model.addAttribute("postList", postList);
-        model.addAttribute("placeInfoList", placeInfoList);
-        model.addAttribute("followingList",followingList);
-        model.addAttribute("followerList",followerList);
-
-        return "usr/member/otherMemberPage";
+        return "usr/member/userPage";
     }
 
     @PreAuthorize("isAuthenticated()")
