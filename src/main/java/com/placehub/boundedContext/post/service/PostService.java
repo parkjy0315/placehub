@@ -67,7 +67,7 @@ public class PostService {
                 return imgSavingResult;
             }
         }
-        return RsData.of("S-1", "게시물 등록 성공", postId);
+        return RsData.of("S-1", "아카이빙이 등록되었습니다", postId);
     }
 
     public RsData validPostOwner(long userId, long postId) {
@@ -196,7 +196,7 @@ public class PostService {
 
 
     @Transactional
-    public RsData deletePost(long postId) {
+    public RsData<Post> deletePost(long postId) {
         Optional<Post> wrappedPost = postRepository.findById(postId);
 
         if (wrappedPost.isEmpty()) {
@@ -209,13 +209,13 @@ public class PostService {
 
         postRepository.save(post);
 
-        RsData imagDeleteResult = imageService.deleteAllInPost(postId);
+        RsData<Post> imagDeleteResult = imageService.deleteAllInPost(postId);
 
         if (imagDeleteResult.isFail()) {
             return imagDeleteResult;
         }
 
-        return RsData.of("S-1", "삭제 성공", post);
+        return RsData.of("S-1", "아카이빙이 삭제되었습니다", post);
     }
 
     public Page<Post> findAll(Pageable pageable) {
