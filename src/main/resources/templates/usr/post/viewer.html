@@ -50,7 +50,7 @@
                 </div>
 
                 <div class="flex gap-4 justify-end"
-                    th:if="${@rq.member.getUsername() == postView.getData().getUsername()}">
+                    th:if="${@rq.member.id == postView.getData().member}">
                     <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
                         <button type="submit" class="btn btn-outline btn-sm">
                             수정하기
