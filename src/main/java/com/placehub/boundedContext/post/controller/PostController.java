@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class PostController {
     @GetMapping("/list")
     public String list(Model model,
                        @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "3") int size){
+                       @RequestParam(defaultValue = "7") int size){
 
         // 페이징 정보
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
@@ -71,8 +72,14 @@ public class PostController {
         Page<Post> postPages =  this.postService.findAll(pageable);
         List<Post> postList = postPages.getContent();
 
+        List<Viewer> postViewerList = new ArrayList<>();
+        for (Post post : postList) {
+            postViewerList.add(postService.showSinglePost(post.getId()).getData());
+        }
+
         model.addAttribute("paging", postPages);
         model.addAttribute("postList", postList);
+        model.addAttribute("postViewerList", postViewerList);
 
         // 페이징 정보
         model.addAttribute("currentPage", page);

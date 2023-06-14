@@ -2,7 +2,9 @@ package com.placehub.boundedContext.post.service;
 
 import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.member.entity.Member;
+import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
+import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
@@ -29,6 +31,10 @@ public class PostService {
     private MemberRepository memberRepository;
     @Autowired
     private PlaceRepository placeRepository;
+    @Autowired
+    private PlaceService placeService;
+    @Autowired
+    private MemberService memberService;
     @Autowired
     private ImageService imageService;
 
@@ -139,28 +145,36 @@ public class PostService {
     }
 
     public RsData<Viewer> showSinglePost(long postId) {
-        Viewer viewer = new Viewer();
-        Optional<Post> tmpPost = postRepository.findById(postId);
+        Post post = findById(postId).orElse(null);
 
-        if (tmpPost.isEmpty()) {
+        if (post == null) {
             return RsData.of("F-2", "존재하지 않는 포스팅입니다");
         }
 
-        Post post = tmpPost.get();
-        Optional<Member> tmpMember = memberRepository.findById(post.getMember());
-        Member member = tmpMember.get();
+        Member member = memberService.findById(post.getMember()).orElse(null);
 
-        viewer.setUsername(member.getNickname());
-        viewer.setContent(post.getContent());
-        viewer.setVisitedDate(post.getVisitedDate());
-        viewer.setPostId(postId);
-        viewer.setPlaceName(placeRepository.findById(post.getPlace()).get().getPlaceName());
-        viewer.setOpenToPublic(post.isOpenToPublic());
-        viewer.setMember(post.getMember());
-        viewer.setPlace(post.getPlace());
+        List<String> imagePathes = imageService.callImagePathes(postId);
+        String mainImage = "";
+        if(imagePathes.size() > 0){
+            mainImage = imagePathes.get(0);
+        }
+
+        Viewer viewer = Viewer.builder()
+                .userId(post.getMember())
+                .username(member.getNickname())
+                .placeId(post.getPlace())
+                .placeName(placeService.getPlace(post.getPlace()).getPlaceName())
+                .postId(postId)
+                .createDate(post.getCreateDate())
+                .visitedDate(post.getVisitedDate())
+                .content(post.getContent())
+                .isOpenToPublic(post.isOpenToPublic())
+                .mainImage(mainImage)
+                .build();
 
         return RsData.of("S-1", "게시글 페이지 응답", viewer);
     }
+
 
     @Transactional
     public RsData deletePost(long postId) {
@@ -198,5 +212,9 @@ public class PostService {
 
     public List<Post> findByPlace(Long placeId) {
         return postRepository.findByPlace(placeId);
+    }
+
+    public Optional<Post> findById(Long id) {
+        return postRepository.findById(id);
     }
 }

@@ -41,26 +41,26 @@
         <div class="max-w-7xl w-full px-4">
             <div>
                 <div class="flex flex-col items-center my-5">
-                    <a th:href="@{|/place/details/${postView.getData().place}|}"
+                    <a th:href="@{|/place/details/${postView.getData().placeId}|}"
                        th:text="${postView.getData().placeName}" class="text-4xl my-2 font-bold"></a>
-                    <a th:href="@{|/member/page/${postView.getData().member}|}" th:text="${postView.getData().username}"
+                    <a th:href="@{|/member/page/${postView.getData().userId}|}" th:text="${postView.getData().username}"
                        class="text-xl my-2 font-bold"></a>
                     <div class="flex gap-1">
                         <i class="fa-regular fa-clock origin-center"></i>
-                        <div th:text="|${postView.getData().getVisitedDate()} 방문|" class="flex justify-center"></div>
+                        <div th:text="|${postView.getData().visitedDate} 방문|" class="flex justify-center"></div>
                     </div>
                 </div>
 
                 <div sec:authorize="isAuthenticated()">
                     <div class="flex gap-4 justify-end"
-                         th:if="${@rq.member.id == postView.getData().member}">
-                        <form th:action="|/post/modify/${postView.getData().getPostId()}|" method="get">
+                         th:if="${@rq.member.id == postView.getData().userId}">
+                        <form th:action="|/post/modify/${postView.getData().postId}|" method="get">
                             <button type="submit" class="btn btn-outline btn-sm">
                                 수정하기
                             </button>
                         </form>
 
-                        <form th:action="|/post/softDelete/${postView.getData().getPostId()}|" method="post"
+                        <form th:action="|/post/softDelete/${postView.getData().postId}|" method="post"
                               onsubmit="checkDelete(this); return false">
                             <button type="submit" th:text="삭제하기"
                                     class="btn btn-outline btn-sm"></button>
