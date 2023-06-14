@@ -128,6 +128,7 @@ public class LocalApi {
 
             JSONParser parser = new JSONParser();
             JSONObject object = null;
+
             try {
                 object = (JSONObject) parser.parse(re.getBody());
             } catch (ParseException e) {

@@ -1,13 +1,11 @@
 package com.placehub.base.util;
 
 import com.placehub.base.entity.Category;
-import com.placehub.boundedContext.category.entity.BigCategory;
-import com.placehub.boundedContext.category.entity.MidCategory;
-import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.service.BigCategoryService;
 import com.placehub.boundedContext.category.service.MidCategoryService;
 import com.placehub.boundedContext.category.service.SmallCategoryService;
 import com.placehub.boundedContext.place.entity.Place;
+import com.placehub.boundedContext.place.factory.PlaceFactory;
 import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
@@ -24,7 +22,7 @@ import java.util.stream.IntStream;
 
 @Component
 @RequiredArgsConstructor
-public class PlaceData {
+public class PlaceProcessor {
     private final PlaceService placeService;
     private final BigCategoryService bigCategoryService;
     private final MidCategoryService midCategoryService;
@@ -36,11 +34,11 @@ public class PlaceData {
     private static double END_Y;
 
     @Autowired
-    public PlaceData(PlaceService placeService,
-                     BigCategoryService bigCategoryService,
-                     MidCategoryService midCategoryService,
-                     SmallCategoryService smallCategoryService,
-                     Environment environment) {
+    public PlaceProcessor(PlaceService placeService,
+                          BigCategoryService bigCategoryService,
+                          MidCategoryService midCategoryService,
+                          SmallCategoryService smallCategoryService,
+                          Environment environment) {
         this.placeService = placeService;
         this.bigCategoryService = bigCategoryService;
         this.midCategoryService = midCategoryService;
@@ -68,17 +66,17 @@ public class PlaceData {
 
         IntStream.range(0, (int) (yDist / criteria) + 1)
                 .boxed()
-                .flatMap(i ->
-                        IntStream.range(0, (int) (xDist / criteria) + 1)
+                .flatMap(
+                        i -> IntStream.range(0, (int) (xDist / criteria) + 1)
                                 .mapToObj(j -> new int[]{i, j}))
-                .forEach(coords -> fetchPlaceInfo(categoryCode, coords[0], coords[1], criteria));
+                .forEach(coords -> processDataAndSave(categoryCode, coords[0], coords[1], criteria));
     }
 
-    public String convertRectString(double [] coords) {
+    public String convertRectString(double[] coords) {
         return String.format("%f,%f,%f,%f", coords[0], coords[1], coords[2], coords[3]);
     }
 
-    public void fetchPlaceInfo(String categoryCode, int i, int j, double criteria) {
+    public void processDataAndSave(String categoryCode, int i, int j, double criteria) {
         int page = 1; // 페이지 수
         int size = 15; // 한 페이지 내 결과 개수
         double[] coords = getNextCoord(i, j, criteria);
@@ -86,7 +84,7 @@ public class PlaceData {
 
         while (true) {
             JSONObject result = LocalApi.Category.getAllRect(rect, categoryCode, page++, size);
-            savePlace(result);
+            processJsonAndSavePlacePage(result);
             System.out.println("total_count = " + ((JSONObject) result.get("meta")).get("total_count"));
             System.out.printf("%d %d page = %d\n", i, j, page);
             if (isLastPage(result)) {
@@ -105,13 +103,14 @@ public class PlaceData {
     }
 
     @Transactional
-    public void savePlace(JSONObject placeData) {
+    public void processJsonAndSavePlacePage(JSONObject placeData) {
         JSONArray documents = (JSONArray) placeData.get("documents");
         documents.stream()
-                .forEach(element -> saveData((JSONObject) element));
+                .map(element -> mapJsonToPlace((JSONObject) element))
+                .forEach(place -> savePlaceData((Place) place));
     }
 
-    public Place convertPlace(JSONObject element) {
+    public Place mapJsonToPlace(JSONObject element) {
         String categoryName = (String) element.get("category_name");
         String placeName = (String) element.get("place_name");
         String phone = (String) element.get("phone");
@@ -123,75 +122,56 @@ public class PlaceData {
         GeometryFactory factory = new GeometryFactory();
         Point point = factory.createPoint(coord);
 
-        Category[] categories = categoryFilter(categoryName);
+        Long[] categoryIds = categoryFilter(categoryName);
 
-        Place place = Place.builder()
-                .bigCategoryId(categories[0].getId())
-                .midCategoryId(categories[1].getId())
-                .smallCategoryId(categories[2].getId())
-                .placeId(placeId)
-                .placeName(placeName)
-                .phone(phone)
-                .addressName(addressName)
-                .point(point)
-                //.likeCount(0L)
-                .build();
+        Place place = PlaceFactory.createPlace(categoryIds, placeId, placeName, phone, addressName, point);
 
         return place;
     }
-    public void saveData(JSONObject element) {
-        Long placeId = Long.parseLong((String) element.get("id"));
 
-        if (placeService.findByPlaceId(placeId) != null) {
-            return;
+    public void savePlaceData(Place placeData) {
+        Place existingPlace = placeService.findByPlaceId(placeData.getPlaceId());
+
+        if (existingPlace != null) {
+            placeService.update(existingPlace, placeData);
+        } else {
+            placeService.create(placeData);
         }
-
-        Place place = convertPlace(element);
-
-        placeService.create(place);
     }
 
-    public Category[] categoryFilter(String categoryStr) {
-        String[] categorySplit = new String[3];
-        String[] temp = categoryStr.split(" > ");
-        for (int j = 0; j < Math.min(temp.length, 3); j++) {
-            categorySplit[j] = temp[j];
+    public Long[] categoryFilter(String categoryStr) {
+        Long[] categoryIds = new Long[3];
+        categoryIds[0] = categoryIds[1] = categoryIds[2] = null;
+        Category[] categories = new Category[3];
+        categories[0] = categories[1] = categories[2] = null;
+        String[] split = categoryStr.split(" > ");
+
+        for (int i = 0; i < Math.min(split.length, 3); i++) {
+            String temp = split[i].trim();
+            switch (i) {
+                case 0:
+                    categories[i] = bigCategoryService.findByCategoryName(temp);
+                    categories[i] = categories[i] == null ? bigCategoryService.create(temp) : categories[i];
+                    break;
+                case 1:
+                    categories[i] = midCategoryService.findByCategoryName(temp);
+                    categories[i] = categories[i] == null ? midCategoryService.create(temp, categories[i - 1].getId()) : categories[i];
+                    break;
+                case 2:
+                    categories[i] = smallCategoryService.findByCategoryName(temp);
+                    categories[i] = categories[i] == null ? smallCategoryService.create(temp, categories[i - 1].getId()) : categories[i];
+                    break;
+            }
         }
 
-        BigCategory bigCategory = null;
-        MidCategory midCategory = null;
-        SmallCategory smallCategory = null;
-        switch (categorySplit.length) {
-            case 3:
-                smallCategory = smallCategoryService.findByCategoryName(categorySplit[2]);
-            case 2:
-                midCategory = midCategoryService.findByCategoryName(categorySplit[1]);
-            case 1:
-                bigCategory = bigCategoryService.findByCategoryName(categorySplit[0]);
-                break;
+        for(int i=0; i<3; i++) {
+            categoryIds[i] = categories[i] == null ? null : categories[i].getId();
         }
 
-        if (bigCategory == null) {
-            bigCategory = bigCategoryService.create(categorySplit[0]);
-        }
-        if (midCategory == null) {
-            midCategory = midCategoryService.create(categorySplit[1], bigCategory.getId());
-        }
-        if (smallCategory == null) {
-            smallCategory = smallCategoryService.create(categorySplit[2], midCategory.getId());
-        }
-
-        return new Category[]{bigCategory, midCategory, smallCategory};
+        return categoryIds;
     }
 
     public boolean isLastPage(JSONObject placeData) {
-        /*
-        "total_count"
-        "is_end"
-        "pageable_count"
-        "same_name"
-         */
-        JSONObject meta = (JSONObject) placeData.get("meta");
-        return (boolean) meta.get("is_end");
+        return (boolean) ((JSONObject) placeData.get("meta")).get("is_end");
     }
 }

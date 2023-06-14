@@ -1,7 +1,7 @@
 <html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
 
 <head>
-    <title> 게시글 목록 </title>
+    <title>공간 아카이빙 목록 </title>
 </head>
 
 <body>
@@ -10,38 +10,72 @@
         <div class="max-w-2xl w-full px-4">
 
             <div class="flex flex-col items-center my-5">
-                <h1 class="text-4xl my-2 font-bold">게시글 목록</h1>
+                <h1 class="text-4xl my-2 font-bold">공간 아카이빙 목록</h1>
             </div>
 
-            <div class="flex flex-col gap-5 w-2xl">
+
+            <div class="flex flex-col gap-3 w-2xl mb-5">
                 <a th:each="post, loop : ${postList}">
-                    <a th:href="@{|/post/view/${post.id}|}" class="card flex-shrink-0 w-full shadow-2xl bg-base-100"
-                       style="width: 640px">
-                        <div class="card-body">
-                            <div th:text="'작성자 : ' +  ${post.getMember()}" class="text-lg font-bold"></div>
-                            <div>
+                    <form th:action method="GET" id="postForm">
+                        <input type="hidden" id="page" name="page" th:value="${paging.number}">
+                        <a th:href="@{|/post/view/${post.id}|}" class="card flex-shrink-0 w-full shadow-xl bg-base-100"
+                           style="width: 640px">
+                            <div class="card-body">
+                                <div th:text="'작성자 : ' +  ${post.getMember()}" class="text-lg font-bold"></div>
+                                <div>
                                 <span th:text="${#temporals.format(post.getVisitedDate(), 'yy년 MM월 dd일')} + ' 방문'"
                                 ></span>
-                            </div>
-                            <div>
+                                </div>
+                                <div>
                                 <span th:text="${#strings.length(post.getContent()) > 150 ?
                                 #strings.substring(post.getContent(), 0, 150) + '...' : post.getContent()}"
                                       class=" text-sm text-gray-400"></span>
+                                </div>
+                                <div th:text="'등록일시 : ' + ${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}"
+                                     class="flex justify-end"></div>
                             </div>
-                            <div th:text="'등록일시 : ' + ${#temporals.format(post.createDate, 'yyyy-MM-dd HH:mm')}"
-                                 class="flex justify-end"></div>
-                        </div>
-                    </a>
+                        </a>
+                    </form>
                 </a>
             </div>
+
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center mt-10">
+                <ul class="pagination justify-content-center flex">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link m-1 btn  " href="javascript:void(0);"
+                           th:data-page="${paging.number - 1}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                           th:data-page="${page}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <a class="page-link m-1 btn " href="javascript:void(0);"
+                           th:data-page="${paging.number + 1}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
-
+    <script layout:fragment="script" type="text/javascript">
+        const page_elements = document.getElementsByClassName("page-link");
+        Array.from(page_elements).forEach(function (element) {
+            element.addEventListener('click', function () {
+                document.getElementById('page').value = this.dataset.page;
+                document.getElementById('postForm').submit();
+            });
+        });
+    </script>
 
 </div>
-</div>
 
-
-</div>
 </body>
 </html>

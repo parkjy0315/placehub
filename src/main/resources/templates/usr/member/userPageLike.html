@@ -1,0 +1,378 @@
+<html layout:decorate="~{layout}" xmlns:layout="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>유저 페이지</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+    <div class="hero-content flex flex-col my-10">
+
+        <h2 th:if="${member.id == @rq.member.id}" class="text-4xl mt-5 mx-5 font-bold flex flex-col">
+            마이페이지
+        </h2>
+
+        <div class="flex flex-col">
+            <div class="flex justify-between my-10 " style="width: 900px">
+                <div class="flex gap-5">
+                    <div class="avatar">
+                        <div class="w-32 rounded-full">
+                            <img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FGHYFr%2FbtrsSwcSDQV%2FUQZxkayGyAXrPACyf0MaV1%2Fimg.jpg"/>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center gap-4">
+                        <div class="flex gap-4">
+                            <span class="text-2xl font-bold" th:text="${member.nickname}"></span>
+                            <a href="/member/me" th:if="${member.id == @rq.member.id}">
+                                <i class="fa-solid fa-gear fa-xl"></i>
+                            </a>
+                            <div sec:authorize="isAuthenticated()" th:if="${member.id != @rq.member.id}">
+                                <form th:if="${follow} != null " th:action="@{|/friend/delete/${member.id}|}" method="POST">
+                                    <button type="submit" class="btn btn-warning btn-sm">언팔로우</button>
+                                </form>
+                                <form th:if="${follow} == null" th:action="@{|/friend/create/${member.id}|}" method="GET">
+                                    <button type="submit" class="btn btn-success btn-sm">팔로우</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div th:if="${member.id != @rq.member.id}">
+                            <div class="flex gap-5">
+                                <div class="min-w-sm">
+                                    <span  class="text-gray-400 text-sm"
+                                          th:text="${member.bio}"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${member.id == @rq.member.id}">
+                            <div id="bioContainer" class="flex gap-5">
+                                <div class="min-w-sm">
+                                    <span id="bioValue" class="text-gray-400 text-sm"
+                                          th:text="${@rq.member.bio} ? ${@rq.member.bio} : '바이오를 등록해보세요'"></span>
+                                </div>
+                                <button id="editBioBtn" class="btn btn-xs btn-outline"
+                                        th:attr="data-member-id=${@rq.member.id}">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </button>
+                            </div>
+                            <div id="bioUpdateContainer" class="flex mt-1" style="display: none;">
+                                <textarea id="bioInput"
+                                          class="p-2 max-w-sm rounded-md border border-gray-200"></textarea>
+                                <button id="updateBioBtn" class="btn btn-xs btn-outline mx-1">수정완료</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="flex gap-4" th:if="${member.id != @rq.member.id}">
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로잉
+                            <div><span th:text="${#lists.size(followingList)}"></span></div>
+                        </div>
+                        <div class="divider divider-horizontal !mx-1"></div>
+                        <div class="flex flex-col justify-center items-center gap-4">
+                            팔로워
+                            <div><span th:text="${#lists.size(followerList)}"></span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-4" th:if="${member.id == @rq.member.id}">
+                        <div class="hover:bg-blue-50 p-2">
+                            <a href="/friend/list" class="flex flex-col justify-center items-center gap-4">
+                                팔로잉
+                                <div><span th:text="${#lists.size(followingList)}"></span></div>
+                            </a>
+                        </div>
+                        <div class="divider divider-horizontal !mx-1"></div>
+                        <div class="hover:bg-blue-50 p-2">
+                            <a href="/friend/list" class="flex flex-col justify-center items-center gap-4">
+                                팔로워
+                                <div><span th:text="${#lists.size(followerList)}"></span></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="flex justify-between mt-5">
+                <div class="flex">
+                    <div class="mx-2">
+                        <a th:href="@{|/member/page/${member.id}|}"  id="myPlaceBtn">나의 공간 아카이빙</a>
+                    </div>
+                    <div class="divider divider-horizontal !mx-1"></div>
+                    <div class="mx-2">
+                        <button id="myLikePlaceBtn" class="font-bold">나의 좋아요 목록</button>
+                    </div>
+                </div>
+                <div class="flex" id="myLikedPlaceSelectBtn">
+                    <div class="mx-2">
+                        <button id="myLikedPlaceListBtn" class="font-bold" >목록 보기</button>
+                    </div>
+                    <div class="mx-2">
+                        <button id="myLikedPlaceMapBtn">지도로 보기</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider !my-2"></div>
+
+
+            <div id="myLikePlace">
+                <div th:if="${#lists.size(placeInfoList)} == 0" class="hero-content">
+                    <div>등록된 좋아요가 없습니다.</div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div th:each="placeInfo, loop : ${placeInfoList}">
+                        <form th:action method="GET" id="placeForm">
+                            <input type="hidden" id="page" name="page" th:value="${PlacePaging.number}">
+                        <a th:href="@{|/place/details/${placeInfo.place.id}|}"
+                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
+                            <!--                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">-->
+                            <div class="card-body">
+                                <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
+                                <div class="flex justify-between">
+                                    <div class="flex flex-col gap-2">
+                                        <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.bigCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.midCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.smallCategoryName}"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <i  class="fa-regular fa-heart text-red-400"></i>
+                                            <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${!PlacePaging.isEmpty()}" class="flex justify-center mt-10">
+                    <ul class="pagination justify-content-center flex">
+                        <li class="page-item" th:classappend="${!PlacePaging.hasPrevious()} ? 'disabled'">
+                            <a class="page-link m-1 btn  " href="javascript:void(0);"
+                               th:data-page="${PlacePaging.number - 1}">
+                                <span>이전</span>
+                            </a>
+                        </li>
+                        <li th:each="page : ${#numbers.sequence(0, PlacePaging.totalPages - 1)}"
+                            th:if="${page >= PlacePaging.number - 5 and page <= PlacePaging.number + 5}"
+                            th:classappend="${page == PlacePaging.number} ? 'active'"
+                            class="page-item">
+                            <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                               th:data-page="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${!PlacePaging.hasNext()} ? 'disabled'">
+                            <a class="page-link m-1 btn " href="javascript:void(0);"
+                               th:data-page="${PlacePaging.number + 1}">
+                                <span>다음</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="myLikedPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript"
+            src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2652c9851bbcfcd7c014b2339462c149"></script>
+    <script th:inline="javascript">
+
+        let likedPlaceArray = new Array();
+        let likedPlaceInfo;
+        /*[# th:each="place : ${likedPlaces}"]*/
+        likedPlaceInfo = {
+            id: /*[[${place.id}]]*/null,
+            name: /*[[${place.placeName}]]*/null,
+            xPos: /*[[${place.point.x}]]*/null,
+            yPos: /*[[${place.point.y}]]*/null
+        };
+        likedPlaceArray.push(likedPlaceInfo);
+        /*[/]*/
+
+        var xPosAverageByLikedPlaces = /*[[${xPosAverageByLikedPlaces}]]*/null;
+        var yPosAverageByLikedPlaces = /*[[${yPosAverageByLikedPlaces}]]*/null;
+
+        console.log(placeArray);
+
+    </script>
+
+    <script>
+        // 탭 이동 관련
+        const myPlaceBtn = document.getElementById("myPlaceBtn");
+        const myPlaceTimeline = document.getElementById("myPlaceTimeline");
+        const myPlaceTimelineBtn = document.getElementById("myPlaceTimelineBtn")
+        const myPlaceMap = document.getElementById("myPlaceMap");
+        const myPlaceMapBtn = document.getElementById("myPlaceMapBtn")
+        const myPlaceSelectBtn = document.getElementById("myPlaceSelectBtn")
+
+        const myLikePlace = document.getElementById("myLikePlace");
+        const myLikePlaceBtn = document.getElementById("myLikePlaceBtn")
+        const myLikedPlaceSelectBtn = document.getElementById("myLikedPlaceSelectBtn")
+        const myLikedPlaceListBtn = document.getElementById("myLikedPlaceListBtn")
+        const myLikedPlaceMap = document.getElementById("myLikedPlaceMap")
+        const myLikedPlaceMapBtn = document.getElementById("myLikedPlaceMapBtn")
+
+        // 페이징
+        const placePage_elements = document.getElementsByClassName("page-link");
+        Array.from(placePage_elements).forEach(function (element) {
+            element.addEventListener('click', function () {
+                document.getElementById('page').value = this.dataset.page;
+                document.getElementById('placeForm').submit();
+            });
+        });
+
+        myLikedPlaceListBtn.addEventListener("click", () => {
+            myLikePlace.style.display = "block";
+            myLikedPlaceMap.style.display = "none";
+
+            myLikedPlaceListBtn.style.fontWeight = "bold";
+            myLikedPlaceMapBtn.style.fontWeight = "normal";
+        });
+
+        myLikedPlaceMapBtn.addEventListener("click", () => {
+            myLikePlace.style.display = "none";
+            myLikedPlaceMap.style.display = "block";
+
+            myLikedPlaceListBtn.style.fontWeight = "normal";
+            myLikedPlaceMapBtn.style.fontWeight = "bold";
+
+            // --------카카오 맵 지도 생성--------------
+            // 마커를 표시할 위치와 title 객체 배열입니다
+            var positions = [];
+
+            for (var i = 0; i < likedPlaceArray.length; i++) {
+                var place = likedPlaceArray[i];
+                var position = {
+                    id: place.id,
+                    title: place.name,
+                    latlng: new kakao.maps.LatLng(place.yPos, place.xPos)
+                };
+                positions.push(position);
+            }
+
+            // 카카오 맵 관련
+            var mapContainer = document.getElementById('myLikedPlaceMap'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(yPosAverageByLikedPlaces, xPosAverageByLikedPlaces), // 지도의 중심좌표
+                    // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
+                    //   center: position[0].latlng, // 지도의 중심좌표
+                    level: 9 // 지도의 확대 레벨
+                };
+
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+            // 마커 이미지의 이미지 주소입니다
+            var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+            for (var i = 0; i < positions.length; i++) {
+
+                // 마커 이미지의 이미지 크기 입니다
+                var imageSize = new kakao.maps.Size(24, 35);
+
+                // 마커 이미지를 생성합니다
+                var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+                // 마커를 생성합니다
+                var marker = new kakao.maps.Marker({
+                    map: map, // 마커를 표시할 지도
+                    position: positions[i].latlng, // 마커를 표시할 위치
+                    title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                    image: markerImage // 마커 이미지
+                });
+
+                var content = '<div class="customoverlay">' +
+                    '  <a href="/place/details/' + positions[i].id + '" target="_blank">' +
+                    '    <span class="title">' + positions[i].title + '</span>' +
+                    '  </a>' +
+                    '</div>';
+
+                // 커스텀 오버레이를 생성합니다
+                var customOverlay = new kakao.maps.CustomOverlay({
+                    map: map,
+                    position: positions[i].latlng,
+                    content: content,
+                    yAnchor: 1
+                });
+
+            }
+        });
+
+    </script>
+
+
+    <script>
+
+        // 바이오 수정 관련
+        const editBioBtn = document.getElementById("editBioBtn");
+        const bioUpdateContainer = document.getElementById("bioUpdateContainer");
+        const bioValue = document.getElementById("bioValue");
+        const bioInput = document.getElementById("bioInput");
+        const updateBioBtn = document.getElementById("updateBioBtn");
+        const memberId = editBioBtn.getAttribute("data-member-id");
+        const bioContainer = document.getElementById("bioContainer");
+
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // 수정하기 버튼 클릭 시
+        editBioBtn.addEventListener("click", () => {
+            bioUpdateContainer.style.display = "block";
+            bioContainer.style.display = "none";
+            bioInput.value = bioValue.textContent;
+        });
+
+        function updateBioDisplay(newBio) {
+            const bioValue = document.getElementById("bioValue");
+            bioValue.textContent = newBio;
+        }
+
+        updateBioBtn.addEventListener("click", () => {
+            const newBio = bioInput.value;
+
+
+            const endpoint = `/member/update/bio/${memberId}`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", endpoint);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                        updateBioDisplay(newBio);
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+            xhr.send("bio=" + encodeURIComponent(newBio));
+            bioUpdateContainer.style.display = "none";
+            bioContainer.style.display = "block";
+        });
+
+    </script>
+
+
+</div>
+</body>
+
+</html>

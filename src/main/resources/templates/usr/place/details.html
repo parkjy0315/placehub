@@ -67,15 +67,15 @@
                         <h1 id="placeName" th:text="${placeInfo.place.placeName}" class="text-4xl my-2 font-bold"></h1>
                         <div class="flex gap-1">
                             <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
-                                <div class="badge badge-outline badge-md" th:text="${placeInfo.bigCategoryName}"></div>
+                                <div class="badge badge-ghost badge-md" th:text="${placeInfo.bigCategoryName}"></div>
                             </div>
                             <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
                                 >
-                                <div class="badge badge-outline badge-md" th:text="${placeInfo.midCategoryName}"></div>
+                                <div class="badge badge-ghost badge-md" th:text="${placeInfo.midCategoryName}"></div>
                             </div>
                             <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
                                 >
-                                <div class="badge badge-outline badge-md"
+                                <div class="badge badge-ghost badge-md"
                                      th:text="${placeInfo.smallCategoryName}"></div>
                             </div>
                         </div>
@@ -98,6 +98,11 @@
                         <i class="fa-solid fa-phone"></i>
                         <div th:text="${placeInfo.place.phone}"></div>
                         <!--        <div th:text="${postView.getData().content}" class="h-96 w-full" style="width: 640px"></div>-->
+                    </div>
+                    <div sec:authorize="isAnonymous()" class="flex gap-2">
+                        <i class="fa-solid fa-heart"></i>
+                        좋아요
+                        <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
                     </div>
                     <div sec:authorize="isAuthenticated()" class="flex justify-center gap-5 mt-5">
                         <div>
