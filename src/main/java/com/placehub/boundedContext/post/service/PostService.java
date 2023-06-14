@@ -19,10 +19,7 @@ import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PostService {
@@ -52,9 +49,10 @@ public class PostService {
                 .build();
 
         long postId = postRepository.save(post).getId();
-        RsData imgSavingResutl = imageService.controlImage(creatingForm.getImages(), postId, ImageControlOptions.CREATE);
-        if (imgSavingResutl.isFail()) {
-            return imgSavingResutl;
+        RsData imgSavingResult = imageService.createOrModifyImages(Arrays.stream(creatingForm.getImgIds().split(",")).map(Long::parseLong).toList(), postId);
+
+        if (imgSavingResult.isFail()) {
+            return imgSavingResult;
         }
 
         return RsData.of("S-1", "게시물 등록 성공", postId);
@@ -126,8 +124,12 @@ public class PostService {
                 .visitedDate(modifyingForm.getVisitedDate())
                 .build();
 
-        RsData imgModifyingResult = imageService.controlImage(modifyingForm.getImages(), postId, ImageControlOptions.MODIFY);
+        RsData imgModifyingResult = imageService.createOrModifyImages(Arrays.stream(modifyingForm.getImgIds().split(",")).map(Long::parseLong).toList()
+                , postId);
 
+        if (imgModifyingResult.isFail()) {
+            throw new RuntimeException("이미지 저장 오류");
+        }
         return postRepository.save(post).getId();
 
     }
@@ -189,6 +191,11 @@ public class PostService {
     public List<Post> findByMember(Long memberId) {
         return postRepository.findByMember(memberId);
     }
+
+    public Page<Post> findByMember(Long id, Pageable pageable) {
+        return postRepository.findByMember(id, pageable);
+    }
+
     public List<Post> findByPlace(Long placeId) {
         return postRepository.findByPlace(placeId);
     }

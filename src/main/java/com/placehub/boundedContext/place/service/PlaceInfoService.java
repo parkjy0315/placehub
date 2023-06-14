@@ -26,10 +26,19 @@ public class PlaceInfoService {
     }
 
     public PlaceInfo getCategoryNames(Place place) {
-        return new PlaceInfo(place,
-                bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName(),
-                midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName(),
-                smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName()
-        );
+        String bigName = "";
+        String midName = "";
+        String smallName = "";
+
+        if (place.getBigCategoryId() != null) {
+            bigName = bigCategoryService.getBigCategory(place.getBigCategoryId()).getCategoryName();
+        }
+        if (place.getBigCategoryId() != null) {
+            midName = midCategoryService.getMidCategory(place.getMidCategoryId()).getCategoryName();
+        }
+        if (place.getSmallCategoryId() != null) {
+            smallName = smallCategoryService.getSmallCategory(place.getSmallCategoryId()).getCategoryName();
+        }
+        return new PlaceInfo(place, bigName, midName, smallName);
     }
 }

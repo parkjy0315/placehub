@@ -17,18 +17,17 @@ import java.util.Objects;
 public class Images extends BaseEntity {
     private long post;
     private long img;
-    private String fileType;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Images images = (Images) o;
-        return post == images.post && img == images.img && Objects.equals(fileType, images.fileType);
+        return post == images.post && img == images.img;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(post, img, fileType);
+        return Objects.hash(post, img);
     }
 }
