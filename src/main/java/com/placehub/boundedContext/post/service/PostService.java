@@ -189,6 +189,11 @@ public class PostService {
     public List<Post> findByMember(Long memberId) {
         return postRepository.findByMember(memberId);
     }
+
+    public Page<Post> findByMember(Long id, Pageable pageable) {
+        return postRepository.findByMember(id, pageable);
+    }
+
     public List<Post> findByPlace(Long placeId) {
         return postRepository.findByPlace(placeId);
     }
