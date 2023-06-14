@@ -26,6 +26,10 @@ public class SmallCategoryService {
     }
 
     public SmallCategory getSmallCategory(Long id) {
+        if (id == null){
+            return new SmallCategory();
+        }
+
         Optional<SmallCategory> category = smallCategoryRepository.findById(id);
         return category.orElse(null);
     }
