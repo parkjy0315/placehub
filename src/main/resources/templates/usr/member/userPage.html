@@ -153,7 +153,15 @@
                         <button id="myLikePlaceBtn">나의 좋아요 목록</button>
                     </div>
                 </div>
-                <div class="flex">
+                <div class="flex" id="myLikedPlaceSelectBtn" style="display: none;">
+                    <div class="mx-2">
+                        <button id="myLikedPlaceListBtn" class="font-bold" >목록 보기</button>
+                    </div>
+                    <div class="mx-2">
+                        <button id="myLikedPlaceMapBtn">지도로 보기</button>
+                    </div>
+                </div>
+                <div class="flex" id="myPlaceSelectBtn">
                     <div class="mx-2">
                         <button id="myPlaceTimelineBtn" class="font-bold">타임라인으로 보기</button>
                     </div>
@@ -161,6 +169,7 @@
                         <button id="myPlaceMapBtn">지도로 보기</button>
                     </div>
                 </div>
+
             </div>
 
             <div class="divider !my-2"></div>
@@ -243,7 +252,7 @@
             </div>
 
             <div id="myPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
-
+            <div id="myLikedPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
         </div>
     </div>
 
@@ -264,12 +273,33 @@
         placeArray.push(placeInfo);
         /*[/]*/
 
-        var xPosAverage = /*[[${xPosAverage}]]*/null;
-        var yPosAverage = /*[[${yPosAverage}]]*/null;
+        var xPosAverageByvisitedPlaces = /*[[${xPosAverageByvisitedPlaces}]]*/null;
+        var yPosAverageByvisitedPlaces = /*[[${yPosAverageByvisitedPlaces}]]*/null;
 
         console.log(placeArray);
 
     </script>
+    <script th:inline="javascript">
+
+        let likedPlaceArray = new Array();
+        let likedPlaceInfo;
+        /*[# th:each="place : ${likedPlaces}"]*/
+        likedPlaceInfo = {
+            id: /*[[${place.id}]]*/null,
+            name: /*[[${place.placeName}]]*/null,
+            xPos: /*[[${place.point.x}]]*/null,
+            yPos: /*[[${place.point.y}]]*/null
+        };
+        likedPlaceArray.push(likedPlaceInfo);
+        /*[/]*/
+
+        var xPosAverageByLikedPlaces = /*[[${xPosAverageByLikedPlaces}]]*/null;
+        var yPosAverageByLikedPlaces = /*[[${yPosAverageByLikedPlaces}]]*/null;
+
+        console.log(placeArray);
+
+    </script>
+
     <script>
         // 탭 이동 관련
         const myPlaceBtn = document.getElementById("myPlaceBtn");
@@ -277,15 +307,24 @@
         const myPlaceTimelineBtn = document.getElementById("myPlaceTimelineBtn")
         const myPlaceMap = document.getElementById("myPlaceMap");
         const myPlaceMapBtn = document.getElementById("myPlaceMapBtn")
+        const myPlaceSelectBtn = document.getElementById("myPlaceSelectBtn")
+
         const myLikePlace = document.getElementById("myLikePlace");
         const myLikePlaceBtn = document.getElementById("myLikePlaceBtn")
+        const myLikedPlaceSelectBtn = document.getElementById("myLikedPlaceSelectBtn")
+        const myLikedPlaceListBtn = document.getElementById("myLikedPlaceListBtn")
+        const myLikedPlaceMap = document.getElementById("myLikedPlaceMap")
+        const myLikedPlaceMapBtn = document.getElementById("myLikedPlaceMapBtn")
 
         myPlaceBtn.addEventListener("click", () => {
             myPlaceTimeline.style.display = "block";
-            myLikePlace.style.display = "none";
             myPlaceMap.style.display = "none";
-            myPlaceTimelineBtn.style.display = "block";
-            myPlaceMapBtn.style.display = "block";
+            myPlaceSelectBtn.style.display = "flex";
+
+
+            myLikePlace.style.display = "none";
+            myLikedPlaceMap.style.display = "none";
+            myLikedPlaceSelectBtn.style.display = "none";
 
             myPlaceTimelineBtn.style.fontWeight = "bold";
             myPlaceMapBtn.style.fontWeight = "normal"
@@ -295,8 +334,10 @@
 
         myPlaceTimelineBtn.addEventListener("click", () => {
             myPlaceTimeline.style.display = "block";
-            myLikePlace.style.display = "none";
             myPlaceMap.style.display = "none";
+
+            myLikePlace.style.display = "none";
+            myLikedPlaceMap.style.display = "none";
 
             myPlaceTimelineBtn.style.fontWeight = "bold";
             myPlaceMapBtn.style.fontWeight = "normal"
@@ -305,7 +346,9 @@
         myPlaceMapBtn.addEventListener("click", () => {
             myPlaceMap.style.display = "block";
             myPlaceTimeline.style.display = "none";
+
             myLikePlace.style.display = "none";
+            myLikedPlaceMap.style.display = "none";
 
             myPlaceTimelineBtn.style.fontWeight = "normal";
             myPlaceMapBtn.style.fontWeight = "bold"
@@ -328,7 +371,7 @@
             // 카카오 맵 관련
             var mapContainer = document.getElementById('myPlaceMap'), // 지도를 표시할 div
                 mapOption = {
-                    center: new kakao.maps.LatLng(yPosAverage, xPosAverage), // 지도의 중심좌표
+                    center: new kakao.maps.LatLng(yPosAverageByvisitedPlaces, xPosAverageByvisitedPlaces), // 지도의 중심좌표
                     // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
                     //   center: position[0].latlng, // 지도의 중심좌표
                     level: 9 // 지도의 확대 레벨
@@ -373,14 +416,95 @@
 
         });
 
-        myLikePlaceBtn.addEventListener("click", () => {
+        const toggleLikedPlaceView = () => {
             myPlaceTimeline.style.display = "none";
-            myLikePlace.style.display = "block";
             myPlaceMap.style.display = "none";
-            myPlaceTimelineBtn.style.display = "none";
-            myPlaceMapBtn.style.display = "none";
+            myPlaceSelectBtn.style.display = "none";
+            myLikePlace.style.display = "block";
+
+            myLikedPlaceSelectBtn.style.display = "flex";
+            myLikedPlaceMap.style.display = "none";
+
             myLikePlaceBtn.style.fontWeight = "bold";
             myPlaceBtn.style.fontWeight = "normal";
+
+            myLikedPlaceListBtn.style.fontWeight = "bold";
+            myLikedPlaceMapBtn.style.fontWeight = "normal";
+        };
+
+        myLikePlaceBtn.addEventListener("click", toggleLikedPlaceView);
+        myLikedPlaceListBtn.addEventListener("click", toggleLikedPlaceView);
+
+        myLikedPlaceMapBtn.addEventListener("click", () => {
+
+            myLikePlace.style.display = "none";
+            myLikedPlaceMap.style.display = "block";
+
+            myLikePlaceBtn.style.fontWeight = "bold";
+            myPlaceBtn.style.fontWeight = "normal";
+
+            myLikedPlaceListBtn.style.fontWeight = "normal";
+            myLikedPlaceMapBtn.style.fontWeight = "bold";
+
+            // --------카카오 맵 지도 생성--------------
+            // 마커를 표시할 위치와 title 객체 배열입니다
+            var positions = [];
+
+            for (var i = 0; i < likedPlaceArray.length; i++) {
+                var place = likedPlaceArray[i];
+                var position = {
+                    id: place.id,
+                    title: place.name,
+                    latlng: new kakao.maps.LatLng(place.yPos, place.xPos)
+                };
+                positions.push(position);
+            }
+
+            // 카카오 맵 관련
+            var mapContainer = document.getElementById('myLikedPlaceMap'), // 지도를 표시할 div
+                mapOption = {
+                    center: new kakao.maps.LatLng(yPosAverageByLikedPlaces, xPosAverageByLikedPlaces), // 지도의 중심좌표
+                    // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
+                    //   center: position[0].latlng, // 지도의 중심좌표
+                    level: 9 // 지도의 확대 레벨
+                };
+
+            var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+            // 마커 이미지의 이미지 주소입니다
+            var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+            for (var i = 0; i < positions.length; i++) {
+
+                // 마커 이미지의 이미지 크기 입니다
+                var imageSize = new kakao.maps.Size(24, 35);
+
+                // 마커 이미지를 생성합니다
+                var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+                // 마커를 생성합니다
+                var marker = new kakao.maps.Marker({
+                    map: map, // 마커를 표시할 지도
+                    position: positions[i].latlng, // 마커를 표시할 위치
+                    title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                    image: markerImage // 마커 이미지
+                });
+
+                var content = '<div class="customoverlay">' +
+                    '  <a href="/place/details/' + positions[i].id + '" target="_blank">' +
+                    '    <span class="title">' + positions[i].title + '</span>' +
+                    '  </a>' +
+                    '</div>';
+
+                // 커스텀 오버레이를 생성합니다
+                var customOverlay = new kakao.maps.CustomOverlay({
+                    map: map,
+                    position: positions[i].latlng,
+                    content: content,
+                    yAnchor: 1
+                });
+
+            }
         });
 
     </script>

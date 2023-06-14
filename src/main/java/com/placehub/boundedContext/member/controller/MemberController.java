@@ -108,36 +108,55 @@ public class MemberController {
         Member member = memberService.findById(id).orElse(null);
 
         List<Post> postList = postService.findByMember(id);
-        List<Place> placeList = placeService.findByPlaceLikeList_MemberId(id);
-        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(placeList);
-        List<Member> followingList = friendService.findFollowing(id);
-        List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
-
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postList) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
         List<Place> visitedPlaces = placeService.findPlacesByMemberId(member.getId());
-        double xPosAverage = visitedPlaces.stream()
+        double xPosAverageByvisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getX())
                 .average()
                 .orElse(0);
 
-        double yPosAverage = visitedPlaces.stream()
+        double yPosAverageByvisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getY())
                 .average()
                 .orElse(0);
-        model.addAttribute("xPosAverage", xPosAverage);
-        model.addAttribute("yPosAverage", yPosAverage);
+
+
+
+        List<Place> likedPlaces = placeService.findByPlaceLikeList_MemberId(id);
+        List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(likedPlaces);
+
+        double xPosAverageByLikedPlaces = likedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getX())
+                .average()
+                .orElse(0);
+
+        double yPosAverageByLikedPlaces = likedPlaces.stream()
+                .mapToDouble(place -> place.getPoint().getY())
+                .average()
+                .orElse(0);
+
+
+        List<Member> followingList = friendService.findFollowing(id);
+        List<Member> followerList = friendService.findFollower(id);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+
+
+        model.addAttribute("xPosAverageByvisitedPlaces", xPosAverageByvisitedPlaces);
+        model.addAttribute("yPosAverageByvisitedPlaces", yPosAverageByvisitedPlaces);
+
+        model.addAttribute("xPosAverageByLikedPlaces", xPosAverageByLikedPlaces);
+        model.addAttribute("yPosAverageByLikedPlaces", yPosAverageByLikedPlaces);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
 
         model.addAttribute("postList", postList);
         model.addAttribute("postViewerList", postViewerList);
-        model.addAttribute("placeList", placeList);
+        model.addAttribute("likedPlaces", likedPlaces);
         model.addAttribute("visitedPlaces", visitedPlaces);
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("followingList",followingList);
