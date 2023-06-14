@@ -1,47 +1,26 @@
 package com.placehub.batch.config;
 
-import com.placehub.base.util.LocalApi;
-import com.placehub.base.util.PlaceData;
-import com.placehub.boundedContext.place.repository.PlaceRepository;
+import com.placehub.base.util.PlaceProcessor;
 import com.placehub.boundedContext.place.service.PlaceService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.springframework.batch.core.*;
-import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
-import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.support.ListItemReader;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.batch.BatchProperties;
-import org.springframework.boot.autoconfigure.batch.JobLauncherApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.config.FixedDelayTask;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Configuration
 @RequiredArgsConstructor
 public class SavePlaceDataJobConfig {
-    private final PlaceData placeData;
+    private final PlaceProcessor placeProcessor;
     private final PlaceService placeService;
     private final JobRepository jobRepository;
     private final PlatformTransactionManager transactionManager;
@@ -53,13 +32,14 @@ public class SavePlaceDataJobConfig {
             String code = jobParameters.getString("categoryCode");
             double criteria = jobParameters.getDouble("criteria");
             int i = jobParameters.getDouble("i").intValue();
-            double xDist = placeData.getXdist();
+            double xDist = placeProcessor.getXdist();
 
             IntStream.range(0, (int) (xDist / criteria) + 1)
                     .mapToObj(j -> new int[]{i, j})
                     .forEach(coords -> {
-                        placeData.fetchPlaceInfo(code, coords[0], coords[1], criteria);
+                        placeProcessor.processDataAndSave(code, coords[0], coords[1], criteria);
                     });
+            Thread.sleep(1000);
 
             return RepeatStatus.FINISHED;
         }

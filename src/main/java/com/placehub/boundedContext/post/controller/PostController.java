@@ -15,6 +15,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -54,13 +57,30 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public String list(Model model){
-        List<Post> postList = this.postService.findAll();
+    public String list(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "3") int size){
+
+        // 페이징 정보
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Post> postPages =  this.postService.findAll(pageable);
+        List<Post> postList = postPages.getContent();
+
+        model.addAttribute("paging", postPages);
         model.addAttribute("postList", postList);
+
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", postPages.getTotalPages());
+        model.addAttribute("totalElements", postPages.getTotalElements());
+
+
         return "usr/post/list";
     }
 
-    //    @PreAuthorize("isAuthenticated()")
     @GetMapping("/view/{postId}")
     public String showPost(@PathVariable Long postId, Model model) {
         RsData<Viewer> response = postService.showSinglePost(postId);
