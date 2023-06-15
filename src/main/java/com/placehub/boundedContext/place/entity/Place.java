@@ -26,7 +26,6 @@ public class Place extends BaseEntity {
     private Long midCategoryId;
     @Index(name = "idx_small")
     private Long smallCategoryId;
-    @Column(unique = true)
     private Long placeId;
     private String placeName;
     private String phone;

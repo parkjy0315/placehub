@@ -71,6 +71,7 @@ public class PlaceService {
                         Long bigCategoryId, Long midCategoryId, Long smallCategoryId,
                         String placeName, String phone, String addressName,
                         Point point) {
+
         Place updatePlace = place.toBuilder()
                 .bigCategoryId(bigCategoryId)
                 .midCategoryId(midCategoryId)
