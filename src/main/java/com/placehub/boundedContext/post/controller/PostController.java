@@ -99,7 +99,11 @@ public class PostController {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
-        if (rq.getMember().getId() != response.getData().getUserId() && !response.getData().isOpenToPublic()){
+        // 비공개 게시물
+        if(!response.getData().isOpenToPublic() && rq.getMember() == null){
+            return "usr/post/private";
+        }
+        if (!response.getData().isOpenToPublic() && rq.getMember().getId() != response.getData().getUserId()){
             return "usr/post/private";
         }
 
