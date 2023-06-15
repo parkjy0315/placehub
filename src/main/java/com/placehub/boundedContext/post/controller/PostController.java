@@ -99,6 +99,10 @@ public class PostController {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
         }
 
+        if (rq.getMember().getId() != response.getData().getUserId() && !response.getData().isOpenToPublic()){
+            return "usr/post/private";
+        }
+
         List<Comment> comments = commentService.findNotDeleted(postId);
         List<String> imagePathes = imageService.callImagePathes(postId);
         model.addAttribute("comments", comments);
