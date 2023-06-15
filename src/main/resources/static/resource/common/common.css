@@ -61,6 +61,7 @@ html > body {
     border-radius: 6px;
     font-size: 14px;
     font-weight: bold;
+    font-family: "GmarketSansMedium";
     overflow: hidden;
     background: #d95050;
     background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
@@ -74,6 +75,7 @@ html > body {
     padding: 10px 15px;
     font-size: 14px;
     font-weight: bold;
+    font-family: "GmarketSansMedium";
 }
 
 .customoverlay:after {

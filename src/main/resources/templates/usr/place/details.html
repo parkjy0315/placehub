@@ -128,22 +128,23 @@
                 </a>
             </div>
 
-            <div th:if="${!paging.isEmpty()}" class="flex justify-center mt-10">
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center my-5">
                 <ul class="pagination justify-content-center flex">
-                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                    <li th:if="${paging.hasPrevious()}" class="page-item">
                         <a class="page-link m-1 btn  " href="javascript:void(0);"
                            th:data-page="${paging.number - 1}">
                             <span>이전</span>
                         </a>
                     </li>
                     <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
-                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
-                        th:classappend="${page == paging.number} ? 'active'"
-                        class="page-item">
-                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}">
+                        <a th:disabled="${page == paging.number}"
+                           th:text="${page}"
+                           class="page-link m-1 btn btn-outline"
+                           href="javascript:void(0);"
                            th:data-page="${page}"></a>
                     </li>
-                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                    <li th:if="${paging.hasNext()}" class="page-item">
                         <a class="page-link m-1 btn " href="javascript:void(0);"
                            th:data-page="${paging.number + 1}">
                             <span>다음</span>

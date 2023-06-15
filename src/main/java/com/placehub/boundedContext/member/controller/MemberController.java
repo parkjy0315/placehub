@@ -109,7 +109,7 @@ public class MemberController {
     @GetMapping("/page/{id}")
     public String showUserPage(Model model, @PathVariable Long id,
                                   @RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "10") int size) {
+                                  @RequestParam(defaultValue = "5") int size) {
 
         Member member = memberService.findById(id).orElse(null);
 
@@ -151,6 +151,12 @@ public class MemberController {
         model.addAttribute("xPosAverageByVisitedPlaces", xPosAverageByVisitedPlaces);
         model.addAttribute("yPosAverageByVisitedPlaces", yPosAverageByVisitedPlaces);
 
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", postPages.getTotalPages());
+        model.addAttribute("totalElements", postPages.getTotalElements());
+
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
@@ -179,6 +185,7 @@ public class MemberController {
 
         Page<Place> likedPlacesPages = placeService.findByPlaceLikeList_MemberId(id, pageablePlace);
         List<Place> likedPlaces = likedPlacesPages.getContent();
+
         List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(likedPlaces);
 
         double xPosAverageByLikedPlaces = likedPlaces.stream()
@@ -196,6 +203,12 @@ public class MemberController {
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("xPosAverageByLikedPlaces", xPosAverageByLikedPlaces);
         model.addAttribute("yPosAverageByLikedPlaces", yPosAverageByLikedPlaces);
+
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", likedPlacesPages.getTotalPages());
+        model.addAttribute("totalElements", likedPlacesPages.getTotalElements());
 
 
         // 친구

@@ -99,11 +99,18 @@
             <div class="flex justify-between mt-5">
                 <div class="flex">
                     <div class="mx-2">
-                        <a th:href="@{|/member/page/${member.id}|}" id="myPlaceBtn">나의 공간 아카이빙</a>
+                        <a th:href="@{|/member/page/${member.id}|}" id="myPlaceBtn">
+                            <span th:if="${member.id == @rq.member.id}"> 나의 공간 아카이빙</span>
+                            <span th:if="${member.id != @rq.member.id}"> 공간 아카이빙</span>
+                        </a>
                     </div>
                     <div class="divider divider-horizontal !mx-1"></div>
-                    <div class="mx-2">
-                        <button id="myLikePlaceBtn" class="font-bold">나의 좋아요 목록</button>
+                    <div class="mx-2 font-bold">
+                        <button id="myLikePlaceBtn" >
+                            <span th:if="${member.id == @rq.member.id}"> 나의 좋아요 목록</span>
+                            <span th:if="${member.id != @rq.member.id}"> 좋아요 목록</span>
+                        </button>
+                        <span th:text="${totalElements}"></span>
                     </div>
                 </div>
                 <div class="flex" id="myLikedPlaceSelectBtn">
@@ -160,22 +167,23 @@
                     </div>
                 </div>
 
-                <div th:if="${!PlacePaging.isEmpty()}" class="flex justify-center mt-10">
+                <div th:if="${!PlacePaging.isEmpty()}" class="flex justify-center my-5">
                     <ul class="pagination justify-content-center flex">
-                        <li class="page-item" th:classappend="${!PlacePaging.hasPrevious()} ? 'disabled'">
+                        <li th:if="${PlacePaging.hasPrevious()}" class="page-item">
                             <a class="page-link m-1 btn  " href="javascript:void(0);"
                                th:data-page="${PlacePaging.number - 1}">
                                 <span>이전</span>
                             </a>
                         </li>
                         <li th:each="page : ${#numbers.sequence(0, PlacePaging.totalPages - 1)}"
-                            th:if="${page >= PlacePaging.number - 5 and page <= PlacePaging.number + 5}"
-                            th:classappend="${page == PlacePaging.number} ? 'active'"
-                            class="page-item">
-                            <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                            th:if="${page >= PlacePaging.number - 5 and page <= PlacePaging.number + 5}">
+                            <a th:disabled="${page == PlacePaging.number}"
+                               th:text="${page}"
+                               class="page-link m-1 btn btn-outline"
+                               href="javascript:void(0);"
                                th:data-page="${page}"></a>
                         </li>
-                        <li class="page-item" th:classappend="${!PlacePaging.hasNext()} ? 'disabled'">
+                        <li th:if="${PlacePaging.hasNext()}" class="page-item">
                             <a class="page-link m-1 btn " href="javascript:void(0);"
                                th:data-page="${PlacePaging.number + 1}">
                                 <span>다음</span>
@@ -183,6 +191,7 @@
                         </li>
                     </ul>
                 </div>
+
             </div>
 
             <div id="myLikedPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
