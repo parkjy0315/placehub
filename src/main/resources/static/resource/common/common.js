@@ -54,5 +54,4 @@ function getCurrentCoords() {
             lon = position.coords.longitude;
         });
     }
-    console.log(`${lat} ${lon}`);
 }

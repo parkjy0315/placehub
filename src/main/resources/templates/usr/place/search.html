@@ -271,13 +271,11 @@
             marker2.setPosition(latlng);
         });
 
-
         var lat = latitudeElement.value,
             lon = longitudeElement.value;
         var markerposition = new kakao.maps.LatLng(lat, lon),
             message = '<div style="padding:5px;">검색 위치</div>';
         displayMarker1(markerposition, message);
-
 
         kakao.maps.event.addListener(map, 'idle', function() {
             searchAddrFromCoords(map.getCenter(), displayCenterInfo);
@@ -292,12 +290,18 @@
         document.getElementById("positionSelect").onchange = function () {
             var selectedOption = this.value;
             if (selectedOption === "current") {
-                getCurrentCoords();
-                latitudeElement.value = lat;
-                longitudeElement.value = lon;
-                var markerposition = new kakao.maps.LatLng(lat, lon)
-                displayMarker(markerposition);
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var lat = position.coords.latitude,
+                            lon = position.coords.longitude;
+                        latitudeElement.value = lat;
+                        longitudeElement.value = lon;
+                        var markerposition = new kakao.maps.LatLng(lat, lon),
+                            message = '<div style="padding:5px;">현재 나의 위치</div>';
+                        displayMarker(markerposition, message);
 
+                    });
+                }
                 function displayMarker(markerposition) {
                     var marker = new kakao.maps.Marker({
                         map: map,
@@ -556,7 +560,6 @@
         }
 
 
-
         // 지도 위에 표시되고 있는 마커를 모두 제거합니다
 
 
@@ -620,8 +623,8 @@
             }
         }
 
-
     </script>
+
     <script th:inline="javascript">
         let placeArray = new Array();
         let placeInfo;
@@ -659,15 +662,15 @@
         }
 
         // 카카오 맵 관련
-        var mapContainer = document.getElementById('myPlaceMap'), // 지도를 표시할 div
-            mapOption = {
+        var mapContainer2 = document.getElementById('myPlaceMap'), // 지도를 표시할 div
+            mapOption2 = {
                 center: new kakao.maps.LatLng(placeArray[0].yPos, placeArray[0].xPos), // 지도의 중심좌표
                 // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
                 //   center: position[0].latlng, // 지도의 중심좌표
-                level: 4 // 지도의 확대 레벨
+                level: 5 // 지도의 확대 레벨
             };
 
-        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+        var map2 = new kakao.maps.Map(mapContainer2, mapOption2); // 지도를 생성합니다
 
         // 마커 이미지의 이미지 주소입니다
         var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
@@ -682,7 +685,7 @@
 
             // 마커를 생성합니다
             var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
+                map: map2, // 마커를 표시할 지도
                 position: positions[i].latlng, // 마커를 표시할 위치
                 title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
                 image: markerImage // 마커 이미지
@@ -696,7 +699,7 @@
 
             // 커스텀 오버레이를 생성합니다
             var customOverlay = new kakao.maps.CustomOverlay({
-                map: map,
+                map: map2,
                 position: positions[i].latlng,
                 content: content,
                 yAnchor: 1
@@ -711,8 +714,6 @@
         displayMarker1(markerposition, message);
 
     </script>
-
-
 </div>
 <script layout:fragment="script" type="text/javascript">
     const page_elements = document.getElementsByClassName("page-link");
