@@ -102,6 +102,8 @@ public class PlaceController {
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
+                model.addAttribute("latitude", 37.564989);
+                model.addAttribute("longitude", 126.9771);
                 // 다음과 같은 처리를 하면 url을 통한 접근 시 붕뜸
                 return rq.historyBack(validRs);
 
@@ -110,6 +112,8 @@ public class PlaceController {
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
+                model.addAttribute("latitude", 37.564989);
+                model.addAttribute("longitude", 126.9771);
                 return "usr/place/search";
 
             case "S-2": // 정상 좌표
@@ -125,6 +129,8 @@ public class PlaceController {
         placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
         model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
+        //model.addAttribute("")
+
 
         // 페이징 정보
         model.addAttribute("currentPage", page);
