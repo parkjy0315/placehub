@@ -188,13 +188,35 @@
     </div>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c2731d0cd855e5c9f82b8e58be1def4e&libraries=services"></script>
+    <script th:inline="javascript">
+        var level = /*[[${level}]]*/7;
+        let placeArray = new Array();
+        let placeInfo;
+        /*[# th:each="place : ${placeInfoList}"]*/
+        placeInfo = {
+            id: /*[[${place.place.id}]]*/null,
+            name: /*[[${place.place.placeName}]]*/null,
+            xPos: /*[[${place.place.point.x}]]*/null,
+            yPos: /*[[${place.place.point.y}]]*/null
+        };
+        placeArray.push(placeInfo);
+        /*[/]*/
+
+        console.log(placeArray);
+
+        var xPosAverageByPlace = /*[[${xPosAverageByPlace}]]*/null;
+        var yPosAverageByPlace = /*[[${yPosAverageByPlace}]]*/null;
+
+        console.log("x " + xPosAverageByPlace);
+        console.log("y " + yPosAverageByPlace);
+    </script>
 
     <script>
         var latitudeElement = document.getElementById('latitude');
         var longitudeElement = document.getElementById('longitude');
         var searchOption = document.getElementById('position2');
         var mapContainer = document.getElementById('searchMap'); // 카카오맵을 표시할 HTML 요소
-        var mapOptions = {center: new kakao.maps.LatLng(37.564989, 126.9771), level: 6};
+        var mapOptions = {center: new kakao.maps.LatLng(37.564989, 126.9771), level: level};
         var map = new kakao.maps.Map(mapContainer, mapOptions);
         var geocoder = new kakao.maps.services.Geocoder();
         var marker2 = new kakao.maps.Marker({position: map.getCenter()});
@@ -456,12 +478,6 @@
             };
         }
 
-        var marker4 = new kakao.maps.Marker({
-            map: map,
-            position: new kakao.maps.LatLng(33.451393, 126.570738)
-        });
-
-
         var markers = [];
 
         var infowindow5 = new kakao.maps.InfoWindow({zIndex: 1});
@@ -545,7 +561,6 @@
             infowindow5.open(map, marker5);
         }
 
-
         function searchLocation() {
             var latitude = document.getElementById("latitude").value;
             var longitude = document.getElementById("longitude").value;
@@ -566,27 +581,6 @@
     </script>
 
     <script th:inline="javascript">
-        let placeArray = new Array();
-        let placeInfo;
-        /*[# th:each="place : ${placeInfoList}"]*/
-        placeInfo = {
-            id: /*[[${place.place.id}]]*/null,
-            name: /*[[${place.place.placeName}]]*/null,
-            xPos: /*[[${place.place.point.x}]]*/null,
-            yPos: /*[[${place.place.point.y}]]*/null
-        };
-        placeArray.push(placeInfo);
-        /*[/]*/
-
-        console.log(placeArray);
-
-        var xPosAverageByPlace = /*[[${xPosAverageByPlace}]]*/null;
-        var yPosAverageByPlace = /*[[${yPosAverageByPlace}]]*/null;
-
-        console.log("x " + xPosAverageByPlace);
-        console.log("y " + yPosAverageByPlace);
-
-
         // --------카카오 맵 지도 생성--------------
         // 마커를 표시할 위치와 title 객체 배열입니다
         var positions = [];

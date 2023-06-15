@@ -40,6 +40,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/place")
 public class PlaceController {
+    private final static Long LIKE_COUNT_CRITERIA = 0L;
+
     private final PlaceService placeService;
     private final PlaceInfoService placeInfoService;
     private final BigCategoryService bigCategoryService;
@@ -63,7 +65,7 @@ public class PlaceController {
             Model model,
             @RequestParam(value = "longitude", required = false) Double longitude,
             @RequestParam(value = "latitude", required = false) Double latitude,
-            @RequestParam(defaultValue = "2000") Long distance,
+            @RequestParam(defaultValue = "1000") Long distance,
             @RequestParam(value = "bigCategoryId", required = false) Long bigCategoryId,
             @RequestParam(value = "midCategoryId", required = false) Long midCategoryId,
             @RequestParam(value = "smallCategoryId", required = false) Long smallCategoryId,
@@ -83,7 +85,7 @@ public class PlaceController {
         model.addAttribute("selectedBig", bigCategoryId);
         model.addAttribute("selectedMid", midCategoryId);
         model.addAttribute("selectedSmall", smallCategoryId);
-        // model.addAttribute("level", 5);
+        model.addAttribute("level", 9);
 
         // 페이징 정보
         Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
@@ -99,7 +101,7 @@ public class PlaceController {
         switch (validRs.getResultCode()) {
             case "F-1": // 좌표설정 오류
             case "F-2": // 좌표범위 오류
-                placePage = placeService.findAll(pageable);
+                placePage = placeService.findPlaceWithPositiveLikeCount(pageable, LIKE_COUNT_CRITERIA);
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
@@ -109,7 +111,7 @@ public class PlaceController {
                 return rq.historyBack(validRs);
 
             case "S-1": // 초기화면 요청
-                placePage = placeService.findAll(pageable);
+                placePage = placeService.findPlaceWithPositiveLikeCount(pageable, LIKE_COUNT_CRITERIA);
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
@@ -137,6 +139,7 @@ public class PlaceController {
                 Point point = Ut.point.toPoint(longitude, latitude);
                 List<Long> categoryIds = placeService.makeCategoryList(bigCategoryId, midCategoryId, smallCategoryId);
                 SearchCriteria searchCriteria = new SearchCriteria(point, distance, categoryIds);
+                model.addAttribute("level", 5);
 
                 placePage = placeService.findPlace(pageable, searchCriteria);
                 break;
