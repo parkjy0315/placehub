@@ -135,6 +135,7 @@ public class PostService {
         post = post.toBuilder()
                 .content(modifyingForm.getContent())
                 .visitedDate(modifyingForm.getVisitedDate())
+                .openToPublic(modifyingForm.getIsOpenToPublic().equals(openToPublic))
                 .build();
 
         RsData imgModifyingResult = imageService.createOrModifyImages(checkEmpty(modifyingForm), postId);

@@ -313,17 +313,16 @@
                         </div>
                     </div>
 
-                    <th:block th:if="${modifyingData == null}" class="card mb-5">
+                    <div class="card mb-5">
                         <div class="text-2xl font-bold mb-2">공개 여부</div>
                         <select name="isOpenToPublic" id="isOpenToPublic" class="select select-bordered w-full max-w-xs">
-                            <option>공개</option>
-                            <option>비공개</option>
+                            <option th:selected="${modifyingData == null || (modifyingData != null && modifyingData.getData().isOpenToPublic())}">공개</option>
+                            <option th:selected="${modifyingData != null && !modifyingData.getData().isOpenToPublic()}">비공개</option>
                         </select>
-                    </th:block>
+                    </div>
                 </div>
 
                 <div class="ml-36">
-
                     <div>
                         <div class="text-2xl font-bold mb-2">내용</div>
                         <textarea name="content" id='content' placeholder="공간에서의 경험과 감상을 작성해보세요"
