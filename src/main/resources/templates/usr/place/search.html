@@ -290,12 +290,18 @@
         document.getElementById("positionSelect").onchange = function () {
             var selectedOption = this.value;
             if (selectedOption === "current") {
-                getCurrentCoords();
-                latitudeElement.value = lat;
-                longitudeElement.value = lon;
-                var markerposition = new kakao.maps.LatLng(lat, lon)
-                displayMarker(markerposition);
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var lat = position.coords.latitude,
+                            lon = position.coords.longitude;
+                        latitudeElement.value = lat;
+                        longitudeElement.value = lon;
+                        var markerposition = new kakao.maps.LatLng(lat, lon),
+                            message = '<div style="padding:5px;">현재 나의 위치</div>';
+                        displayMarker(markerposition, message);
 
+                    });
+                }
                 function displayMarker(markerposition) {
                     var marker = new kakao.maps.Marker({
                         map: map,
