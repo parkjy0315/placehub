@@ -97,12 +97,19 @@
 
             <div class="flex justify-between mt-5">
                 <div class="flex">
-                    <div class="mx-2">
-                        <button id="myPlaceBtn" class="font-bold">나의 공간 아카이빙</button>
+                    <div class="mx-2 font-bold">
+                        <button id="myPlaceBtn">
+                            <span th:if="${member.id == @rq.member.id}"> 나의 공간 아카이빙</span>
+                            <span th:if="${member.id != @rq.member.id}"> 공간 아카이빙</span>
+                        </button>
+                        <span th:text="${totalElements}"></span>
                     </div>
                     <div class="divider divider-horizontal !mx-1"></div>
                     <div class="mx-2">
-                        <a th:href="@{|/member/page/like-list/${member.id}|}" id="myLikePlaceBtn">나의 좋아요 목록</a>
+                        <a th:href="@{|/member/page/like-list/${member.id}|}" id="myLikePlaceBtn">
+                            <span th:if="${member.id == @rq.member.id}"> 나의 좋아요 목록</span>
+                            <span th:if="${member.id != @rq.member.id}"> 좋아요 목록</span>
+                        </a>
                     </div>
                 </div>
                 <div class="flex" id="myPlaceSelectBtn">

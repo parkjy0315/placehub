@@ -126,6 +126,7 @@ public class MemberController {
         }
 
         List<Post> postList = postPages.getContent();
+        long totalElements = postPages.getTotalElements();
 
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postList) {
@@ -150,6 +151,7 @@ public class MemberController {
         model.addAttribute("visitedPlaces", visitedPlaces);
         model.addAttribute("xPosAverageByVisitedPlaces", xPosAverageByVisitedPlaces);
         model.addAttribute("yPosAverageByVisitedPlaces", yPosAverageByVisitedPlaces);
+        model.addAttribute("totalElements", totalElements);
 
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
@@ -179,6 +181,8 @@ public class MemberController {
 
         Page<Place> likedPlacesPages = placeService.findByPlaceLikeList_MemberId(id, pageablePlace);
         List<Place> likedPlaces = likedPlacesPages.getContent();
+        long totalElements = likedPlacesPages.getTotalElements();
+
         List<PlaceInfo> placeInfoList = placeInfoService.getCategoryNamesList(likedPlaces);
 
         double xPosAverageByLikedPlaces = likedPlaces.stream()
@@ -196,6 +200,7 @@ public class MemberController {
         model.addAttribute("placeInfoList", placeInfoList);
         model.addAttribute("xPosAverageByLikedPlaces", xPosAverageByLikedPlaces);
         model.addAttribute("yPosAverageByLikedPlaces", yPosAverageByLikedPlaces);
+        model.addAttribute("totalElements", totalElements);
 
 
         // 친구
