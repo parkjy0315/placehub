@@ -117,7 +117,14 @@ public class MemberController {
         Sort sortPost = Sort.by(Sort.Direction.DESC, "visitedDate");
         Pageable pageablePost = PageRequest.of(page, size, sortPost);
 
-        Page<Post> postPages =  this.postService.findByMember(id, pageablePost);
+
+        Page<Post> postPages;
+        if(id == rq.getMember().getId()){
+            postPages =  this.postService.findByMember(id, pageablePost);
+        } else{
+            postPages =  this.postService.findByMemberAndOpenToPublic(id, pageablePost);
+        }
+
         List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();

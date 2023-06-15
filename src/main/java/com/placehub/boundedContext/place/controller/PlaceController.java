@@ -194,7 +194,7 @@ public class PlaceController {
         Sort sort = Sort.by(Sort.Direction.DESC, "visitedDate");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> postPage = postService.findByPlace(id, pageable);
+        Page<Post> postPage = postService.findByPlaceAndOpenToPublicIsTrue(id, pageable);
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postPage) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
