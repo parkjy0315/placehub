@@ -110,21 +110,6 @@ public class PlaceController {
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
-
-                // 좌표정보
-                double xPosAverageByPlace = placeInfoList.stream()
-                        .mapToDouble(place -> place.getPlace().getPoint().getX())
-                        .average()
-                        .orElse(0);
-
-                double yPosAverageByPlace = placeInfoList.stream()
-                        .mapToDouble(place -> place.getPlace().getPoint().getY())
-                        .average()
-                        .orElse(0);
-
-                model.addAttribute("xPosAverageByPlace", xPosAverageByPlace);
-                model.addAttribute("yPosAverageByPlace", yPosAverageByPlace);
-
                 return "usr/place/search";
 
             case "S-2": // 정상 좌표
@@ -141,21 +126,6 @@ public class PlaceController {
         model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
 
-        // 좌표정보
-        double xPosAverageByPlace = placeInfoList.stream()
-                .mapToDouble(place -> place.getPlace().getPoint().getX())
-                .average()
-                .orElse(0);
-
-        double yPosAverageByPlace = placeInfoList.stream()
-                .mapToDouble(place -> place.getPlace().getPoint().getY())
-                .average()
-                .orElse(0);
-
-        model.addAttribute("xPosAverageByPlace", xPosAverageByPlace);
-        model.addAttribute("yPosAverageByPlace", yPosAverageByPlace);
-
-
         // 페이징 정보
         model.addAttribute("currentPage", page);
         model.addAttribute("pageSize", size);
@@ -166,9 +136,7 @@ public class PlaceController {
     }
 
     @GetMapping("/details/{placeId}")
-    public String details(Model model, @PathVariable("placeId") Long id,
-                          @RequestParam(defaultValue = "0") int page,
-                          @RequestParam(defaultValue = "7") int size) {
+    public String details(Model model, @PathVariable("placeId") Long id) {
         Place place = placeService.getPlace(id);
 
         if (place == null) {
@@ -185,18 +153,12 @@ public class PlaceController {
             model.addAttribute("placeLike", placeLike);
         }
 
-
-        // 아카이빙 포스트 정보
-        Sort sort = Sort.by(Sort.Direction.DESC, "visitedDate");
-        Pageable pageable = PageRequest.of(page, size, sort);
-
-        Page<Post> postPage = postService.findByPlace(id, pageable);
+        List<Post> postList = postService.findByPlace(id);
         List<Viewer> postViewerList = new ArrayList<>();
-        for (Post post : postPage) {
+        for (Post post : postList) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
-        model.addAttribute("paging", postPage);
         model.addAttribute("postList", postViewerList);
 
         return "usr/place/details";

@@ -23,6 +23,7 @@
                            style="width: 800px">
                             <div class="card-body">
                                 <div class="flex justify-between gap-5">
+
                                         <div class="flex flex-col justify-between items-between gap-2">
                                             <div class="flex gap-3 mt-2">
                                                 <div th:text="${post.placeName}" class="text-2xl font-bold "></div>
@@ -49,7 +50,7 @@
                                             </div>
                                         </div>
 
-                                    <div th:unless="${post.mainImage == ''}" class="flex justify-center items-center"
+                                    <div th:unless="${post.mainImage == ''}" class="flex jusify-center items-center"
                                          style="width: 200px; height: 200px;">
                                         <img class="rounded-lg object-contain" th:src="${post.mainImage}" alt="Image"
                                              style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">

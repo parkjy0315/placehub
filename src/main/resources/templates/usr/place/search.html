@@ -59,6 +59,54 @@
         .info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
         .info .link {color: #5085BB;}
 
+
+        .customoverlay {
+            position: relative;
+            bottom: 50px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            border-bottom: 2px solid #ddd;
+            float: left;
+        }
+
+        .customoverlay:nth-of-type(n) {
+            border: 0;
+            box-shadow: 0px 1px 2px #888;
+        }
+
+        .customoverlay a {
+            display: block;
+            text-decoration: none;
+            color: #000;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            overflow: hidden;
+            background: #d95050;
+            background: #d95050 url(https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/arrow_white.png) no-repeat right 14px center;
+        }
+
+        .customoverlay .title {
+            display: block;
+            text-align: center;
+            background: #fff;
+            margin-right: 35px;
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .customoverlay:after {
+            content: '';
+            position: absolute;
+            margin-left: -12px;
+            left: 50%;
+            bottom: -12px;
+            width: 22px;
+            height: 12px;
+            background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')
+        }
     </style>
 </head>
 
@@ -66,20 +114,16 @@
 <div layout:fragment="content">
     <div class="hero-content flex-col mb-10">
         <div class=" w-full px-4" style="width:1000px;">
-            <div class="flex flex-col items-center my-10">
+            <div class="flex flex-col items-center my-5">
                 <h1 class="text-4xl my-2 font-bold">공간 큐레이션</h1>
             </div>
 
-            <div>
-                <h2 class="text-2xl font-bold">검색하기</h2>
-                <div class="divider !my-2"></div>
-            </div>
             <div class="bg-gray-30">
                 <div>
                     <div>
                         <div class="flex gap-4">
                             <div class="map_wrap" style="width: 100%; height: 400px">
-                                <div id="searchMap" class="rounded-lg border border-gray-300" style="width: 100%; height: 400px"></div>
+                                <div id="searchMap" class="border border-gray-400" style="width: 100%; height: 400px"></div>
                                 <div class="hAddr">
                                     <span class="title">지도중심기준 행정동 주소정보</span>
                                     <span id="centerAddr"></span>
@@ -170,85 +214,87 @@
                     </div>
                 </div>
             </div>
-
-            <div class="mt-10 pt-10">
-                <h2 class="text-2xl font-bold">큐레이션 목록</h2>
-                <div class="divider !my-2"></div>
-            </div>
-            <div th:if="${#lists.size(placeInfoList) == 0}">
-                <div class="flex flex-col justify-center items-center text-lg my-10">
-                    <span>큐레이션 목록이 없습니다.</span>
-                    <span>위치정보를 확인해주세요.</span>
+            <div class="container py-8">
+                <div class="grid grid-cols-3 gap-5">
+                    <div th:each="placeInfo, loop : ${placeInfoList}">
+                        <a th:href="@{|/place/details/${placeInfo.place.id}|}"
+                           class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
+                            <!--                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">-->
+                            <div class="card-body">
+                                <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
+                                <div class="flex justify-between">
+                                    <div class="flex flex-col gap-2">
+                                        <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.bigCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.midCategoryName}"></div>
+                                        </div>
+                                        <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
+                                            <div class="badge badge-ghost badge-md"
+                                                 th:text="${placeInfo.smallCategoryName}"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div>
+                                            <i class="fa-regular fa-heart text-red-400"></i>
+                                            <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
-         <div th:unless="${#lists.size(placeInfoList) == 0}" >
-             <div id="myPlaceMap" class="rounded-lg border border-gray-300 my-3" style="width:100%;height:500px;"></div>
-             <div class="container pb-8 mt-6">
-                 <div class="grid grid-cols-3 gap-5">
-                     <div th:each="placeInfo, loop : ${placeInfoList}">
-                         <a th:href="@{|/place/details/${placeInfo.place.id}|}"
-                            class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
-                             <!--                           onclick="window.open(this.href, '_blank', 'width=600, height=700'); return false;">-->
-                             <div class="card-body">
-                                 <div th:text="${placeInfo.place.placeName}" class="text-lg font-bold"></div>
-                                 <div class="flex justify-between">
-                                     <div class="flex flex-col gap-2">
-                                         <div th:if="${!#strings.isEmpty(placeInfo.bigCategoryName)}">
-                                             <div class="badge badge-ghost badge-md"
-                                                  th:text="${placeInfo.bigCategoryName}"></div>
-                                         </div>
-                                         <div th:if="${!#strings.isEmpty(placeInfo.midCategoryName)}">
-                                             <div class="badge badge-ghost badge-md"
-                                                  th:text="${placeInfo.midCategoryName}"></div>
-                                         </div>
-                                         <div th:if="${!#strings.isEmpty(placeInfo.smallCategoryName)}">
-                                             <div class="badge badge-ghost badge-md"
-                                                  th:text="${placeInfo.smallCategoryName}"></div>
-                                         </div>
-                                     </div>
-                                     <div>
-                                         <div>
-                                             <i class="fa-regular fa-heart text-red-400"></i>
-                                             <span th:text="${placeInfo.place.likeCount != null ? placeInfo.place.likeCount : 0}"></span>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </a>
-                     </div>
-                 </div>
-             </div>
-             <div th:if="${!paging.isEmpty()}" class="flex justify-center mt-10">
-                 <ul class="pagination justify-content-center flex">
-                     <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
-                         <a class="page-link m-1 btn  " href="javascript:void(0);"
-                            th:data-page="${paging.number - 1}">
-                             <span>이전</span>
-                         </a>
-                     </li>
-                     <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
-                         th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
-                         th:classappend="${page == paging.number} ? 'active'"
-                         class="page-item">
-                         <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
-                            th:data-page="${page}"></a>
-                     </li>
-                     <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
-                         <a class="page-link m-1 btn " href="javascript:void(0);"
-                            th:data-page="${paging.number + 1}">
-                             <span>다음</span>
-                         </a>
-                     </li>
-                 </ul>
-             </div>
-         </div>
-
-
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center">
+                <ul class="pagination justify-content-center flex">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link m-1 btn  " href="javascript:void(0);"
+                           th:data-page="${paging.number - 1}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                           th:data-page="${page}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <a class="page-link m-1 btn " href="javascript:void(0);"
+                           th:data-page="${paging.number + 1}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c2731d0cd855e5c9f82b8e58be1def4e&libraries=services"></script>
+    <script th:inline="javascript">
+        let placeArray = new Array();
+        let placeInfo;
+        /*[# th:each="place : ${visitedPlaces}"]*/
+        placeInfo = {
+            id: /*[[${place.id}]]*/null,
+            name: /*[[${place.placeName}]]*/null,
+            xPos: /*[[${place.point.x}]]*/null,
+            yPos: /*[[${place.point.y}]]*/null
+        };
+        placeArray.push(placeInfo);
+        /*[/]*/
 
+        var xPosAverage = /*[[${xPosAverage}]]*/null;
+        var yPosAverage = /*[[${yPosAverage}]]*/null;
+
+        console.log(placeArray);
+
+    </script>
     <script>
         var latitudeElement = document.getElementById('latitude');
         var longitudeElement = document.getElementById('longitude');
@@ -272,12 +318,24 @@
         });
 
 
-        var lat = latitudeElement.value,
-            lon = longitudeElement.value;
-        var markerposition = new kakao.maps.LatLng(lat, lon),
-            message = '<div style="padding:5px;">검색 위치</div>';
-        displayMarker1(markerposition, message);
 
+        // 현재 위치를 불러와 전역 변수에 저장 lat, lon
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                var lat = position.coords.latitude,
+                    lon = position.coords.longitude;
+                latitudeElement.value = lat;
+                longitudeElement.value = lon;
+                var markerposition = new kakao.maps.LatLng(lat, lon),
+                    message = '<div style="padding:5px;">현재 나의 위치</div>';
+                displayMarker1(markerposition, message);
+
+            });
+        } else {
+            var markerposition = new kakao.maps.LatLng(33.450701, 126.570667),
+                message = 'geolocation을 사용할수 없어요..';
+            displayMarker1(markerposition, message);
+        }
 
         kakao.maps.event.addListener(map, 'idle', function() {
             searchAddrFromCoords(map.getCenter(), displayCenterInfo);
@@ -619,100 +677,7 @@
                 return false;
             }
         }
-
-
     </script>
-    <script th:inline="javascript">
-        let placeArray = new Array();
-        let placeInfo;
-        /*[# th:each="place : ${placeInfoList}"]*/
-        placeInfo = {
-            id: /*[[${place.place.id}]]*/null,
-            name: /*[[${place.place.placeName}]]*/null,
-            xPos: /*[[${place.place.point.x}]]*/null,
-            yPos: /*[[${place.place.point.y}]]*/null
-        };
-        placeArray.push(placeInfo);
-        /*[/]*/
-
-        console.log(placeArray);
-
-        var xPosAverageByPlace = /*[[${xPosAverageByPlace}]]*/null;
-        var yPosAverageByPlace = /*[[${yPosAverageByPlace}]]*/null;
-
-        console.log("x " +  xPosAverageByPlace);
-        console.log("y " +  yPosAverageByPlace);
-
-
-        // --------카카오 맵 지도 생성--------------
-        // 마커를 표시할 위치와 title 객체 배열입니다
-        var positions = [];
-
-        for (var i = 0; i < placeArray.length; i++) {
-            var place = placeArray[i];
-            var position = {
-                id: place.id,
-                title: place.name,
-                latlng: new kakao.maps.LatLng(place.yPos, place.xPos)
-            };
-            positions.push(position);
-        }
-
-        // 카카오 맵 관련
-        var mapContainer = document.getElementById('myPlaceMap'), // 지도를 표시할 div
-            mapOption = {
-                center: new kakao.maps.LatLng(placeArray[0].yPos, placeArray[0].xPos), // 지도의 중심좌표
-                // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
-                //   center: position[0].latlng, // 지도의 중심좌표
-                level: 4 // 지도의 확대 레벨
-            };
-
-        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-        // 마커 이미지의 이미지 주소입니다
-        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
-
-        for (var i = 0; i < positions.length; i++) {
-
-            // 마커 이미지의 이미지 크기 입니다
-            var imageSize = new kakao.maps.Size(24, 35);
-
-            // 마커 이미지를 생성합니다
-            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
-
-            // 마커를 생성합니다
-            var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
-                position: positions[i].latlng, // 마커를 표시할 위치
-                title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-                image: markerImage // 마커 이미지
-            });
-
-            var content = '<div class="customoverlay">' +
-                '  <a href="/place/details/' + positions[i].id + '" target="_blank">' +
-                '    <span class="title">' + positions[i].title + '</span>' +
-                '  </a>' +
-                '</div>';
-
-            // 커스텀 오버레이를 생성합니다
-            var customOverlay = new kakao.maps.CustomOverlay({
-                map: map,
-                position: positions[i].latlng,
-                content: content,
-                yAnchor: 1
-            });
-
-        }
-
-        var lat = latitudeElement.value,
-            lon = longitudeElement.value;
-        var markerposition = new kakao.maps.LatLng(lat, lon),
-            message = '<div style="padding:5px;">검색 위치</div>';
-        displayMarker1(markerposition, message);
-
-    </script>
-
-
 </div>
 <script layout:fragment="script" type="text/javascript">
     const page_elements = document.getElementsByClassName("page-link");

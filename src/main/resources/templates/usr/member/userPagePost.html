@@ -212,8 +212,8 @@
         placeArray.push(placeInfo);
         /*[/]*/
 
-        var xPosAverageByVisitedPlaces = /*[[${xPosAverageByVisitedPlaces}]]*/null;
-        var yPosAverageByVisitedPlaces = /*[[${yPosAverageByVisitedPlaces}]]*/null;
+        var xPosAverageByvisitedPlaces = /*[[${xPosAverageByvisitedPlaces}]]*/null;
+        var yPosAverageByvisitedPlaces = /*[[${yPosAverageByvisitedPlaces}]]*/null;
 
         console.log(placeArray);
 
@@ -284,7 +284,7 @@
             // 카카오 맵 관련
             var mapContainer = document.getElementById('myPlaceMap'), // 지도를 표시할 div
                 mapOption = {
-                    center: new kakao.maps.LatLng(yPosAverageByVisitedPlaces, xPosAverageByVisitedPlaces), // 지도의 중심좌표
+                    center: new kakao.maps.LatLng(yPosAverageByvisitedPlaces, xPosAverageByvisitedPlaces), // 지도의 중심좌표
                     // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
                     //   center: position[0].latlng, // 지도의 중심좌표
                     level: 9 // 지도의 확대 레벨
