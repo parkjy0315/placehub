@@ -166,7 +166,9 @@ public class PlaceController {
     }
 
     @GetMapping("/details/{placeId}")
-    public String details(Model model, @PathVariable("placeId") Long id) {
+    public String details(Model model, @PathVariable("placeId") Long id,
+                          @RequestParam(defaultValue = "0") int page,
+                          @RequestParam(defaultValue = "7") int size) {
         Place place = placeService.getPlace(id);
 
         if (place == null) {
@@ -183,12 +185,18 @@ public class PlaceController {
             model.addAttribute("placeLike", placeLike);
         }
 
-        List<Post> postList = postService.findByPlace(id);
+
+        // 아카이빙 포스트 정보
+        Sort sort = Sort.by(Sort.Direction.DESC, "visitedDate");
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Post> postPage = postService.findByPlace(id, pageable);
         List<Viewer> postViewerList = new ArrayList<>();
-        for (Post post : postList) {
+        for (Post post : postPage) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());
         }
 
+        model.addAttribute("paging", postPage);
         model.addAttribute("postList", postViewerList);
 
         return "usr/place/details";
