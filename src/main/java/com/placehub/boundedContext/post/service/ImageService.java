@@ -11,14 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -208,28 +208,6 @@ public class ImageService {
         
         return true;
     }
-
-//    private void distinguishImages(List<String> inputFiles, Set<Long> sentImgs
-//                                    , List<MultipartFile> readyToSave, Set<Long> idSetFromDb) {
-//        for (MultipartFile multipartFile : inputFiles) {
-//            String fileName = multipartFile.getOriginalFilename();
-//
-//            if (!validateFileNameFromClient(fileName)) {
-//                readyToSave.add(multipartFile);
-//                continue;
-//            }
-//
-//            String beforeDot = fileName.split("\\.")[0];
-//            long imgNum = Long.parseLong(beforeDot.split("_")[1]);
-//
-//            if (!idSetFromDb.contains(imgNum)) {
-//                readyToSave.add(multipartFile);
-//                continue;
-//            }
-//
-//            sentImgs.add(imgNum);
-//        }
-//    }
 
     @Transactional
     public RsData deleteAllInPost(long postId) {

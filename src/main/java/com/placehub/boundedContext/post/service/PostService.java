@@ -11,7 +11,6 @@ import com.placehub.boundedContext.place.service.PlaceService;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
-import com.placehub.boundedContext.member.repository.MemberRepository;
 import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +23,16 @@ import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class PostService {
     @Autowired
     private PostRepository postRepository;
-    @Autowired
-    private MemberRepository memberRepository;
     @Autowired
     private PlaceRepository placeRepository;
     @Autowired
@@ -220,9 +221,6 @@ public class PostService {
 
     public Page<Post> findAll(Pageable pageable) {
         return postRepository.findAll(pageable);
-    }
-    public List<Post> findByMember(Long memberId) {
-        return postRepository.findByMember(memberId);
     }
 
     public Page<Post> findByMember(Long id, Pageable pageable) {
