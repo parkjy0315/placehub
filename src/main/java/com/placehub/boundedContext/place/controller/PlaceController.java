@@ -177,7 +177,7 @@ public class PlaceController {
     @GetMapping("/details/{placeId}")
     public String details(Model model, @PathVariable("placeId") Long id,
                           @RequestParam(defaultValue = "0") int page,
-                          @RequestParam(defaultValue = "7") int size) {
+                          @RequestParam(defaultValue = "5") int size) {
         Place place = placeService.getPlace(id);
 
         if (place == null) {
@@ -207,6 +207,12 @@ public class PlaceController {
 
         model.addAttribute("paging", postPage);
         model.addAttribute("postList", postViewerList);
+
+        // 페이징 정보
+        model.addAttribute("currentPage", page);
+        model.addAttribute("pageSize", size);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("totalElements", postPage.getTotalElements());
 
         return "usr/place/details";
     }

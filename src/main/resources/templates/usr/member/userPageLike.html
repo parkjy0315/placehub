@@ -167,22 +167,23 @@
                     </div>
                 </div>
 
-                <div th:if="${!PlacePaging.isEmpty()}" class="flex justify-center mt-10">
+                <div th:if="${!PlacePaging.isEmpty()}" class="flex justify-center my-5">
                     <ul class="pagination justify-content-center flex">
-                        <li class="page-item" th:classappend="${!PlacePaging.hasPrevious()} ? 'disabled'">
+                        <li th:if="${PlacePaging.hasPrevious()}" class="page-item">
                             <a class="page-link m-1 btn  " href="javascript:void(0);"
                                th:data-page="${PlacePaging.number - 1}">
                                 <span>이전</span>
                             </a>
                         </li>
                         <li th:each="page : ${#numbers.sequence(0, PlacePaging.totalPages - 1)}"
-                            th:if="${page >= PlacePaging.number - 5 and page <= PlacePaging.number + 5}"
-                            th:classappend="${page == PlacePaging.number} ? 'active'"
-                            class="page-item">
-                            <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                            th:if="${page >= PlacePaging.number - 5 and page <= PlacePaging.number + 5}">
+                            <a th:disabled="${page == PlacePaging.number}"
+                               th:text="${page}"
+                               class="page-link m-1 btn btn-outline"
+                               href="javascript:void(0);"
                                th:data-page="${page}"></a>
                         </li>
-                        <li class="page-item" th:classappend="${!PlacePaging.hasNext()} ? 'disabled'">
+                        <li th:if="${PlacePaging.hasNext()}" class="page-item">
                             <a class="page-link m-1 btn " href="javascript:void(0);"
                                th:data-page="${PlacePaging.number + 1}">
                                 <span>다음</span>
@@ -190,6 +191,7 @@
                         </li>
                     </ul>
                 </div>
+
             </div>
 
             <div id="myLikedPlaceMap" class="hidden" style="width:100%;height:500px;"></div>

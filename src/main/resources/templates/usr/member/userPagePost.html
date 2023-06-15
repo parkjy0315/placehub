@@ -176,22 +176,23 @@
                     </ul>
                 </ol>
 
-                <div th:if="${!postPaging.isEmpty()}" class="flex justify-center">
+                <div th:if="${!postPaging.isEmpty()}" class="flex justify-center my-5">
                     <ul class="pagination justify-content-center flex">
-                        <li class="page-item" th:classappend="${!postPaging.hasPrevious()} ? 'disabled'">
+                        <li th:if="${postPaging.hasPrevious()}" class="page-item">
                             <a class="page-link m-1 btn  " href="javascript:void(0);"
                                th:data-page="${postPaging.number - 1}">
                                 <span>이전</span>
                             </a>
                         </li>
                         <li th:each="page : ${#numbers.sequence(0, postPaging.totalPages - 1)}"
-                            th:if="${page >= postPaging.number - 5 and page <= postPaging.number + 5}"
-                            th:classappend="${page == postPaging.number} ? 'active'"
-                            class="page-item">
-                            <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                            th:if="${page >= postPaging.number - 5 and page <= postPaging.number + 5}">
+                            <a th:disabled="${page == postPaging.number}"
+                               th:text="${page}"
+                               class="page-link m-1 btn btn-outline"
+                               href="javascript:void(0);"
                                th:data-page="${page}"></a>
                         </li>
-                        <li class="page-item" th:classappend="${!postPaging.hasNext()} ? 'disabled'">
+                        <li th:if="${postPaging.hasNext()}" class="page-item">
                             <a class="page-link m-1 btn " href="javascript:void(0);"
                                th:data-page="${postPaging.number + 1}">
                                 <span>다음</span>
@@ -199,6 +200,8 @@
                         </li>
                     </ul>
                 </div>
+
+
             </div>
 
             <div id="myPlaceMap" class="hidden" style="width:100%;height:500px;"></div>
