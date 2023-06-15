@@ -13,6 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAll(Pageable pageable);
     Optional<List<Post>> findPostsByPlace(long placeId);
     Page<Post> findByMember(Long id, Pageable pageable);
-    List<Post> findByPlace(Long placeId);
+    Page<Post> findByPlace(Long placeId, Pageable pageable);
     Optional<Post> findFirstByOrderByIdDesc();
 }

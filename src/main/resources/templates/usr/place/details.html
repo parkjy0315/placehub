@@ -126,7 +126,7 @@
             </div>
         </div>
 
-        <div class="flex flex-col gap-5 w-2xl mt-5 mb-10 p-4">
+        <div class="flex flex-col w-2xl mt-5 mb-10 p-4">
             <div>
                 <div class="text-lg font-bold">등록된 아카이빙</div>
                 <div class="divider !my-2"></div>
@@ -137,30 +137,75 @@
 
             <div th:if="${#lists.size(postList)} > 0" class="flex flex-col gap-3 ">
                 <a th:each="post, loop : ${postList}">
+                    <form th:action method="GET" id="postForm">
+                        <input type="hidden" id="page" name="page" th:value="${paging.number}">
                     <a th:href="@{|/post/view/${post.postId}|}"
                        class="card flex-shrink-0 w-full shadow-2xl bg-base-100">
                         <div class="card-body">
-                            <div class="flex items-center gap-3">
-                                <div th:text="${post.getUsername()}" class="text-lg font-bold"></div>
-                                <div class="flex gap-1">
-                                    <i class="fa-regular fa-clock origin-center"></i>
-                                    <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"
-                                    ></span>
+                            <div class="flex justify-between gap-5">
+                                <div class="flex flex-col gap-2">
+                                    <div class="flex flex-col gap-3">
+                                        <div th:text="${post.getUsername()}" class="text-lg font-bold"></div>
+                                        <div class="flex gap-1">
+                                            <i class="fa-regular fa-clock origin-center"></i>
+                                            <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"
+                                            ></span>
+                                        </div>
+                                    </div>
+                                    <div class="mt-5">
+                                    <span th:text="${#strings.length(post.content) > 150 ?
+                                    #strings.substring(post.content, 0, 150) + '...' : post.content}"
+                                          class=" text-sm text-gray-400"></span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                            <span th:text="${#strings.length(post.content) > 150 ?
-                            #strings.substring(post.content, 0, 150) + '...' : post.content}"
-                                  class=" text-sm text-gray-400"></span>
+                                <div th:unless="${post.mainImage == ''}" class="flex justify-center items-center"
+                                     style="width: 200px; height: 200px;">
+                                    <img class="rounded-lg object-contain" th:src="${post.mainImage}" alt="Image"
+                                         style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
+                                </div>
                             </div>
                         </div>
                     </a>
+                    </form>
                 </a>
             </div>
+
+            <div th:if="${!paging.isEmpty()}" class="flex justify-center mt-10">
+                <ul class="pagination justify-content-center flex">
+                    <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <a class="page-link m-1 btn  " href="javascript:void(0);"
+                           th:data-page="${paging.number - 1}">
+                            <span>이전</span>
+                        </a>
+                    </li>
+                    <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                        th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                        th:classappend="${page == paging.number} ? 'active'"
+                        class="page-item">
+                        <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                           th:data-page="${page}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <a class="page-link m-1 btn " href="javascript:void(0);"
+                           th:data-page="${paging.number + 1}">
+                            <span>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 
-
+    <script layout:fragment="script" type="text/javascript">
+        const page_elements = document.getElementsByClassName("page-link");
+        Array.from(page_elements).forEach(function (element) {
+            element.addEventListener('click', function () {
+                document.getElementById('page').value = this.dataset.page;
+                document.getElementById('postForm').submit();
+            });
+        });
+    </script>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2652c9851bbcfcd7c014b2339462c149"></script>
     <script>
