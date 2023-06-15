@@ -125,7 +125,6 @@
                     <span>위치정보를 확인해주세요.</span>
                 </div>
             </div>
-
             <div th:unless="${#lists.size(placeInfoList) == 0}">
                 <div th:if="${!paging.isEmpty()}" class="flex justify-center my-5">
                     <ul class="pagination justify-content-center flex">
@@ -227,8 +226,6 @@
         var markers = [];
 
         marker2.setMap(map);
-
-
         kakao.maps.event.addListener(map, 'click', function (mouseEvent) {
             var latlng = mouseEvent.latLng;
             kakao.maps.event.addListener(marker2, 'click', function () {
@@ -580,7 +577,7 @@
             searchForm.submit();
         }
 
-        function pageSubmit() {
+      function pageSubmit() {
             document.getElementById('searchForm').submit();
         }
 

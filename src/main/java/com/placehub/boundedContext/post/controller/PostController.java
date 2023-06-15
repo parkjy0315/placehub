@@ -69,7 +69,7 @@ public class PostController {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> postPages =  this.postService.findAll(pageable);
+        Page<Post> postPages =  this.postService.findByOpenToPublicTrue(pageable);
         List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();
@@ -97,6 +97,14 @@ public class PostController {
 
         if (response.isFail()) {
             throw new RuntimeException("존재하지 않는 포스팅입니다");
+        }
+
+        // 비공개 게시물
+        if(!response.getData().isOpenToPublic() && rq.getMember() == null){
+            return "usr/post/private";
+        }
+        if (!response.getData().isOpenToPublic() && rq.getMember().getId() != response.getData().getUserId()){
+            return "usr/post/private";
         }
 
         List<Comment> comments = commentService.findNotDeleted(postId);

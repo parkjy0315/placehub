@@ -117,6 +117,7 @@ public class PlaceController {
                 model.addAttribute("placeInfoList", placeInfoList);
                 model.addAttribute("latitude", 37.564989);
                 model.addAttribute("longitude", 126.9771);
+                // model.addAttribute("level", 3);
 
                 // 좌표정보
                 double xPosAverageByPlace = placeInfoList.stream()
@@ -198,7 +199,7 @@ public class PlaceController {
         Sort sort = Sort.by(Sort.Direction.DESC, "visitedDate");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> postPage = postService.findByPlace(id, pageable);
+        Page<Post> postPage = postService.findByPlaceAndOpenToPublicIsTrue(id, pageable);
         List<Viewer> postViewerList = new ArrayList<>();
         for (Post post : postPage) {
             postViewerList.add(postService.showSinglePost(post.getId()).getData());

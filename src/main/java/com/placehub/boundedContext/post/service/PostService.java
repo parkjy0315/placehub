@@ -135,6 +135,7 @@ public class PostService {
         post = post.toBuilder()
                 .content(modifyingForm.getContent())
                 .visitedDate(modifyingForm.getVisitedDate())
+                .openToPublic(modifyingForm.getIsOpenToPublic().equals(openToPublic))
                 .build();
 
         RsData imgModifyingResult = imageService.createOrModifyImages(checkEmpty(modifyingForm), postId);
@@ -223,12 +224,24 @@ public class PostService {
         return postRepository.findAll(pageable);
     }
 
+    public Page<Post> findByOpenToPublicTrue(Pageable pageable) {
+        return postRepository.findByOpenToPublicTrue(pageable);
+    }
+
     public Page<Post> findByMember(Long id, Pageable pageable) {
         return postRepository.findByMember(id, pageable);
     }
 
+    public Page<Post> findByMemberAndOpenToPublic(Long id, Pageable pageable) {
+        return postRepository.findByMemberAndOpenToPublicIsTrue(id, pageable);
+    }
+
     public Page<Post> findByPlace(Long placeId, Pageable pageable) {
         return postRepository.findByPlace(placeId, pageable);
+    }
+
+    public Page<Post> findByPlaceAndOpenToPublicIsTrue(Long placeId, Pageable pageable) {
+        return postRepository.findByPlaceAndOpenToPublicIsTrue(placeId, pageable);
     }
 
     public Optional<Post> findById(Long id) {

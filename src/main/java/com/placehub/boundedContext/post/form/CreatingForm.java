@@ -7,6 +7,5 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 public class CreatingForm extends BasePostFormFromFrontToBack {
-    @NotBlank
-    public String isOpenToPublic;
+
 }
