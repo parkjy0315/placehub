@@ -114,9 +114,9 @@
                 </div>
             </div>
 
-            <div class="flex mt-5">
+            <div class="flex mt-10">
                 <h2 class="text-2xl font-bold mr-5">큐레이션 목록</h2>
-                <h2 class="text-lg text-neutral mt-1" th:text="${paging.totalElements}"></h2>
+                <h2 class="text-xl" th:text="${paging.totalElements}"></h2>
             </div>
             <div class="divider !my-2"></div>
             <div th:if="${#lists.size(placeInfoList) == 0}">
