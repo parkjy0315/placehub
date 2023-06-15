@@ -176,4 +176,8 @@ public class PlaceService {
     public Page<Place> findPlace(Pageable pageable, SearchCriteria searchCriteria) {
         return placeRepository.findPlaceByDistanceAndIds(pageable, searchCriteria);
     }
+
+    public Page<Place> findPlaceWithPositiveLikeCount(Pageable pageable, Long likeCountCriteria) {
+        return placeRepository.findPlaceWithPositiveLikeCount(pageable, likeCountCriteria);
+    }
 }

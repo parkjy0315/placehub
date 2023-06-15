@@ -42,7 +42,8 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 
         JPQLQuery<Place> query = jpaQueryFactory
                 .selectFrom(place)
-                .where(distanceExpression.loe(distance));
+                .where(distanceExpression.loe(distance))
+                .orderBy(place.likeCount.desc());
 
         List<Place> resultList = query
                 .offset(pageable.getOffset())
@@ -77,7 +78,25 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
         JPQLQuery<Place> query = jpaQueryFactory
                 .selectFrom(place)
                 .where(whereClause)
-                .orderBy(distanceExpression.asc());
+                .orderBy(distanceExpression.asc())
+                .orderBy(place.likeCount.desc());
+
+        List<Place> resultList = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(resultList, pageable, query.fetchResults().getTotal());
+    }
+
+    @Override
+    public Page<Place> findPlaceWithPositiveLikeCount(Pageable pageable, Long likeCountCriteria) {
+        BooleanExpression likeCountCondition = place.likeCount.gt(likeCountCriteria);
+
+        JPQLQuery<Place> query = jpaQueryFactory
+                .selectFrom(place)
+                .where(likeCountCondition)
+                .orderBy(place.likeCount.desc());
 
         List<Place> resultList = query
                 .offset(pageable.getOffset())
