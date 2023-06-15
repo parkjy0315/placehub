@@ -248,89 +248,7 @@
     </div>
     <script type="text/javascript"
             src="//dapi.kakao.com/v2/maps/sdk.js?appkey=c2731d0cd855e5c9f82b8e58be1def4e&libraries=services"></script>
-    <script th:inline="javascript">
-        let placeArray = new Array();
-        let placeInfo;
-        /*[# th:each="place : ${placeInfoList}"]*/
-        placeInfo = {
-            id: /*[[${place.place.id}]]*/null,
-            name: /*[[${place.place.placeName}]]*/null,
-            xPos: /*[[${place.place.point.x}]]*/null,
-            yPos: /*[[${place.place.point.y}]]*/null
-        };
-        placeArray.push(placeInfo);
-        /*[/]*/
 
-        console.log(placeArray);
-
-        var xPosAverageByPlace = /*[[${xPosAverageByPlace}]]*/null;
-        var yPosAverageByPlace = /*[[${yPosAverageByPlace}]]*/null;
-
-        console.log("x " +  xPosAverageByPlace);
-        console.log("y " +  yPosAverageByPlace);
-
-
-        // --------카카오 맵 지도 생성--------------
-        // 마커를 표시할 위치와 title 객체 배열입니다
-        var positions = [];
-
-        for (var i = 0; i < placeArray.length; i++) {
-            var place = placeArray[i];
-            var position = {
-                id: place.id,
-                title: place.name,
-                latlng: new kakao.maps.LatLng(place.yPos, place.xPos)
-            };
-            positions.push(position);
-        }
-
-        // 카카오 맵 관련
-        var mapContainer = document.getElementById('myPlaceMap'), // 지도를 표시할 div
-            mapOption = {
-                center: new kakao.maps.LatLng(placeArray[0].yPos, placeArray[0].xPos), // 지도의 중심좌표
-                // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
-                //   center: position[0].latlng, // 지도의 중심좌표
-                level: 5 // 지도의 확대 레벨
-            };
-
-        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-
-        // 마커 이미지의 이미지 주소입니다
-        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
-
-        for (var i = 0; i < positions.length; i++) {
-
-            // 마커 이미지의 이미지 크기 입니다
-            var imageSize = new kakao.maps.Size(24, 35);
-
-            // 마커 이미지를 생성합니다
-            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
-
-            // 마커를 생성합니다
-            var marker = new kakao.maps.Marker({
-                map: map, // 마커를 표시할 지도
-                position: positions[i].latlng, // 마커를 표시할 위치
-                title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
-                image: markerImage // 마커 이미지
-            });
-
-            var content = '<div class="customoverlay">' +
-                '  <a href="/place/details/' + positions[i].id + '" target="_blank">' +
-                '    <span class="title">' + positions[i].title + '</span>' +
-                '  </a>' +
-                '</div>';
-
-            // 커스텀 오버레이를 생성합니다
-            var customOverlay = new kakao.maps.CustomOverlay({
-                map: map,
-                position: positions[i].latlng,
-                content: content,
-                yAnchor: 1
-            });
-
-        }
-
-    </script>
     <script>
         var latitudeElement = document.getElementById('latitude');
         var longitudeElement = document.getElementById('longitude');
@@ -353,25 +271,11 @@
             marker2.setPosition(latlng);
         });
 
-
-
-        // 현재 위치를 불러와 전역 변수에 저장 lat, lon
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function (position) {
-                var lat = position.coords.latitude,
-                    lon = position.coords.longitude;
-                latitudeElement.value = lat;
-                longitudeElement.value = lon;
-                var markerposition = new kakao.maps.LatLng(lat, lon),
-                    message = '<div style="padding:5px;">현재 나의 위치</div>';
-                displayMarker1(markerposition, message);
-
-            });
-        } else {
-            var markerposition = new kakao.maps.LatLng(33.450701, 126.570667),
-                message = 'geolocation을 사용할수 없어요..';
-            displayMarker1(markerposition, message);
-        }
+        var lat = latitudeElement.value,
+            lon = longitudeElement.value;
+        var markerposition = new kakao.maps.LatLng(lat, lon),
+            message = '<div style="padding:5px;">검색 위치</div>';
+        displayMarker1(markerposition, message);
 
         kakao.maps.event.addListener(map, 'idle', function() {
             searchAddrFromCoords(map.getCenter(), displayCenterInfo);
@@ -650,7 +554,6 @@
         }
 
 
-
         // 지도 위에 표시되고 있는 마커를 모두 제거합니다
 
 
@@ -714,6 +617,95 @@
             }
         }
 
+    </script>
+
+    <script th:inline="javascript">
+        let placeArray = new Array();
+        let placeInfo;
+        /*[# th:each="place : ${placeInfoList}"]*/
+        placeInfo = {
+            id: /*[[${place.place.id}]]*/null,
+            name: /*[[${place.place.placeName}]]*/null,
+            xPos: /*[[${place.place.point.x}]]*/null,
+            yPos: /*[[${place.place.point.y}]]*/null
+        };
+        placeArray.push(placeInfo);
+        /*[/]*/
+
+        console.log(placeArray);
+
+        var xPosAverageByPlace = /*[[${xPosAverageByPlace}]]*/null;
+        var yPosAverageByPlace = /*[[${yPosAverageByPlace}]]*/null;
+
+        console.log("x " +  xPosAverageByPlace);
+        console.log("y " +  yPosAverageByPlace);
+
+
+        // --------카카오 맵 지도 생성--------------
+        // 마커를 표시할 위치와 title 객체 배열입니다
+        var positions = [];
+
+        for (var i = 0; i < placeArray.length; i++) {
+            var place = placeArray[i];
+            var position = {
+                id: place.id,
+                title: place.name,
+                latlng: new kakao.maps.LatLng(place.yPos, place.xPos)
+            };
+            positions.push(position);
+        }
+
+        // 카카오 맵 관련
+        var mapContainer2 = document.getElementById('myPlaceMap'), // 지도를 표시할 div
+            mapOption2 = {
+                center: new kakao.maps.LatLng(placeArray[0].yPos, placeArray[0].xPos), // 지도의 중심좌표
+                // center: new kakao.maps.LatLng(,126.85496334236), // 지도의 중심좌표
+                //   center: position[0].latlng, // 지도의 중심좌표
+                level: 5 // 지도의 확대 레벨
+            };
+
+        var map2 = new kakao.maps.Map(mapContainer2, mapOption2); // 지도를 생성합니다
+
+        // 마커 이미지의 이미지 주소입니다
+        var imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
+
+        for (var i = 0; i < positions.length; i++) {
+
+            // 마커 이미지의 이미지 크기 입니다
+            var imageSize = new kakao.maps.Size(24, 35);
+
+            // 마커 이미지를 생성합니다
+            var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize);
+
+            // 마커를 생성합니다
+            var marker = new kakao.maps.Marker({
+                map: map2, // 마커를 표시할 지도
+                position: positions[i].latlng, // 마커를 표시할 위치
+                title: positions[i].title, // 마커의 타이틀, 마커에 마우스를 올리면 타이틀이 표시됩니다
+                image: markerImage // 마커 이미지
+            });
+
+            var content = '<div class="customoverlay">' +
+                '  <a href="/place/details/' + positions[i].id + '" target="_blank">' +
+                '    <span class="title">' + positions[i].title + '</span>' +
+                '  </a>' +
+                '</div>';
+
+            // 커스텀 오버레이를 생성합니다
+            var customOverlay = new kakao.maps.CustomOverlay({
+                map: map2,
+                position: positions[i].latlng,
+                content: content,
+                yAnchor: 1
+            });
+
+        }
+
+        var lat = latitudeElement.value,
+            lon = longitudeElement.value;
+        var markerposition = new kakao.maps.LatLng(lat, lon),
+            message = '<div style="padding:5px;">검색 위치</div>';
+        displayMarker1(markerposition, message);
 
     </script>
 </div>
