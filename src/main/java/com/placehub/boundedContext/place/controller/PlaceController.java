@@ -110,6 +110,21 @@ public class PlaceController {
                 placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
                 model.addAttribute("paging", placePage);
                 model.addAttribute("placeInfoList", placeInfoList);
+
+                // 좌표정보
+                double xPosAverageByPlace = placeInfoList.stream()
+                        .mapToDouble(place -> place.getPlace().getPoint().getX())
+                        .average()
+                        .orElse(0);
+
+                double yPosAverageByPlace = placeInfoList.stream()
+                        .mapToDouble(place -> place.getPlace().getPoint().getY())
+                        .average()
+                        .orElse(0);
+
+                model.addAttribute("xPosAverageByPlace", xPosAverageByPlace);
+                model.addAttribute("yPosAverageByPlace", yPosAverageByPlace);
+
                 return "usr/place/search";
 
             case "S-2": // 정상 좌표
@@ -125,6 +140,21 @@ public class PlaceController {
         placeInfoList = placeInfoService.getCategoryNamesList(placePage.getContent());
         model.addAttribute("paging", placePage);
         model.addAttribute("placeInfoList", placeInfoList);
+
+        // 좌표정보
+        double xPosAverageByPlace = placeInfoList.stream()
+                .mapToDouble(place -> place.getPlace().getPoint().getX())
+                .average()
+                .orElse(0);
+
+        double yPosAverageByPlace = placeInfoList.stream()
+                .mapToDouble(place -> place.getPlace().getPoint().getY())
+                .average()
+                .orElse(0);
+
+        model.addAttribute("xPosAverageByPlace", xPosAverageByPlace);
+        model.addAttribute("yPosAverageByPlace", yPosAverageByPlace);
+
 
         // 페이징 정보
         model.addAttribute("currentPage", page);
