@@ -69,7 +69,7 @@ public class PostController {
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> postPages =  this.postService.findAll(pageable);
+        Page<Post> postPages =  this.postService.findByOpenToPublicTrue(pageable);
         List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();
