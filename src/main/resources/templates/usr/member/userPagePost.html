@@ -28,10 +28,12 @@
                                 <i class="fa-solid fa-gear fa-xl"></i>
                             </a>
                             <div sec:authorize="isAuthenticated()" th:if="${member.id != @rq.member.id}">
-                                <form th:if="${follow} != null " th:action="@{|/friend/delete/${member.id}|}" method="POST">
+                                <form th:if="${follow} != null " th:action="@{|/friend/delete/${member.id}|}"
+                                      method="POST">
                                     <button type="submit" class="btn btn-warning btn-sm">언팔로우</button>
                                 </form>
-                                <form th:if="${follow} == null" th:action="@{|/friend/create/${member.id}|}" method="GET">
+                                <form th:if="${follow} == null" th:action="@{|/friend/create/${member.id}|}"
+                                      method="GET">
                                     <button type="submit" class="btn btn-success btn-sm">팔로우</button>
                                 </form>
                             </div>
@@ -39,7 +41,7 @@
                         <div th:if="${member.id != @rq.member.id}">
                             <div class="flex gap-5">
                                 <div class="min-w-sm">
-                                    <span  class="text-gray-400 text-sm"
+                                    <span class="text-gray-400 text-sm"
                                           th:text="${member.bio}"></span>
                                 </div>
                             </div>
@@ -124,43 +126,44 @@
                     <li th:each="post, loop : ${postViewerList}" class="my-10 ml-6">
                         <form th:action method="GET" id="postForm">
                             <input type="hidden" id="page" name="page" th:value="${postPaging.number}">
-                        <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
+                            <span class="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                             <svg aria-hidden="true" class="w-3 h-3 text-blue-800 dark:text-blue-300" fill="currentColor"
                                  viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path fill-rule="evenodd"
                                       d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
                                       clip-rule="evenodd"></path></svg>
                         </span>
-                        <div>
-                            <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"></span>
-                            <i th:if="${post.openToPublic}" class="fa-solid fa-lock-open mx-3"></i>
-                            <i th:unless="${post.openToPublic}" class="fa-solid fa-lock mx-3"></i>
-                        </div>
-                        <div class="mt-5 flex flex-row gap-4">
-                            <a th:href="@{|/post/view/${post.postId}|}"
-                               class="card flex-shrink-0 w-full shadow-xl bg-base-100"
-                               style="width: 640px">
-                                <div class="card-body">
-                                    <div class="flex gap-3 mt-2">
-                                        <div th:text="${post.placeName}" class="text-lg font-bold "></div>
-                                        <div th:if="${!#strings.isEmpty(post.midCategoryName)}">
-                                            <div class="badge badge-ghost badge-md"
-                                                 th:text="${post.midCategoryName}"></div>
+                            <div>
+                                <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"></span>
+                                <i th:if="${post.openToPublic}" class="fa-solid fa-lock-open mx-3"></i>
+                                <i th:unless="${post.openToPublic}" class="fa-solid fa-lock mx-3"></i>
+                            </div>
+                            <div class="mt-5 flex flex-row gap-4">
+                                <a th:href="@{|/post/view/${post.postId}|}"
+                                   class="card flex-shrink-0 w-full shadow-xl bg-base-100"
+                                   style="width: 640px">
+                                    <div class="card-body">
+                                        <div class="flex gap-3 mt-2">
+                                            <div th:text="${post.placeName}" class="text-lg font-bold "></div>
+                                            <div th:if="${!#strings.isEmpty(post.midCategoryName)}">
+                                                <div class="badge badge-ghost badge-md"
+                                                     th:text="${post.midCategoryName}"></div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div>
+                                        <div>
                                 <span th:text="${#strings.length(post.content) > 150 ?
                                 #strings.substring(post.content, 0, 150) + '...' : post.content}"
                                       class=" text-sm text-gray-400"></span>
+                                        </div>
                                     </div>
-                                </div>
-                            </a>
-                            <a th:href="@{|/post/view/${post.postId}|}" th:unless="${post.mainImage == ''}" class="flex jusify-center items-center shadow-xl rounded-xl"
-                                 style="width: 200px; height: 200px;">
-                                <img class="rounded-xl object-contain" th:src="${post.mainImage}" alt="Image"
-                                     style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
-                            </a>
-                        </div>
+                                </a>
+                                <a th:href="@{|/post/view/${post.postId}|}" th:unless="${post.mainImage == ''}"
+                                   class="flex jusify-center items-center shadow-xl rounded-xl"
+                                   style="width: 200px; height: 200px;">
+                                    <img class="rounded-xl object-contain" th:src="${post.mainImage}" alt="Image"
+                                         style="width: 200px; height: 200px; object-fit: cover; object-position: center; ">
+                                </a>
+                            </div>
                         </form>
                     </li>
                     </ul>
@@ -329,6 +332,60 @@
 
         });
 
+    </script>
+    <script>
+        // 바이오 수정 관련
+        const editBioBtn = document.getElementById("editBioBtn");
+        const bioUpdateContainer = document.getElementById("bioUpdateContainer");
+        const bioValue = document.getElementById("bioValue");
+        const bioInput = document.getElementById("bioInput");
+        const updateBioBtn = document.getElementById("updateBioBtn");
+        const memberId = editBioBtn.getAttribute("data-member-id");
+        const bioContainer = document.getElementById("bioContainer");
+
+        // csrf 토큰
+        var csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        var csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // 수정하기 버튼 클릭 시
+        editBioBtn.addEventListener("click", () => {
+            bioUpdateContainer.style.display = "block";
+            bioContainer.style.display = "none";
+            bioInput.value = bioValue.textContent;
+        });
+
+        function updateBioDisplay(newBio) {
+            const bioValue = document.getElementById("bioValue");
+            bioValue.textContent = newBio;
+        }
+
+        updateBioBtn.addEventListener("click", () => {
+            const newBio = bioInput.value;
+
+
+            const endpoint = `/member/update/bio/${memberId}`;
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", endpoint);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    const response = JSON.parse(xhr.responseText);
+                    const returnMessage = response.message;
+
+                    if (xhr.status === 200) {
+                        toastNotice(returnMessage);
+                        updateBioDisplay(newBio);
+                    } else {
+                        toastWarning(returnMessage);
+                    }
+                }
+            };
+            xhr.send("bio=" + encodeURIComponent(newBio));
+            bioUpdateContainer.style.display = "none";
+            bioContainer.style.display = "block";
+        });
     </script>
 
 

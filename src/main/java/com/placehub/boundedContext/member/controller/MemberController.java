@@ -147,7 +147,7 @@ public class MemberController {
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
@@ -194,7 +194,7 @@ public class MemberController {
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);

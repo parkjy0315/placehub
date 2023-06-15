@@ -13,7 +13,6 @@
                 <h1 class="text-4xl my-2 font-bold">공간 아카이빙 목록</h1>
             </div>
 
-
             <div class="flex flex-col gap-3 w-2xl mb-5">
                 <a th:each="post, loop : ${postViewerList}">
                     <form th:action method="GET" id="postForm">
@@ -31,10 +30,11 @@
                                                          th:text="${post.midCategoryName}"></div>
                                                 </div>
                                             </div>
-                                            <div class="flex flex-row gap-4 justify-between mt-5">
+                                            <div class="flex flex-row gap-4 justify-between mt-5" >
                                                 <span th:text="${#strings.length(post.content) > 150 ?
                                                         #strings.substring(post.content, 0, 150) + '...' : post.content}"
-                                                      class="text-sm text-gray-400 line-break clamp-lines"></span>
+                                                      class="text-sm text-gray-400 line-break clamp-lines"
+                                                      style="width: 500px;"></span>
                                             </div>
                                             <div class="flex flex-col gap-1">
                                                 <div class="flex gap-1 items-center text-sm text-gray-700 mt-5">
