@@ -83,6 +83,7 @@ public class PlaceController {
         model.addAttribute("selectedBig", bigCategoryId);
         model.addAttribute("selectedMid", midCategoryId);
         model.addAttribute("selectedSmall", smallCategoryId);
+        // model.addAttribute("level", 5);
 
         // 페이징 정보
         Sort sort = Sort.by(Sort.Direction.DESC, "likeCount");
@@ -114,6 +115,7 @@ public class PlaceController {
                 model.addAttribute("placeInfoList", placeInfoList);
                 model.addAttribute("latitude", 37.564989);
                 model.addAttribute("longitude", 126.9771);
+                // model.addAttribute("level", 3);
 
                 // 좌표정보
                 double xPosAverageByPlace = placeInfoList.stream()

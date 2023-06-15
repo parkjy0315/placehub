@@ -76,7 +76,8 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
 
         JPQLQuery<Place> query = jpaQueryFactory
                 .selectFrom(place)
-                .where(whereClause);
+                .where(whereClause)
+                .orderBy(distanceExpression.asc());
 
         List<Place> resultList = query
                 .offset(pageable.getOffset())
