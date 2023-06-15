@@ -20,7 +20,8 @@
                 <div>
                     <div>
                         <div class="m-5">
-                            <form th:action method="get" id="searchForm" onsubmit="searchSubmit()" class="flex justify-between gap-4">
+                            <form th:action method="get" id="searchForm" onsubmit="searchSubmit()"
+                                  class="flex justify-between gap-4">
                                 <input type="hidden" name="latitude" id="latitude" th:value="${latitude}">
                                 <input type="hidden" name="longitude" id="longitude" th:value="${longitude}">
                                 <input type="hidden" id="page" name="page" th:value="${paging.number}">
@@ -113,33 +114,36 @@
                 </div>
             </div>
 
-            <div class="mt-10 pt-10">
-                <h2 class="text-2xl font-bold">큐레이션 목록</h2>
-                <div class="divider !my-2"></div>
+            <div class="flex mt-5">
+                <h2 class="text-2xl font-bold mr-5">큐레이션 목록</h2>
+                <h2 class="text-lg text-neutral mt-1" th:text="${paging.totalElements}"></h2>
             </div>
+            <div class="divider !my-2"></div>
             <div th:if="${#lists.size(placeInfoList) == 0}">
                 <div class="flex flex-col justify-center items-center text-lg my-10">
                     <span>큐레이션 목록이 없습니다.</span>
                     <span>위치정보를 확인해주세요.</span>
                 </div>
             </div>
+
             <div th:unless="${#lists.size(placeInfoList) == 0}">
-                <div th:if="${!paging.isEmpty()}" class="flex justify-center mt-10">
+                <div th:if="${!paging.isEmpty()}" class="flex justify-center my-5">
                     <ul class="pagination justify-content-center flex">
-                        <li class="page-item" th:classappend="${!paging.hasPrevious()} ? 'disabled'">
+                        <li th:if="${paging.hasPrevious()}" class="page-item">
                             <a class="page-link m-1 btn  " href="javascript:void(0);"
                                th:data-page="${paging.number - 1}">
                                 <span>이전</span>
                             </a>
                         </li>
                         <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
-                            th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
-                            th:classappend="${page == paging.number} ? 'active'"
-                            class="page-item">
-                            <a th:text="${page}" class="page-link m-1 btn btn-outline" href="javascript:void(0);"
+                            th:if="${page >= paging.number - 5 and page <= paging.number + 5}">
+                            <a th:disabled="${page == paging.number}"
+                               th:text="${page}"
+                               class="page-link m-1 btn btn-outline"
+                               href="javascript:void(0);"
                                th:data-page="${page}"></a>
                         </li>
-                        <li class="page-item" th:classappend="${!paging.hasNext()} ? 'disabled'">
+                        <li th:if="${paging.hasNext()}" class="page-item">
                             <a class="page-link m-1 btn " href="javascript:void(0);"
                                th:data-page="${paging.number + 1}">
                                 <span>다음</span>
@@ -575,6 +579,7 @@
             document.getElementById('page').value = 0;
             searchForm.submit();
         }
+
         function pageSubmit() {
             document.getElementById('searchForm').submit();
         }
