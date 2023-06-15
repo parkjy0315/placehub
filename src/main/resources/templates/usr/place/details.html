@@ -97,8 +97,13 @@
                             <div class="flex justify-between gap-5">
                                 <div class="flex flex-col gap-2">
                                     <div class="flex flex-col gap-3">
-                                        <div th:if="${@rq.member.id == post.userId}" th:text="${post.username}" class="text-lg font-bold text-blue-700"></div>
-                                        <div th:if="${@rq.member.id != post.userId}" th:text="${post.username}" class="text-lg font-bold"></div>
+                                        <div sec:authorize="isAuthenticated()">
+                                            <div th:if="${@rq.member.id == post.userId}" th:text="${post.username}" class="font-bold text-blue-700"></div>
+                                            <div th:if="${@rq.member.id != post.userId}" th:text="${post.username}" class="font-bold"></div>
+                                        </div>
+                                        <div sec:authorize="isAnonymous()">
+                                            <div th:text="${post.username}" class="font-bold"></div>
+                                        </div>
                                         <div class="flex gap-1">
                                             <i class="fa-regular fa-clock origin-center"></i>
                                             <span th:text="${#temporals.format(post.visitedDate, 'yy년 MM월 dd일')} + ' 방문'"

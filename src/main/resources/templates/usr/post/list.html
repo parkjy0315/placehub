@@ -39,8 +39,13 @@
                                             <div class="flex flex-col gap-1">
                                                 <div class="flex gap-1 items-center text-sm text-gray-700 mt-5">
                                                     <i class="fa-regular fa-user"></i>
-                                                    <div th:if="${@rq.member.id == post.userId}" th:text="${post.username}" class="font-bold text-blue-700"></div>
-                                                    <div th:if="${@rq.member.id != post.userId}" th:text="${post.username}" class="font-bold"></div>
+                                                    <div sec:authorize="isAuthenticated()">
+                                                        <div th:if="${@rq.member.id == post.userId}" th:text="${post.username}" class="font-bold text-blue-700"></div>
+                                                        <div th:if="${@rq.member.id != post.userId}" th:text="${post.username}" class="font-bold"></div>
+                                                    </div>
+                                                    <div sec:authorize="isAnonymous()">
+                                                        <div th:text="${post.username}" class="font-bold"></div>
+                                                    </div>
                                                 </div>
                                                 <div class="flex gap-1 items-center text-sm text-gray-700">
                                                     <i class="fa-regular fa-clock origin-center"></i>
