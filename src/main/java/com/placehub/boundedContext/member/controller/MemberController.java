@@ -117,7 +117,14 @@ public class MemberController {
         Sort sortPost = Sort.by(Sort.Direction.DESC, "visitedDate");
         Pageable pageablePost = PageRequest.of(page, size, sortPost);
 
-        Page<Post> postPages =  this.postService.findByMember(id, pageablePost);
+
+        Page<Post> postPages;
+        if(id == rq.getMember().getId()){
+            postPages =  this.postService.findByMember(id, pageablePost);
+        } else{
+            postPages =  this.postService.findByMemberAndOpenToPublic(id, pageablePost);
+        }
+
         List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();
@@ -147,7 +154,7 @@ public class MemberController {
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
@@ -194,7 +201,7 @@ public class MemberController {
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
         List<Member> followerList = friendService.findFollower(id);
-        Friend follow = friendService.findByFollowerIdAndFollowingId(member.getId(), id).orElse(null);
+        Friend follow = friendService.findByFollowerIdAndFollowingId(rq.getMember().getId(), id).orElse(null);
 
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);

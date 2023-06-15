@@ -37,7 +37,7 @@ public class ViewerTest {
         creatingForm.setContent("content");
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
 
         RsData id = postService.createPost(1L, 1L, creatingForm);
 
@@ -61,7 +61,7 @@ public class ViewerTest {
         creatingForm.setContent("content");
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
 
         RsData id = postService.createPost(1L, 1L, creatingForm);
         RsData response = postService.deletePost((long) id.getData());

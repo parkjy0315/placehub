@@ -2,7 +2,7 @@
 
 <head>
     <title>
-        게시글 읽기
+        아카이빙
     </title>
 
     <!-- jQuery CDN -->
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div class="divider !my-2"></div>
-                <div class="flex flex-col gap-5 my-10">
+                <div class="flex flex-col gap-10 my-5">
                     <div th:if="${#lists.size(imageList)} > 0 " class="grid grid-cols-2 md:grid-cols-3 gap-4">
                         <div th:each="photo : ${imageList}"
                              class="flex items-center h-auto w-auto max-h-200 max-w-200 justify-center">
@@ -114,17 +114,17 @@
             <div class="flex flex-col gap-6 my-5">
                 <div th:each="comment : ${comments}">
                     <div class="card flex-shrink-0 w-full bg-base-100 border border-gray-300">
-                        <div class="flex gap-4 mx-8 mt-8">
-                            <a class="font-bold hover:text-yellow-300"
-                               th:href="@{|/member/page/${comment.memberId}|}"
-                                  th:text="${comment.memberNickName}"></a>
-                            <div class="flex gap-1">
-                                <i class="fa-regular fa-clock origin-center"></i>
-                                <span class="text-sm text-gray-500"
-                                      th:text="${#temporals.format(comment.createDate, 'yy-MM-dd hh:mm')}"></span>
-                            </div>
-                        </div>
                         <div class="card-body">
+                            <div class="flex gap-4">
+                                <a class="font-bold hover:text-yellow-300"
+                                   th:href="@{|/member/page/${comment.memberId}|}"
+                                   th:text="${comment.memberNickName}"></a>
+                                <div class="flex gap-1">
+                                    <i class="fa-regular fa-clock origin-center"></i>
+                                    <span class="text-sm text-gray-500"
+                                          th:text="${#temporals.format(comment.createDate, 'yy-MM-dd hh:mm')}"></span>
+                                </div>
+                            </div>
                             <div class="card-text whitespace-pre-line" th:text="${comment.content}"></div>
                             <div sec:authorize="isAuthenticated()"
                                  th:if="${@rq.member.id == comment.getMemberId()}"
