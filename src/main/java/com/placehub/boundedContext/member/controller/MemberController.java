@@ -130,19 +130,19 @@ public class MemberController {
         model.addAttribute("postViewerList", postViewerList);
 
         List<Place> visitedPlaces = placeService.findPlacesByMemberId(member.getId());
-        double xPosAverageByvisitedPlaces = visitedPlaces.stream()
+        double xPosAverageByVisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getX())
                 .average()
                 .orElse(0);
 
-        double yPosAverageByvisitedPlaces = visitedPlaces.stream()
+        double yPosAverageByVisitedPlaces = visitedPlaces.stream()
                 .mapToDouble(place -> place.getPoint().getY())
                 .average()
                 .orElse(0);
 
         model.addAttribute("visitedPlaces", visitedPlaces);
-        model.addAttribute("xPosAverageByvisitedPlaces", xPosAverageByvisitedPlaces);
-        model.addAttribute("yPosAverageByvisitedPlaces", yPosAverageByvisitedPlaces);
+        model.addAttribute("xPosAverageByVisitedPlaces", xPosAverageByVisitedPlaces);
+        model.addAttribute("yPosAverageByVisitedPlaces", yPosAverageByVisitedPlaces);
 
         // 친구
         List<Member> followingList = friendService.findFollowing(id);
