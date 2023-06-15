@@ -76,7 +76,7 @@ class PostTest {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
         creatingForm.setContent("content");
 
         RsData savedId = postService.createPost(1L, 1L, creatingForm);
@@ -91,17 +91,17 @@ class PostTest {
         CreatingForm creatingForm1 = new CreatingForm();
         creatingForm1.setVisitedDate(LocalDate.now());
         creatingForm1.setIsOpenToPublic("공개");
-        creatingForm1.setImages(new ArrayList<>());
+        creatingForm1.setImgIds("1,2,3,4,5");
 
         CreatingForm creatingForm2 = new CreatingForm();
         creatingForm2.setVisitedDate(LocalDate.now());
         creatingForm2.setIsOpenToPublic("공개");
-        creatingForm2.setImages(new ArrayList<>());
+        creatingForm2.setImgIds("1,2,3,4,5");
 
         CreatingForm creatingForm3 = new CreatingForm();
         creatingForm3.setVisitedDate(LocalDate.now());
         creatingForm3.setIsOpenToPublic("공개");
-        creatingForm3.setImages(new ArrayList<>());
+        creatingForm3.setImgIds("1,2,3,4,5");
         RsData one = postService.createPost(1L, 1L, creatingForm1);
         RsData two = postService.createPost(1L, 2L, creatingForm2);
         RsData three = postService.createPost(1L, 1L, creatingForm3);
@@ -117,7 +117,7 @@ class PostTest {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
         RsData postId = postService.createPost(1L, 1L, creatingForm);
 
         try {
@@ -144,12 +144,12 @@ class PostTest {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
 
         RsData postId = postService.createPost(1L, 1L, creatingForm);
 
         ModifyingForm modifyingForm = new ModifyingForm();
-        modifyingForm.setImages(new ArrayList<>());
+        modifyingForm.setImgIds("1,2,3,4,5");
         modifyingForm.setVisitedDate(LocalDate.now());
 
         String modifiedContent = "ReplacedContent";
@@ -170,7 +170,7 @@ class PostTest {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
 
         RsData postId = postService.createPost(1L, 1L, creatingForm);
         long userId = postRepository.findById((long) postId.getData()).get().getMember();
@@ -191,7 +191,7 @@ class PostTest {
         CreatingForm creatingForm = new CreatingForm();
         creatingForm.setVisitedDate(LocalDate.now());
         creatingForm.setIsOpenToPublic("공개");
-        creatingForm.setImages(new ArrayList<>());
+        creatingForm.setImgIds("1,2,3,4,5");
         RsData postId = postService.createPost(1L, 1L, creatingForm);
 
         assertThat(postService.validPostOwner(0L, (long) postId.getData()).isFail()).isTrue();
