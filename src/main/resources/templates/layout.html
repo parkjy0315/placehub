@@ -76,15 +76,6 @@
         }
     });
 
-    function submitCheck(form) {
-        console.log(lat);
-        console.log(lon);
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lon;
-
-        form.submit();
-    }
-
     function showRelatedMidOptions(selectElement) {
         var selectedValue = selectElement.value;
         var relatedSelect = document.getElementById("midSelect");
