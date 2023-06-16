@@ -1,9 +1,7 @@
 # PlaceHub 🚩
 `2023.05.16` ~ `2023.06.16`
 > 공간 큐레이션 서비스
-> https://www.placehub.xyz/
 <br/>
-           
  
 ## 💻 프로젝트 소개
 
@@ -12,7 +10,11 @@
 - 공간에 대한 아카이빙
 - 팔로잉/팔로워 기능 기반 커뮤니티
 <br/>
-         
+
+### [PlaceHub 바로가기](https://www.placehub.xyz/) 
+### [시연 영상](https://youtu.be/ZjNE_YZlFac) 
+### [팀 노션](https://www.notion.so/13-PlaceHub-e0493f1c1090469eb949c8e38fed4784?pvs=4)
+<br/>         
 
 ## 🦁 팀원
 
@@ -22,9 +24,16 @@
 
 <br/>
 
-## ⚙️ 기술
-![](https://velog.velcdn.com/images/jyp1102/post/c51c33ee-24f4-4d48-b9ae-bf4af8cc3dfa/image.png)
+## 🛠️ 기술
+![](https://velog.velcdn.com/images/jyp1102/post/237be60c-20df-48f2-a2e7-e7e7043734d7/image.png)
 <br/>
+
+
+## ⚙️ 시스템 아키텍쳐
+![](https://velog.velcdn.com/images/jyp1102/post/78557948-3f48-47e8-aeae-6ffcf9520868/image.png)
+<br/>
+
+
 
 ## 💡 주요 기능
 
