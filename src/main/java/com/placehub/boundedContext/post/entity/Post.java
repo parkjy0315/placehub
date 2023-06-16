@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @Where(clause = "delete_date is null")
-@Table(indexes = {@Index(name = "place_index",columnList = "place")})
+@Table(indexes = {@Index(name = "place_index", columnList = "place")})
 public class Post extends BaseEntity implements Comparable<Post> {
     private long member;
     private long place;

@@ -15,6 +15,7 @@ import java.util.Date;
 public class S3Pre_signedUrl {
     @Autowired
     private S3Config s3Config;
+
     public String getPreSignedUrl(String bucket, String prefix, String fileName) {
         if (!prefix.equals("")) {
             fileName = prefix + "/" + fileName;

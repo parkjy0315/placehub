@@ -69,9 +69,12 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
         List<Long> categoryIds = searchCriteria.getCategoryIds();
 
         switch (categoryIds.size()) {
-            case 3: whereClause = whereClause.and(place.smallCategoryId.eq(categoryIds.get(2)));
-            case 2: whereClause = whereClause.and(place.midCategoryId.eq(categoryIds.get(1)));
-            case 1: whereClause = whereClause.and(place.bigCategoryId.eq(categoryIds.get(0)));
+            case 3:
+                whereClause = whereClause.and(place.smallCategoryId.eq(categoryIds.get(2)));
+            case 2:
+                whereClause = whereClause.and(place.midCategoryId.eq(categoryIds.get(1)));
+            case 1:
+                whereClause = whereClause.and(place.bigCategoryId.eq(categoryIds.get(0)));
                 break;
         }
 

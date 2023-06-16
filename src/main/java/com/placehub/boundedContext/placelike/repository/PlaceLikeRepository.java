@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface PlaceLikeRepository extends JpaRepository<PlaceLike, Long> {
     List<PlaceLike> findByPlaceId(Long placeId);
+
     boolean existsByPlaceIdAndMemberId(Long placeId, Long memberId);
+
     PlaceLike findByPlaceIdAndMemberId(Long placeId, Long memberId);
 }

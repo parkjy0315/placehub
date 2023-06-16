@@ -1,6 +1,5 @@
 package com.placehub.boundedContext.place.factory;
 
-import com.placehub.base.entity.Category;
 import com.placehub.boundedContext.place.entity.Place;
 import org.locationtech.jts.geom.Point;
 

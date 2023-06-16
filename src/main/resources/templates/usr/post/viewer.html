@@ -100,7 +100,8 @@
                     <div th:text="${postView.content}" class="whitespace-pre-line"></div>
                 </div>
                 <div class="flex justify-end">
-                    <span th:text="'작성 : ' +  ${#temporals.format(postView.createDate, 'yyyy-MM-dd hh:mm')}" class="text-gray-500"></span>
+                    <span th:text="'작성 : ' +  ${#temporals.format(postView.createDate, 'yyyy-MM-dd hh:mm')}"
+                          class="text-gray-500"></span>
                 </div>
             </div>
 

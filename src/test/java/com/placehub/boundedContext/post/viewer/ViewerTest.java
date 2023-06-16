@@ -1,9 +1,9 @@
 package com.placehub.boundedContext.post.viewer;
 
 import com.placehub.base.rsData.RsData;
+import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.Viewer;
-import com.placehub.boundedContext.member.service.MemberService;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import com.placehub.boundedContext.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +14,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

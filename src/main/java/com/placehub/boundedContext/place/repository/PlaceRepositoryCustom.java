@@ -11,7 +11,10 @@ import java.util.List;
 public interface PlaceRepositoryCustom {
 
     List<Place> findPlaceByDistance(Point point, Long distance);
+
     Page<Place> findPlaceByDistance(Pageable pageable, Point point, Long distance);
+
     Page<Place> findPlaceByDistanceAndIds(Pageable pageable, SearchCriteria searchCriteria);
+
     Page<Place> findPlaceWithPositiveLikeCount(Pageable pageable, Long likeCountCriteria);
 }

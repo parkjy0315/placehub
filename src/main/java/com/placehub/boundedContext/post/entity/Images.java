@@ -16,7 +16,7 @@ import java.util.Objects;
 @SuperBuilder(toBuilder = true)
 @Getter
 @Where(clause = "delete_date is null")
-@Table(indexes = {@Index(name = "post_index",columnList = "post")})
+@Table(indexes = {@Index(name = "post_index", columnList = "post")})
 public class Images extends BaseEntity {
     private long post;
     private long img;

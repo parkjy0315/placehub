@@ -11,7 +11,7 @@
 
 
     <!--flowbite 불러오기-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"  rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css" rel="stylesheet"/>
     <!--datepicker 불러오기-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/datepicker.min.js"></script>
 
@@ -35,7 +35,9 @@
         <script th:inline="javascript">
             let token = $("meta[name='_csrf']").attr("content");
             let header = $("meta[name='_csrf_header']").attr("content");
-            $(document).ajaxSend(function(e, xhr, options) { xhr.setRequestHeader(header, token); });
+            $(document).ajaxSend(function (e, xhr, options) {
+                xhr.setRequestHeader(header, token);
+            });
 
             const imageLimit = 10;
             let imageFiles = new Array();
@@ -67,6 +69,7 @@
 
                 fileInput.files = dataTransfer.files;
             }
+
             /*]]>*/
 
             function dataURLToFile(dataURL, filename) {
@@ -80,7 +83,7 @@
                 while (n--) {
                     u8arr[n] = bstr.charCodeAt(n);
                 }
-                return new File([u8arr], fileName, { type: mime });
+                return new File([u8arr], fileName, {type: mime});
             }
 
             function validate(visitedDate, visitedDateValue) {
@@ -114,10 +117,11 @@
                 }
                 let imgData = dataTransfer.files;
                 for (let imgIdx = 0; imgIdx < imgData.length; imgIdx++) {
-                    const element = {'id' : imgIdx,
-                        'fileData' : {
-                            'fileName' : imgData[imgIdx].name,
-                            'contentType' : imgData[imgIdx].type
+                    const element = {
+                        'id': imgIdx,
+                        'fileData': {
+                            'fileName': imgData[imgIdx].name,
+                            'contentType': imgData[imgIdx].type
                         }
                     }
 
@@ -153,10 +157,10 @@
                         data: imgData[idx],
                         contentType: imgData[idx].type,
                         processData: false,
-                        success: function() {
+                        success: function () {
 
                         },
-                        error: function() {
+                        error: function () {
                             alert('이미지 업로드 실패');
                             isSuccess = false;
                             return false;
@@ -186,7 +190,7 @@
                     }
 
                     const afterModified = [];
-                    for(let idx = 0; idx < imgData.length; idx++) {
+                    for (let idx = 0; idx < imgData.length; idx++) {
                         afterModified.push(imgData[idx].name);
                     }
 
@@ -260,13 +264,13 @@
                 }, 0);
             }
 
-            window.onload = function() {
+            window.onload = function () {
                 modifyInit(images);
             };
         </script>
 
         <form th:action id="uploadForm" method="post" onsubmit="getPreSignedUrl(); return false;">
-            <input type="hidden" name="imgIds" value="" />
+            <input type="hidden" name="imgIds" value=""/>
             <div class="flex pb-10 border-b-2 my-10" style="width: 1000px; height: 270px">
                 <div class="flex justify-start items-center gap-8 overflow-x-auto w-10/12" id="imageList"></div>
                 <div class="flex bg-gray-300 mx-4 relative justify-center w-2/12 text-center">
@@ -280,7 +284,8 @@
                         <p>최대 10개</p>
                     </div>
 
-                    <input id="fileUpload" class="absolute w-full h-full" style="opacity:0;filter:alpha(opacity=0);" type="file" accept="image/*" multiple onchange="addImage(this)"/>
+                    <input id="fileUpload" class="absolute w-full h-full" style="opacity:0;filter:alpha(opacity=0);"
+                           type="file" accept="image/*" multiple onchange="addImage(this)"/>
                 </div>
             </div>
             <div class="flex justify-center mb-5">
@@ -289,7 +294,8 @@
                         <div class="text-2xl font-bold mb-2">방문한 장소</div>
                         <div class="relative w-60 h-12">
                             <div th:if="${placeName != null}" th:text="${placeName.getData()}"></div>
-                            <div th:if="${modifyingData != null}" th:text="${modifyingData.getData().getPlaceName()}"></div>
+                            <div th:if="${modifyingData != null}"
+                                 th:text="${modifyingData.getData().getPlaceName()}"></div>
                         </div>
                     </div>
 
@@ -305,7 +311,8 @@
                                 </svg>
                             </div>
 
-                            <input name="visitedDate" id="visitedDate" datepicker datepicker-autohide datepicker-format="yyyy-mm-dd"
+                            <input name="visitedDate" id="visitedDate" datepicker datepicker-autohide
+                                   datepicker-format="yyyy-mm-dd"
                                    type="text"
                                    th:value="${modifyingData != null ? modifyingData.getData().getVisitedDate() : ''}"
                                    class="w-52 h-12 bg-white border border-gray-300 text-black text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -315,9 +322,14 @@
 
                     <div class="card mb-5">
                         <div class="text-2xl font-bold mb-2">공개 여부</div>
-                        <select name="isOpenToPublic" id="isOpenToPublic" class="select select-bordered w-full max-w-xs">
-                            <option th:selected="${modifyingData == null || (modifyingData != null && modifyingData.getData().isOpenToPublic())}">공개</option>
-                            <option th:selected="${modifyingData != null && !modifyingData.getData().isOpenToPublic()}">비공개</option>
+                        <select name="isOpenToPublic" id="isOpenToPublic"
+                                class="select select-bordered w-full max-w-xs">
+                            <option th:selected="${modifyingData == null || (modifyingData != null && modifyingData.getData().isOpenToPublic())}">
+                                공개
+                            </option>
+                            <option th:selected="${modifyingData != null && !modifyingData.getData().isOpenToPublic()}">
+                                비공개
+                            </option>
                         </select>
                     </div>
                 </div>

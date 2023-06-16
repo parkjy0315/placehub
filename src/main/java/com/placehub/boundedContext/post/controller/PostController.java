@@ -9,15 +9,12 @@ import com.placehub.boundedContext.post.form.*;
 import com.placehub.boundedContext.post.service.ImageService;
 import com.placehub.boundedContext.post.service.PostService;
 import jakarta.validation.Valid;
-import lombok.*;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/post")
@@ -63,13 +59,13 @@ public class PostController {
     @GetMapping("/list")
     public String list(Model model,
                        @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "7") int size){
+                       @RequestParam(defaultValue = "7") int size) {
 
         // 페이징 정보
         Sort sort = Sort.by(Sort.Direction.DESC, "id");
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Post> postPages =  this.postService.findByOpenToPublicTrue(pageable);
+        Page<Post> postPages = this.postService.findByOpenToPublicTrue(pageable);
         List<Post> postList = postPages.getContent();
 
         List<Viewer> postViewerList = new ArrayList<>();
@@ -100,10 +96,10 @@ public class PostController {
         }
 
         // 비공개 게시물
-        if(!response.getData().isOpenToPublic() && rq.getMember() == null){
+        if (!response.getData().isOpenToPublic() && rq.getMember() == null) {
             return "usr/post/private";
         }
-        if (!response.getData().isOpenToPublic() && rq.getMember().getId() != response.getData().getUserId()){
+        if (!response.getData().isOpenToPublic() && rq.getMember().getId() != response.getData().getUserId()) {
             return "usr/post/private";
         }
 
@@ -163,7 +159,7 @@ public class PostController {
     @PostMapping("/get_Pre_Signed_Url/{flag}")
     @ResponseBody
     public List<PreSignedUrlResponseForm> createPreSigned(@RequestBody List<PreSignedUrlRequestForm> inputImgNames,
-                                                            @PathVariable("flag") long flag) {
+                                                          @PathVariable("flag") long flag) {
         List<PreSignedUrlResponseForm> preSignedUrl = imageService.getPreSignedUrlFromFilteredData(inputImgNames, flag);
         return preSignedUrl;
     }

@@ -121,11 +121,11 @@ public class PlaceService {
     }
 
 
-    public List<Place> findByPlaceLikeList_MemberId(Long memberId){
+    public List<Place> findByPlaceLikeList_MemberId(Long memberId) {
         return placeRepository.findByPlaceLikeList_MemberId(memberId);
     }
 
-    public Page<Place> findByPlaceLikeList_MemberId(Long id, Pageable pageable){
+    public Page<Place> findByPlaceLikeList_MemberId(Long id, Pageable pageable) {
         return placeRepository.findByPlaceLikeList_MemberId(id, pageable);
     }
 
@@ -133,14 +133,14 @@ public class PlaceService {
     public void whenUpdatePlaceLike(Long placeId, boolean isCreated) {
         Place place = getPlace(placeId);
 
-        if(place.getLikeCount() == null){
+        if (place.getLikeCount() == null) {
             place = place.toBuilder().likeCount(0L).build();
         }
 
-        if(isCreated){
-            place = place.toBuilder().likeCount(place.getLikeCount()+1).build();
-        }else {
-            place = place.toBuilder().likeCount(place.getLikeCount()-1).build();
+        if (isCreated) {
+            place = place.toBuilder().likeCount(place.getLikeCount() + 1).build();
+        } else {
+            place = place.toBuilder().likeCount(place.getLikeCount() - 1).build();
         }
 
         placeRepository.save(place);

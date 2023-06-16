@@ -32,46 +32,45 @@
         </div>
 
 
-
         <div class="flex gap-4 items-center mt-10">
             나의 닉네임
             <span class="text-2xl font-bold" th:text="${@rq.member.nickname}"></span>
         </div>
         <div>
-        <div class="divider !my-2"></div>
-        <div class="flex justify-center justify-around my-5" style="width: 800px;">
-            <div class="grow">
-                <table class="table w-full">
-                    <tr class="text-center font-bold text-lg">
-                        <th>팔로잉 <span id="followingCount" th:text="${#lists.size(followingList)}"></span></th>
-                    </tr>
-                    <div id="followingTableBody">
-                        <tr class="hover text-center" th:each="following, loop : ${followingList}">
+            <div class="divider !my-2"></div>
+            <div class="flex justify-center justify-around my-5" style="width: 800px;">
+                <div class="grow">
+                    <table class="table w-full">
+                        <tr class="text-center font-bold text-lg">
+                            <th>팔로잉 <span id="followingCount" th:text="${#lists.size(followingList)}"></span></th>
+                        </tr>
+                        <div id="followingTableBody">
+                            <tr class="hover text-center" th:each="following, loop : ${followingList}">
+                                <td>
+                                    <a th:href="@{'member/page/' + ${following.id}}">
+                                        <span th:text="${following.nickname}"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </div>
+                    </table>
+                </div>
+                <div class="divider divider-horizontal grow"></div>
+                <div class="grow ">
+                    <table class="table w-full">
+                        <tr class="text-center font-bold text-lg">
+                            <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
+                        </tr>
+                        <tr class="hover text-center" th:each="follwer, loop : ${followerList}">
                             <td>
-                                <a th:href="@{'member/page/' + ${following.id}}">
-                                    <span th:text="${following.nickname}"></span>
+                                <a th:href="@{'member/page/' + ${follwer.id}}">
+                                    <span th:text="${follwer.nickname}"></span>
                                 </a>
                             </td>
                         </tr>
-                    </div>
-                </table>
+                    </table>
+                </div>
             </div>
-            <div class="divider divider-horizontal grow"></div>
-            <div class="grow ">
-                <table class="table w-full">
-                    <tr class="text-center font-bold text-lg">
-                        <th>팔로워 <span th:text="${#lists.size(followerList)}"></span></th>
-                    </tr>
-                    <tr class="hover text-center" th:each="follwer, loop : ${followerList}">
-                        <td>
-                            <a th:href="@{'member/page/' + ${follwer.id}}">
-                                <span th:text="${follwer.nickname}"></span>
-                            </a>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
         </div>
     </div>
 

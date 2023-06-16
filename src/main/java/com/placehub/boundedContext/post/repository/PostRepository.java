@@ -11,11 +11,18 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAll(Pageable pageable);
+
     Page<Post> findByOpenToPublicTrue(Pageable pageable);
+
     Optional<List<Post>> findPostsByPlace(long placeId);
+
     Page<Post> findByMember(Long id, Pageable pageable);
+
     Page<Post> findByMemberAndOpenToPublicIsTrue(Long id, Pageable pageable);
+
     Page<Post> findByPlace(Long placeId, Pageable pageable);
+
     Page<Post> findByPlaceAndOpenToPublicIsTrue(Long placeId, Pageable pageable);
+
     Optional<Post> findFirstByOrderByIdDesc();
 }

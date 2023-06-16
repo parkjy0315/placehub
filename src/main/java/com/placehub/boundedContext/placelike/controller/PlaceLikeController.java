@@ -8,7 +8,6 @@ import com.placehub.boundedContext.placelike.service.PlaceLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +21,14 @@ public class PlaceLikeController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{placeId}")
-    public String create(@PathVariable("placeId") Long placeId){
+    public String create(@PathVariable("placeId") Long placeId) {
 
         Member actor = rq.getMember();
 
         PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, actor.getId());
         RsData checkStatus = placeLikeService.checkStatus(placeLike);
 
-        if(checkStatus.getResultCode().equals("F-2")){
+        if (checkStatus.getResultCode().equals("F-2")) {
             rq.historyBack(checkStatus);
         }
 
@@ -40,14 +39,14 @@ public class PlaceLikeController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/delete/{placeId}")
-    public String delete(@PathVariable("placeId") Long placeId){
+    public String delete(@PathVariable("placeId") Long placeId) {
 
         Member actor = rq.getMember();
 
         PlaceLike placeLike = placeLikeService.findByPlaceIdAndMemberId(placeId, actor.getId());
         RsData checkStatus = placeLikeService.checkStatus(placeLike);
 
-        if(checkStatus.getResultCode().equals("F-1")){
+        if (checkStatus.getResultCode().equals("F-1")) {
             rq.historyBack(checkStatus);
         }
 
