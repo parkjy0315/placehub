@@ -1,14 +1,10 @@
 package com.placehub.boundedContext.member.entity;
 
-import com.placehub.base.appConfig.AppConfig;
 import com.placehub.base.entity.BaseEntity;
-import com.placehub.base.rq.Rq;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;

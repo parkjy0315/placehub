@@ -31,8 +31,8 @@ public class FriendController {
         List<Member> followingList = friendService.findFollowing(rq.getMember().getId());
         List<Member> followerList = friendService.findFollower(rq.getMember().getId());
 
-        model.addAttribute("followingList",followingList);
-        model.addAttribute("followerList",followerList);
+        model.addAttribute("followingList", followingList);
+        model.addAttribute("followerList", followerList);
 
         return "usr/member/follow";
     }
@@ -61,7 +61,7 @@ public class FriendController {
             return rq.historyBack(followRsData);
         }
 
-        return rq.redirectWithMsg("/member/page/%s".formatted(followingId) ,followRsData);
+        return rq.redirectWithMsg("/member/page/%s".formatted(followingId), followRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -72,7 +72,7 @@ public class FriendController {
 
         RsData<Friend> unfollowRsData = friendService.unfollow(friend);
 
-        if(unfollowRsData.isFail()){
+        if (unfollowRsData.isFail()) {
             return rq.historyBack(unfollowRsData);
         }
 

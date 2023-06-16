@@ -12,7 +12,7 @@ public class PlaceEventListener {
     private final PlaceService placeService;
 
     @EventListener
-    public void listen(EventAfterUpdatePlaceLike event){
+    public void listen(EventAfterUpdatePlaceLike event) {
         placeService.whenUpdatePlaceLike(event.getPlaceId(), event.isCreated());
     }
 }

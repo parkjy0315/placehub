@@ -27,7 +27,7 @@ public class PlaceLikeService {
 
     // 현재 상태 확인
     public RsData<PlaceLike> checkStatus(PlaceLike placeLike) {
-        if(placeLike == null) {
+        if (placeLike == null) {
             return RsData.of("F-2", "이미 취소된 좋아요입니다.");
         }
         return RsData.of("F-1", "이미 등록된 좋아요입니다.");
@@ -70,7 +70,7 @@ public class PlaceLikeService {
         long actorId = actor.getId();
         long fromMemberId = placeLike.getMemberId();
 
-        if(actorId != fromMemberId){
+        if (actorId != fromMemberId) {
             return RsData.of("F-1", "취소 권한이 없습니다");
         }
 
@@ -82,11 +82,11 @@ public class PlaceLikeService {
         return placeLikeRepository.findById(Id);
     }
 
-    public PlaceLike findByPlaceIdAndMemberId(Long placeId, Long memberId){
+    public PlaceLike findByPlaceIdAndMemberId(Long placeId, Long memberId) {
         return placeLikeRepository.findByPlaceIdAndMemberId(placeId, memberId);
     }
 
-    public List<PlaceLike> findByPlaceId(Long placeId){
+    public List<PlaceLike> findByPlaceId(Long placeId) {
         return placeLikeRepository.findByPlaceId(placeId);
     }
 

@@ -17,15 +17,18 @@
                         <a href="/" class="text-white hover:text-yellow-300">홈</a>
                         <a href="/place/search" class="text-white hover:text-yellow-300">큐레이션</a>
                         <a href="/post/list" class="text-white hover:text-yellow-300">아카이빙</a>
-                        <a th:href="@{|/member/page/${@rq.member.id}|}" class="text-white hover:text-yellow-300">마이페이지</a>
-                        <a href="javascript:;" onclick="$(this).next().submit();" class="text-white hover:text-yellow-300">로그아웃</a>
+                        <a th:href="@{|/member/page/${@rq.member.id}|}"
+                           class="text-white hover:text-yellow-300">마이페이지</a>
+                        <a href="javascript:;" onclick="$(this).next().submit();"
+                           class="text-white hover:text-yellow-300">로그아웃</a>
                         <form th:action="|/member/logout|" method="POST"></form>
                     </li>
                 </ul>
             </div>
             <div class="md:hidden">
                 <button class="text-gray-400 hover:text-white focus:outline-none">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>

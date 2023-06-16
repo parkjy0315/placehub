@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ActiveProfiles;
@@ -71,9 +70,9 @@ public class MemberControllerTests {
                         .with(csrf()) // CSRF 키 생성
                         .param("username", "user10")
                         .param("password", "1234")
-                        .param("email","aaa1@naver.com")
-                        .param("name","홍길동")
-                        .param("nickname","도적")
+                        .param("email", "aaa1@naver.com")
+                        .param("name", "홍길동")
+                        .param("nickname", "도적")
                 )
                 .andDo(print());
 
@@ -186,8 +185,8 @@ public class MemberControllerTests {
         // 세션에 접근해서 user 객체를 가져온다.
         MvcResult mvcResult = resultActions.andReturn();
         HttpSession session = mvcResult.getRequest().getSession(false);// 원래 getSession 을 하면, 만약에 없을 경우에 만들어서라도 준다., false 는 없으면 만들지 말라는 뜻
-        SecurityContext securityContext = (SecurityContext)session.getAttribute("SPRING_SECURITY_CONTEXT");
-        User user = (User)securityContext.getAuthentication().getPrincipal();
+        SecurityContext securityContext = (SecurityContext) session.getAttribute("SPRING_SECURITY_CONTEXT");
+        User user = (User) securityContext.getAuthentication().getPrincipal();
 
         assertThat(user.getUsername()).isEqualTo("user1");
 

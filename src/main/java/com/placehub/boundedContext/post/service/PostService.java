@@ -8,10 +8,10 @@ import com.placehub.boundedContext.place.entity.Place;
 import com.placehub.boundedContext.place.repository.PlaceRepository;
 import com.placehub.boundedContext.place.service.PlaceInfoService;
 import com.placehub.boundedContext.place.service.PlaceService;
+import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.form.CreatingForm;
 import com.placehub.boundedContext.post.form.ModifyingForm;
 import com.placehub.boundedContext.post.form.Viewer;
-import com.placehub.boundedContext.post.entity.Post;
 import com.placehub.boundedContext.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,11 +23,7 @@ import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class PostService {
@@ -124,7 +120,7 @@ public class PostService {
     }
 
     @Transactional
-    public long modifyContent(long postId, ModifyingForm modifyingForm) throws RuntimeException{
+    public long modifyContent(long postId, ModifyingForm modifyingForm) throws RuntimeException {
         if (!validateModifyingPost(modifyingForm.getVisitedDate())) {
             throw new RuntimeException("올바르지 않은 포스팅");
         }
@@ -170,7 +166,7 @@ public class PostService {
 
         List<String> imagePathes = imageService.callImagePathes(postId);
         String mainImage = "";
-        if(imagePathes.size() > 0){
+        if (imagePathes.size() > 0) {
             mainImage = imagePathes.get(0);
         }
 

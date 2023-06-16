@@ -85,7 +85,7 @@ public class MemberController {
             return rq.historyBack(checkRsData.getMsg());
         }
 
-        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(),joinForm.getEmail(),joinForm.getName(),joinForm.getNickname());
+        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getEmail(), joinForm.getName(), joinForm.getNickname());
 
         String msg = joinRs.getMsg() + "\n로그인 후 이용해주세요.";
 
@@ -108,8 +108,8 @@ public class MemberController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/page/{id}")
     public String showUserPage(Model model, @PathVariable Long id,
-                                  @RequestParam(defaultValue = "0") int page,
-                                  @RequestParam(defaultValue = "5") int size) {
+                               @RequestParam(defaultValue = "0") int page,
+                               @RequestParam(defaultValue = "5") int size) {
 
         Member member = memberService.findById(id).orElse(null);
 
@@ -119,10 +119,10 @@ public class MemberController {
 
 
         Page<Post> postPages;
-        if(id == rq.getMember().getId()){
-            postPages =  this.postService.findByMember(id, pageablePost);
-        } else{
-            postPages =  this.postService.findByMemberAndOpenToPublic(id, pageablePost);
+        if (id == rq.getMember().getId()) {
+            postPages = this.postService.findByMember(id, pageablePost);
+        } else {
+            postPages = this.postService.findByMemberAndOpenToPublic(id, pageablePost);
         }
 
         List<Post> postList = postPages.getContent();
@@ -165,8 +165,8 @@ public class MemberController {
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
 
-        model.addAttribute("followingList",followingList);
-        model.addAttribute("followerList",followerList);
+        model.addAttribute("followingList", followingList);
+        model.addAttribute("followerList", followerList);
 
         return "usr/member/userPagePost";
     }
@@ -219,20 +219,20 @@ public class MemberController {
         model.addAttribute("member", member);
         model.addAttribute("follow", follow);
 
-        model.addAttribute("followingList",followingList);
-        model.addAttribute("followerList",followerList);
+        model.addAttribute("followingList", followingList);
+        model.addAttribute("followerList", followerList);
 
         return "usr/member/userPageLike";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/update/nickname/{id}")
-    public ResponseEntity<String> updateNickname(@PathVariable Long id ,@RequestParam("nickname") String nickname) {
+    public ResponseEntity<String> updateNickname(@PathVariable Long id, @RequestParam("nickname") String nickname) {
         Member member = rq.getMember();
 
         RsData updateRsData = memberService.updateNickname(member, id, nickname);
 
-        if(updateRsData.isFail()){
+        if (updateRsData.isFail()) {
             return ResponseEntity.badRequest().body("{\"message\": \"" + updateRsData.getMsg() + "\"}");
         }
 

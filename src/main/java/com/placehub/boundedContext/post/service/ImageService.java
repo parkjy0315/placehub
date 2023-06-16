@@ -13,12 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ImageService {
@@ -108,8 +103,8 @@ public class ImageService {
         return postId;
     }
 
-    public List<PreSignedUrlResponseForm>  getPreSignedUrlFromFilteredData(List<PreSignedUrlRequestForm> inputImgNames
-                                            , long creating_modifying_flag) {
+    public List<PreSignedUrlResponseForm> getPreSignedUrlFromFilteredData(List<PreSignedUrlRequestForm> inputImgNames
+            , long creating_modifying_flag) {
         Optional<Post> wrappedMaxPostId = postRepository.findFirstByOrderByIdDesc();
 
         long postId = getPostId(wrappedMaxPostId, creating_modifying_flag);
@@ -162,7 +157,7 @@ public class ImageService {
         return saveImages(willBeAddedImgs, postId);
     }
 
-    private RsData<Integer> deleteParticially (List<Long> sentImgs, List<Images> images) {
+    private RsData<Integer> deleteParticially(List<Long> sentImgs, List<Images> images) {
         Set<Long> idSetFromDb = getImgIdsFromDB(images);
 
         Set<Long> sentImgIds = new HashSet<>();
@@ -195,17 +190,17 @@ public class ImageService {
 
         return result;
     }
-    
+
     private boolean validateFileNameFromClient(String multiPartFileName) {
         if (!multiPartFileName.contains(".")) {
             return false;
         }
-        
+
         String beforeDot = multiPartFileName.split("\\.")[0];
         if (!beforeDot.matches("^[0-9]+_[0-9]+$")) {
             return false;
         }
-        
+
         return true;
     }
 

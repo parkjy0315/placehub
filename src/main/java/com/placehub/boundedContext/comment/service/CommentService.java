@@ -4,7 +4,6 @@ import com.placehub.base.rsData.RsData;
 import com.placehub.boundedContext.comment.entity.Comment;
 import com.placehub.boundedContext.comment.repository.CommentRepository;
 import com.placehub.boundedContext.member.entity.Member;
-import com.placehub.boundedContext.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     @Transactional
-    public Comment create(Long postId, String content, Member actor){
+    public Comment create(Long postId, String content, Member actor) {
 
         Long actorId = actor.getId();
         String actorNickName = actor.getNickname();
@@ -36,7 +35,7 @@ public class CommentService {
     }
 
     @Transactional
-    public RsData<Comment> update(Comment comment, String content){
+    public RsData<Comment> update(Comment comment, String content) {
 
         comment = comment.toBuilder().content(content).build();
         commentRepository.save(comment);
@@ -73,7 +72,7 @@ public class CommentService {
         if (comment.getMemberId() != actor.getId()) {
             return RsData.of("F-1", "수정 및 삭제 권한이 없습니다.");
         }
-        return RsData.of("S-1","수정 및 삭제가 가능합니다.", comment);
+        return RsData.of("S-1", "수정 및 삭제가 가능합니다.", comment);
     }
 
 

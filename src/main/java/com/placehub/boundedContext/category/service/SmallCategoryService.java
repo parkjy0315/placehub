@@ -1,12 +1,9 @@
 package com.placehub.boundedContext.category.service;
 
 
-import com.placehub.boundedContext.category.entity.BigCategory;
-import com.placehub.boundedContext.category.entity.MidCategory;
 import com.placehub.boundedContext.category.entity.SmallCategory;
 import com.placehub.boundedContext.category.repository.SmallCategoryRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +23,7 @@ public class SmallCategoryService {
     }
 
     public SmallCategory getSmallCategory(Long id) {
-        if (id == null){
+        if (id == null) {
             return new SmallCategory();
         }
 

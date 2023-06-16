@@ -22,7 +22,7 @@ public class CommentController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/create/{postId}")
-    public String create(@PathVariable("postId") String postId ,@RequestParam String content){
+    public String create(@PathVariable("postId") String postId, @RequestParam String content) {
         Long parsedPostId = Long.parseLong(postId);
         commentService.create(parsedPostId, content, rq.getMember());
         return "redirect:/post/view/%s".formatted(postId);
@@ -44,7 +44,7 @@ public class CommentController {
 
         RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
 
-        if(checkRsData.isFail()){
+        if (checkRsData.isFail()) {
             return rq.historyBack(checkRsData);
         }
 
@@ -60,7 +60,7 @@ public class CommentController {
 
         RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
 
-        if(checkRsData.isFail()){
+        if (checkRsData.isFail()) {
             return rq.historyBack(checkRsData);
         }
 
@@ -76,7 +76,7 @@ public class CommentController {
 
         RsData<Comment> checkRsData = checkPermissionAndValidity(comment);
 
-        if(checkRsData.isFail()){
+        if (checkRsData.isFail()) {
             return rq.historyBack(checkRsData);
         }
 
@@ -85,10 +85,10 @@ public class CommentController {
         return rq.redirectWithMsg("/post/view/%s".formatted(postId), deleteRsData);
     }
 
-    private RsData<Comment> checkPermissionAndValidity(Comment comment){
+    private RsData<Comment> checkPermissionAndValidity(Comment comment) {
 
         RsData<Comment> isVaildRsData = commentService.isVaild(comment);
-        if(isVaildRsData.isFail()){
+        if (isVaildRsData.isFail()) {
             return isVaildRsData;
         }
 

@@ -48,7 +48,7 @@ public class FriendControllerTests {
                 .andExpect(handler().handlerType(FriendController.class))
                 .andExpect(handler().methodName("follow"))
                 .andExpect(status().is2xxSuccessful())
-                ;
+        ;
 
         Friend friend = friendService.findByFollowerIdAndFollowingId(1L, 2L).orElse(null);
         assertThat(friend).isNotNull();

@@ -24,7 +24,7 @@ public class FriendService {
         Member followingMember = memberService.findByNickname(nickname).orElse(null);
         RsData<Friend> canFollowRsData = canFollow(followerId, followingMember);
 
-        if(canFollowRsData.isFail()){
+        if (canFollowRsData.isFail()) {
             return canFollowRsData;
         }
 
@@ -43,7 +43,7 @@ public class FriendService {
         Member followingMember = memberService.findById(followingId).orElse(null);
         RsData<Friend> canFollowRsData = canFollow(followerId, followingMember);
 
-        if(canFollowRsData.isFail()){
+        if (canFollowRsData.isFail()) {
             return canFollowRsData;
         }
 
@@ -58,11 +58,11 @@ public class FriendService {
 
     private RsData<Friend> canFollow(Long followerId, Member followingMember) {
 
-        if(followingMember == null){
+        if (followingMember == null) {
             return RsData.of("F-1", "존재하지 않는 사용자입니다.");
         }
 
-        if(followingMember.getId() == followerId){
+        if (followingMember.getId() == followerId) {
             return RsData.of("F-2", "나를 팔로우할 수 없습니다.");
         }
 
@@ -76,9 +76,9 @@ public class FriendService {
     }
 
     @Transactional
-    public RsData<Friend> unfollow(Friend friend){
+    public RsData<Friend> unfollow(Friend friend) {
 
-        if(friend == null){
+        if (friend == null) {
             return RsData.of("F-1", "존재하지 않는 팔로우입니다.");
         }
 

@@ -34,11 +34,13 @@ public class MemberService {
     }
 
 
-    public void delete(Member member) {memberRepository.delete(member);}
+    public void delete(Member member) {
+        memberRepository.delete(member);
+    }
 
     // 일반 회원가입
     @Transactional
-    public RsData<Member> join(String username, String password, String email, String name, String nickname){
+    public RsData<Member> join(String username, String password, String email, String name, String nickname) {
         // "PlaceHub" - 일반 회원가입으로 가입한 회원 확인용
         return join("PlaceHub", username, password, email, name, nickname);
     }
@@ -61,16 +63,16 @@ public class MemberService {
 
     }
 
-    public RsData<Member> checkDuplicateValue(String username, String email, String nickname){
-        if ( findByUsername(username).isPresent() ) {
+    public RsData<Member> checkDuplicateValue(String username, String email, String nickname) {
+        if (findByUsername(username).isPresent()) {
             return RsData.of("F-1", "해당 아이디(%s)는 이미 사용중입니다.".formatted(username));
         }
 
-        if ( findByEmail(email).isPresent() ) {
+        if (findByEmail(email).isPresent()) {
             return RsData.of("F-2", "해당 이메일(%s)은 이미 사용중입니다.".formatted(email));
         }
 
-        if ( findByNickname(nickname).isPresent() ) {
+        if (findByNickname(nickname).isPresent()) {
             return RsData.of("F-3", "해당 닉네임(%s)은 이미 사용중입니다.".formatted(nickname));
         }
 
@@ -91,13 +93,13 @@ public class MemberService {
     @Transactional
     public RsData<Member> updateNickname(Member actor, Long memberId, String nickname) {
 
-        if(actor.getId() != memberId) {
+        if (actor.getId() != memberId) {
             return RsData.of("F-1", "사용자 정보가 일치하지 않습니다.");
         }
 
-         Member checkMember = findByNickname(nickname).orElse(null);
+        Member checkMember = findByNickname(nickname).orElse(null);
 
-        if(checkMember != null) {
+        if (checkMember != null) {
             return RsData.of("F-S", "이미 사용 중인 닉네임입니다.");
         }
 
@@ -108,7 +110,7 @@ public class MemberService {
     }
 
     @Transactional
-    public RsData<Member> updateBio(Member actor, String bio){
+    public RsData<Member> updateBio(Member actor, String bio) {
         // TODO : 검증로직
         actor = actor.toBuilder().bio(bio).build();
         memberRepository.save(actor);
@@ -120,12 +122,15 @@ public class MemberService {
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
     }
+
     public Optional<Member> findByUsername(String username) {
         return memberRepository.findByUsername(username);
     }
+
     public Optional<Member> findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
+
     public Optional<Member> findByNickname(String nickname) {
         return memberRepository.findByNickname(nickname);
     }
