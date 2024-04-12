@@ -11,7 +11,6 @@
 - 팔로잉/팔로워 기능 기반 커뮤니티
 <br/>
 
-### [PlaceHub 바로가기](https://www.placehub.xyz/) 
 ### [시연 영상](https://youtu.be/ZjNE_YZlFac) 
 ### [팀 노션](https://www.notion.so/13-PlaceHub-e0493f1c1090469eb949c8e38fed4784?pvs=4)
 <br/>         
